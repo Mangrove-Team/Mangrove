@@ -1,6 +1,9 @@
-//
-// Created by yanismonte on 3/3/26.
-//
+/*
+// Mangrove Project
+// IConstraint.hpp
+// Description:
+// Copyright (c) Mangrove. All rights reserved.
+*/
 
 #ifndef MANGROVE_ICONSTRAINT_H
 #define MANGROVE_ICONSTRAINT_H
