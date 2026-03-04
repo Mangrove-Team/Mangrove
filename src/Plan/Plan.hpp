@@ -17,6 +17,7 @@ public:
     Plan() = default;
 
     [[nodiscard]] std::list<std::shared_ptr<Stand>> getStandsByConstraint(Constraint::Type type) const;
+    [[nodiscard]] float getTotalWatt() const;
 
     void addStand(const Stand& stand);
 

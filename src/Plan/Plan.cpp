@@ -7,6 +7,8 @@
 
 #include "Plan.hpp"
 
+#include "Electricity.hpp"
+
 std::list<std::shared_ptr<Stand>> Plan::getStandsByConstraint(const Constraint::Type type) const {
     std::list<std::shared_ptr<Stand>> stands;
 
@@ -18,4 +20,13 @@ std::list<std::shared_ptr<Stand>> Plan::getStandsByConstraint(const Constraint::
 
 void Plan::addStand(const Stand& stand) {
     _stands.push_back(std::make_shared<Stand>(stand));
+}
+
+float Plan::getTotalWatt() const {
+    float watt = 0.0f;
+
+    for (const auto& stand : _stands)
+        if (auto c = stand->getConstraintByType(Constraint::Electricity); c != nullptr)
+            watt += std::dynamic_pointer_cast<Electricity>(c)->getWatt();
+    return watt;
 }

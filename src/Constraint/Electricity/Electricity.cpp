@@ -12,3 +12,7 @@ Electricity::Electricity(const float watt) {
     _name = "Electricity";
     _type = Constraint::Electricity;
 }
+
+float Electricity::getWatt() const {
+    return _watt;
+}

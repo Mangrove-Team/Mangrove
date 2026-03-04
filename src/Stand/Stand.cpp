@@ -16,7 +16,9 @@ std::map<Constraint::Type, std::shared_ptr<AConstraint>>& Stand::getConstraints(
 }
 
 std::shared_ptr<AConstraint> Stand::getConstraintByType(const Constraint::Type type) const {
-    return _constraints.at(type);
+    if (_constraints.contains(type))
+        return _constraints.at(type);
+    return nullptr;
 }
 
 void Stand::setName(const std::string &name) {

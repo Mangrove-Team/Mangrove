@@ -46,4 +46,5 @@ auto main() -> int {
 
     for (const auto standWithElectricity = plan->getStandsByConstraint(Constraint::Electricity); const auto& elt : standWithElectricity)
         std::cout << elt->getName() << std::endl;
+    std::cout << plan->getTotalWatt() << std::endl;
 }
