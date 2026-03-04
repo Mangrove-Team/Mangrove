@@ -7,11 +7,15 @@
 
 #include "Plan.hpp"
 
-std::list<Stand> Plan::getStandsByConstraint(Constraint::Type type) const {
-    std::list<Stand> stands;
+std::list<std::shared_ptr<Stand>> Plan::getStandsByConstraint(const Constraint::Type type) const {
+    std::list<std::shared_ptr<Stand>> stands;
 
-    for (const auto& elt : _stands) {
-        stands.push_back(elt);
-    }
+    for (const auto& stand : _stands)
+        if (auto constraints = stand->getConstraints(); constraints.contains(type))
+            stands.push_back(stand);
     return stands;
+}
+
+void Plan::addStand(const Stand& stand) {
+    _stands.push_back(std::make_shared<Stand>(stand));
 }

@@ -7,14 +7,18 @@
 
 #include "Stand.hpp"
 
-void Stand::addConstraint(const AConstraint& c) {
-    _constraints.emplace(c.getType(), c);
-}
-
-std::string Stand::getName() const {
+std::string& Stand::getName() {
     return _name;
 }
 
-AConstraint Stand::getConstraintByType(const Constraint::Type type) const {
+std::map<Constraint::Type, std::shared_ptr<AConstraint>>& Stand::getConstraints() {
+    return _constraints;
+}
+
+std::shared_ptr<AConstraint> Stand::getConstraintByType(const Constraint::Type type) const {
     return _constraints.at(type);
+}
+
+void Stand::setName(const std::string &name) {
+    _name = name;
 }

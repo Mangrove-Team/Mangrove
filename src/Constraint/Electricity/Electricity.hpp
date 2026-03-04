@@ -12,7 +12,9 @@
 
 class Electricity : public AConstraint {
 public:
-    Electricity();
+    explicit Electricity(float watt);
+private:
+    float _watt;
 };
 
 #endif //MANGROVE_ELECTRICITY_H

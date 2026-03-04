@@ -7,18 +7,43 @@
 
 #include <iostream>
 
+#include "Plan.hpp"
 #include "Stand.hpp"
-#include "Electricity/Electricity.hpp"
-#include "PmrAccess/PmrAccess.hpp"
+#include "PmrAccess.hpp"
+#include "Electricity.hpp"
+
+auto handleStand1(const std::shared_ptr<Plan>& plan) -> void {
+    Stand stand;
+
+    stand.setName("stand 1");
+    stand.addConstraint<Electricity>(12.5);
+    stand.addConstraint<PmrAccess>();
+    plan->addStand(stand);
+}
+
+auto handleStand2(const std::shared_ptr<Plan>& plan) -> void {
+    Stand stand;
+
+    stand.setName("stand 2");
+    stand.addConstraint<Electricity>(5.3);
+    plan->addStand(stand);
+}
+
+auto handleStand3(const std::shared_ptr<Plan>& plan) -> void {
+    Stand stand;
+
+    stand.setName("stand 3");
+    stand.addConstraint<PmrAccess>();
+    plan->addStand(stand);
+}
 
 auto main() -> int {
-    Stand stand;
-    Electricity electricity;
-    PmrAccess pmrAccess;
+    const auto plan = std::make_shared<Plan>();
 
-    stand.addConstraint(electricity);
-    stand.addConstraint(pmrAccess);
+    handleStand1(plan);
+    handleStand2(plan);
+    handleStand3(plan);
 
-    std::cout << stand.getConstraintByType(Constraint::Electricity).getName() << std::endl;
-    std::cout << stand.getConstraintByType(Constraint::PMRAccess).getName() << std::endl;
+    for (const auto standWithElectricity = plan->getStandsByConstraint(Constraint::Electricity); const auto& elt : standWithElectricity)
+        std::cout << elt->getName() << std::endl;
 }

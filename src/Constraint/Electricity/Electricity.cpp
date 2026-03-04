@@ -7,7 +7,8 @@
 
 #include "Electricity.hpp"
 
-Electricity::Electricity() {
+Electricity::Electricity(const float watt) {
+    _watt = watt;
     _name = "Electricity";
     _type = Constraint::Electricity;
 }

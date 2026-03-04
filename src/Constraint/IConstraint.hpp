@@ -19,8 +19,8 @@ namespace Constraint {
     public:
         virtual ~IConstraint() = default;
 
-        virtual std::string getName() const = 0;
-        virtual Type getType() const = 0;
+        [[nodiscard]] virtual std::string& getName() = 0;
+        [[nodiscard]] virtual Type getType() const = 0;
     };
 }
 

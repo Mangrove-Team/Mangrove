@@ -11,7 +11,7 @@ AConstraint::AConstraint() {
     _type = Constraint::None;
 }
 
-std::string AConstraint::getName() const {
+std::string& AConstraint::getName() {
     return _name;
 }
 

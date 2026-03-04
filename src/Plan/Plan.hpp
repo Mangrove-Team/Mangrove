@@ -16,11 +16,12 @@ class Plan {
 public:
     Plan() = default;
 
-    std::list<Stand> getStandsByConstraint(Constraint::Type type) const;
+    [[nodiscard]] std::list<std::shared_ptr<Stand>> getStandsByConstraint(Constraint::Type type) const;
+
+    void addStand(const Stand& stand);
 
 private:
-    std::list<Stand> _stands;
+    std::list<std::shared_ptr<Stand>> _stands;
 };
-
 
 #endif //MANGROVE_PLAN_HPP

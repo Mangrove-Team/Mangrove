@@ -15,8 +15,8 @@ public:
     AConstraint();
     ~AConstraint() override = default;
 
-    std::string getName() const override;
-    Constraint::Type getType() const override;
+    [[nodiscard]] std::string& getName() override;
+    [[nodiscard]] Constraint::Type getType() const override;
 protected:
     std::string _name;
     Constraint::Type _type;
