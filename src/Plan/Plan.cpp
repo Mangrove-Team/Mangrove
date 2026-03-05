@@ -8,7 +8,10 @@
 #include "Plan.hpp"
 #include "Electricity.hpp"
 
-Plan::Plan(QObject *parent) : QObject(parent) {}
+Plan::Plan(QObject *parent)
+    : QObject(parent)
+{
+}
 
 float Plan::getTotalWatt() const {
     float watt = 0.0f;
@@ -25,11 +28,17 @@ void Plan::addStand(const std::shared_ptr<Stand>& stand) {
     emit totalWattChanged();
 }
 
-Q_INVOKABLE QList<std::shared_ptr<Stand>> Plan::getStandsByConstraint(const Constraint::Type type) const {
-    Q_INVOKABLE QList<std::shared_ptr<Stand>> stands;
+QList<std::shared_ptr<Stand>> Plan::getStandsByConstraint(const Constraint::Type type) const {
+    QList<std::shared_ptr<Stand>> stands;
 
     for (const auto& stand : _stands)
         if (auto constraints = stand->getConstraints(); constraints.contains(type))
             stands.push_back(stand);
     return stands;
+}
+
+QList<QObject*> Plan::getStandsForQml() {
+    QList<QObject*> list;
+    for(auto& s : _stands) list.append(s.get());
+    return list;
 }

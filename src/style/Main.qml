@@ -4,8 +4,8 @@ import QtQuick.Layouts
 
 Window {
     visible: true
-    width: 400
-    height: 600
+    width: 1920
+    height: 1080
     title: "Mangrove Dashboard"
     color: "#1a1a1a"
 

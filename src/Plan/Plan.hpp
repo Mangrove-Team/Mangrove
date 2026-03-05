@@ -6,14 +6,14 @@
 */
 
 #ifndef MANGROVE_PLAN_HPP
-#define MANGROVE_PLAN_HPP
+    #define MANGROVE_PLAN_HPP
 
-    #include <QObject>
-    #include <QList>
     #include <memory>
     #include "Stand.hpp"
 
 class Plan : public QObject {
+
+    // The Q_OBJECT macro is necessary for any class that defines signals, slots, or properties and enables the meta-object features of Qt.
     Q_OBJECT
     Q_PROPERTY(QList<QObject*> stands READ getStandsForQml NOTIFY standsChanged)
     Q_PROPERTY(float totalWatt READ getTotalWatt NOTIFY totalWattChanged)
@@ -21,30 +21,20 @@ class Plan : public QObject {
     public:
         explicit Plan(QObject *parent = nullptr);
 
-        Q_INVOKABLE QList<std::shared_ptr<Stand>> getStandsByConstraint(const Constraint::Type type) const;
-        Q_INVOKABLE void addStand(const std::shared_ptr<Stand>& stand);
+        [[nodiscard]] float getTotalWatt() const;
+        [[nodiscard]] Q_INVOKABLE QList<QObject*> getStandsForQml();
+        [[nodiscard]] Q_INVOKABLE QList<std::shared_ptr<Stand>> getStandsByConstraint(Constraint::Type type) const;
 
-        void addStand(std::shared_ptr<Stand> &stand) {
-            _stands.push_back(stand);
-            emit standsChanged();
-            emit totalWattChanged();
-        }
-
-        float getTotalWatt() const;
-
-        QList<QObject*> getStandsForQml() {
-            QList<QObject*> list;
-            for(auto& s : _stands) list.append(s.get());
-            return list;
-        }
+        void addStand(const std::shared_ptr<Stand>& stand);
 
         signals:
-            void totalWattChanged();
             void standsChanged();
+            void totalWattChanged();
             void standAdded(std::shared_ptr<Stand> stand);
 
     private:
-        QList<std::shared_ptr<Stand>> _stands;
+            QList<std::shared_ptr<Stand>> _stands;
 };
+
 
 #endif //MANGROVE_PLAN_HPP

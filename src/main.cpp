@@ -32,9 +32,15 @@ int main(int argc, char *argv[])
     handleStand1(plan);
     handleStand2(plan);
 
+    const auto plan2 = std::make_shared<Plan>();
+    handleStand1(plan2);
+    handleStand2(plan2);
+    handleStand2(plan2);
+
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("planData", plan.get());
+
 
     const QUrl url("../src/style/Main.qml");
     engine.load(url);
