@@ -9,14 +9,18 @@
 #define MANGROVE_ICONSTRAINT_H
 
 #include <string>
+#include <QObject>
 
 namespace Constraint {
+    Q_NAMESPACE
+
     enum Type {
         None = 0,
         Electricity,
         PMRAccess,
         Luminosity,
     };
+    Q_ENUM_NS(Type)
 
     class IConstraint {
     public:

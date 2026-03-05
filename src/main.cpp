@@ -5,21 +5,24 @@
 // Copyright (c) Mangrove. All rights reserved.
 */
 
+#include <QQmlContext>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <QQmlContext>
+#include <qqml.h>
+
 #include "Plan.hpp"
 #include "Electricity.hpp"
+#include "IConstraint.hpp"
 
-void handleStand1(std::shared_ptr<Plan> plan) {
-    auto stand = std::make_shared<Stand>();
+void handleStand1(const std::shared_ptr<Plan>& plan) {
+    const auto stand = std::make_shared<Stand>();
     stand->setName(static_cast<std::string>("Stand 1"));
     stand->addConstraint<Electricity>(12.5);
     plan->addStand(stand);
 }
 
-void handleStand2(std::shared_ptr<Plan> plan) {
-    auto stand = std::make_shared<Stand>();
+void handleStand2(const std::shared_ptr<Plan>& plan) {
+    const auto stand = std::make_shared<Stand>();
     stand->setName(static_cast<std::string>("Stand 2"));
     plan->addStand(stand);
 }
@@ -27,6 +30,15 @@ void handleStand2(std::shared_ptr<Plan> plan) {
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+
+    qmlRegisterUncreatableMetaObject(
+        Constraint::staticMetaObject,
+        "Mangrove",
+        1,
+        0,
+        "Constraint",
+        "Constraint is an enum namespace"
+    );
 
     const auto plan = std::make_shared<Plan>();
     handleStand1(plan);
@@ -40,7 +52,6 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("planData", plan.get());
-
 
     const QUrl url("../src/style/Main.qml");
     engine.load(url);

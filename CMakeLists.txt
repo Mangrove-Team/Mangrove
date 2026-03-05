@@ -19,6 +19,7 @@ add_executable(Mangrove
         src/Constraint/AConstraint.cpp
         src/Constraint/PmrAccess/PmrAccess.cpp
         src/Constraint/Electricity/Electricity.cpp
+        src/Constraint/IConstraint.hpp
 )
 
 qt_add_qml_module(Mangrove

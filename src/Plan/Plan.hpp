@@ -9,6 +9,7 @@
     #define MANGROVE_PLAN_HPP
 
     #include <memory>
+
     #include "Stand.hpp"
 
 class Plan : public QObject {

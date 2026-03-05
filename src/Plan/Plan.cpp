@@ -24,7 +24,13 @@ float Plan::getTotalWatt() const {
 
 void Plan::addStand(const std::shared_ptr<Stand>& stand) {
     _stands.append(stand);
+
+    connect(stand.get(), &Stand::constraintsChanged, this, [this]() {
+        emit totalWattChanged();
+    });
+
     emit standAdded(stand);
+    emit standsChanged();
     emit totalWattChanged();
 }
 
@@ -32,13 +38,14 @@ QList<std::shared_ptr<Stand>> Plan::getStandsByConstraint(const Constraint::Type
     QList<std::shared_ptr<Stand>> stands;
 
     for (const auto& stand : _stands)
-        if (auto constraints = stand->getConstraints(); constraints.contains(type))
+        if (auto& constraints = stand->getConstraints(); constraints.contains(type))
             stands.push_back(stand);
     return stands;
 }
 
 QList<QObject*> Plan::getStandsForQml() {
     QList<QObject*> list;
-    for(auto& s : _stands) list.append(s.get());
+    for(auto& s : _stands)
+        list.append(s.get());
     return list;
 }

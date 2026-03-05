@@ -6,9 +6,19 @@
 */
 
 #include "Stand.hpp"
+#include "PmrAccess.hpp"
+#include "Electricity.hpp"
 
-QString Stand::getName() const {
+QString& Stand::getName() {
     return _name;
+}
+
+QStringList Stand::getConstraintsForQml() const {
+    QStringList constraints;
+
+    for (const auto &val: _constraints | std::views::values)
+        constraints.append(QString::fromStdString(val->getName()));
+    return constraints;
 }
 
 std::map<Constraint::Type, std::shared_ptr<AConstraint>>& Stand::getConstraints() {
@@ -29,6 +39,30 @@ void Stand::setName(const QString& name) {
 void Stand::setName(const std::string& name) {
     _name = QString::fromStdString(name);
     emit nameChanged();
+}
+
+bool Stand::addConstraintByType(const int type) {
+    const auto constraintType = static_cast<Constraint::Type>(type);
+
+    if (constraintType == Constraint::None || getConstraintByType(constraintType) != nullptr)
+        return false;
+
+    switch (constraintType) {
+        case Constraint::Electricity:
+            addConstraint<Electricity>(12.5f);
+            return true;
+        case Constraint::PMRAccess:
+            addConstraint<PmrAccess>();
+            return true;
+        default:
+            return false;
+    }
+}
+
+void Stand::addNextConstraint() {
+    if (addConstraintByType(Constraint::Electricity))
+        return;
+    addConstraintByType(Constraint::PMRAccess);
 }
 
 float Stand::getX() const {
