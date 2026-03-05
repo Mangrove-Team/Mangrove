@@ -30,3 +30,4 @@ QPushButton#specialButton {
     border: 2px solid white;
     font-weight: bold;
 }
+
