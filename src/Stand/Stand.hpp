@@ -8,13 +8,13 @@
 #ifndef MANGROVE_STAND_HPP
 #define MANGROVE_STAND_HPP
 
-#include <map>
-#include <memory>
-#include <type_traits>
-#include <QObject>
-#include <QList>
+    #include <map>
+    #include <memory>
+    #include <type_traits>
+    #include <QObject>
+    #include <QList>
 
-#include "AConstraint.hpp"
+    #include "AConstraint.hpp"
 
 class Stand : public QObject {
     Q_OBJECT
