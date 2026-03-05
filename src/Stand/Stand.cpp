@@ -30,3 +30,21 @@ void Stand::setName(const std::string& name) {
     _name = QString::fromStdString(name);
     emit nameChanged();
 }
+
+float Stand::getX() const {
+    return _x;
+}
+
+float Stand::getY() const {
+    return _y;
+}
+
+void Stand::setX(float x) {
+    _x = x;
+    emit xChanged();
+}
+
+void Stand::setY(float y) {
+    _y = y;
+    emit yChanged();
+}

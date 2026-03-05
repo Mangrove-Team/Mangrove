@@ -26,6 +26,7 @@ qt_add_qml_module(Mangrove
         VERSION 1.0
         QML_FILES
         src/style/Main.qml
+        src/style/Map.qml
 )
 
 target_include_directories(Mangrove PRIVATE
