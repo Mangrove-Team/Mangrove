@@ -1,50 +1,32 @@
 /*
 // Mangrove Project
 // main.cpp
-// Description: 
+// Description: Qt application entry point
 // Copyright (c) Mangrove. All rights reserved.
 */
 
-#include <iostream>
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include "DrawingCanvasBackend.hpp"
 
-#include "Plan.hpp"
-#include "Stand.hpp"
-#include "PmrAccess.hpp"
-#include "Electricity.hpp"
+int main(int argc, char *argv[]) {
+    QGuiApplication app(argc, argv);
 
-auto handleStand1(const std::shared_ptr<Plan>& plan) -> void {
-    Stand stand;
+    qmlRegisterType<DrawingCanvasBackend>("Mangrove", 1, 0, "DrawingCanvasBackend");
 
-    stand.setName("stand 1");
-    stand.addConstraint<Electricity>(12.5);
-    stand.addConstraint<PmrAccess>();
-    plan->addStand(stand);
-}
+    QQmlApplicationEngine engine;
+    const QUrl url(QStringLiteral("qrc:/qt/qml/Mangrove/qml/main.qml"));
 
-auto handleStand2(const std::shared_ptr<Plan>& plan) -> void {
-    Stand stand;
+    QObject::connect(
+        &engine, &QQmlApplicationEngine::objectCreated,
+        &app, [url](QObject *obj, const QUrl &objUrl) {
+            if (!obj && url == objUrl)
+                QCoreApplication::exit(-1);
+        },
+        Qt::QueuedConnection);
 
-    stand.setName("stand 2");
-    stand.addConstraint<Electricity>(5.3);
-    plan->addStand(stand);
-}
+    engine.load(url);
 
-auto handleStand3(const std::shared_ptr<Plan>& plan) -> void {
-    Stand stand;
-
-    stand.setName("stand 3");
-    stand.addConstraint<PmrAccess>();
-    plan->addStand(stand);
-}
-
-auto main() -> int {
-    const auto plan = std::make_shared<Plan>();
-
-    handleStand1(plan);
-    handleStand2(plan);
-    handleStand3(plan);
-
-    for (const auto standWithElectricity = plan->getStandsByConstraint(Constraint::Electricity); const auto& elt : standWithElectricity)
-        std::cout << elt->getName() << std::endl;
-    std::cout << plan->getTotalWatt() << std::endl;
+    return app.exec();
 }
