@@ -7,7 +7,7 @@
 
 #include "Stand.hpp"
 
-std::string& Stand::getName() {
+QString Stand::getName() const {
     return _name;
 }
 
@@ -21,6 +21,12 @@ std::shared_ptr<AConstraint> Stand::getConstraintByType(const Constraint::Type t
     return nullptr;
 }
 
-void Stand::setName(const std::string &name) {
+void Stand::setName(const QString& name) {
     _name = name;
+    emit nameChanged();
+}
+
+void Stand::setName(const std::string& name) {
+    _name = QString::fromStdString(name);
+    emit nameChanged();
 }

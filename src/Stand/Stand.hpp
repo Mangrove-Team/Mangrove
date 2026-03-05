@@ -11,24 +11,33 @@
 #include <map>
 #include <memory>
 #include <type_traits>
+#include <QObject>
+#include <QList>
 
 #include "AConstraint.hpp"
 
-class Stand {
-public:
-    Stand() = default;
+class Stand : public QObject {
+    Q_OBJECT
+    Q_PROPERTY(QString name READ getName WRITE setName NOTIFY nameChanged)
 
-    [[nodiscard]] std::string& getName();
-    [[nodiscard]] std::map<Constraint::Type, std::shared_ptr<AConstraint>>& getConstraints();
-    [[nodiscard]] std::shared_ptr<AConstraint> getConstraintByType(Constraint::Type type) const;
+    public:
+        explicit Stand(QObject* parent = nullptr) : QObject(parent) {}
 
-    void setName(const std::string &name);
-    template<typename T, typename ... Args>
-    void addConstraint(Args&& ... args);
+        [[nodiscard]] QString getName() const;
+        [[nodiscard]] std::map<Constraint::Type, std::shared_ptr<AConstraint>>& getConstraints();
+        [[nodiscard]] std::shared_ptr<AConstraint> getConstraintByType(Constraint::Type type) const;
 
-private:
-    std::string _name;
-    std::map<Constraint::Type, std::shared_ptr<AConstraint>> _constraints;
+        void setName(const QString& name);
+        void setName(const std::string& name);
+        template<typename T, typename ... Args>
+        void addConstraint(Args&& ... args);
+    signals:
+        void nameChanged();
+
+    private:
+        QString _name;
+
+        std::map<Constraint::Type, std::shared_ptr<AConstraint>> _constraints;
 };
 
 template<typename T, typename... Args>

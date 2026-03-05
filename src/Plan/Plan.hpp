@@ -8,28 +8,43 @@
 #ifndef MANGROVE_PLAN_HPP
 #define MANGROVE_PLAN_HPP
 
-#include <list>
-#include <QFile>
-#include <QBoxLayout>
-#include <QPushButton>
+    #include <QObject>
+    #include <QList>
+    #include <memory>
+    #include "Stand.hpp"
 
-#include "Stand.hpp"
+class Plan : public QObject {
+    Q_OBJECT
+    Q_PROPERTY(QList<QObject*> stands READ getStandsForQml NOTIFY standsChanged)
+    Q_PROPERTY(float totalWatt READ getTotalWatt NOTIFY totalWattChanged)
 
-class Plan {
-public:
-    explicit Plan(const std::shared_ptr<QWidget>& window);
+    public:
+        explicit Plan(QObject *parent = nullptr);
 
-    [[nodiscard]] std::list<std::shared_ptr<Stand>> getStandsByConstraint(Constraint::Type type) const;
-    [[nodiscard]] float getTotalWatt() const;
+        Q_INVOKABLE QList<std::shared_ptr<Stand>> getStandsByConstraint(const Constraint::Type type) const;
+        Q_INVOKABLE void addStand(const std::shared_ptr<Stand>& stand);
 
-    void addStand(const Stand& stand);
+        void addStand(std::shared_ptr<Stand> &stand) {
+            _stands.push_back(stand);
+            emit standsChanged();
+            emit totalWattChanged();
+        }
 
-private:
-    std::shared_ptr<QWidget> _standListWidget;
-    std::shared_ptr<QBoxLayout> _standListLayout;
-    std::unique_ptr<QWidget> _planWidget;
-    std::shared_ptr<QPushButton> _addStandButton;
-    std::list<std::shared_ptr<Stand>> _stands;
+        float getTotalWatt() const;
+
+        QList<QObject*> getStandsForQml() {
+            QList<QObject*> list;
+            for(auto& s : _stands) list.append(s.get());
+            return list;
+        }
+
+        signals:
+            void totalWattChanged();
+            void standsChanged();
+            void standAdded(std::shared_ptr<Stand> stand);
+
+    private:
+        QList<std::shared_ptr<Stand>> _stands;
 };
 
 #endif //MANGROVE_PLAN_HPP
