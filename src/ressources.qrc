@@ -1,6 +1,0 @@
-<!DOCTYPE RCC><RCC version="1.0">
-    <qresource prefix="/styles">
-        <file>style/main.qss</file>
-        <file>style/buttons.qss</file>
-    </qresource>
-</RCC>
