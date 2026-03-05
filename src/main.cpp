@@ -52,11 +52,8 @@ auto main() -> int {
 
 #include <iostream>
 #include <QApplication>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QWidget>
-#include <QFile>
-#include <QTextStream>
+
+#include "Plan.hpp"
 
 QString loadStyle(const QString& path) {
     QFile file(path);
@@ -71,24 +68,19 @@ QString loadStyle(const QString& path) {
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-
     QString fullStyle;
+
     fullStyle += loadStyle("../src/style/Main.qss");
     fullStyle += loadStyle("../src/style/Buttons.qss");
     app.setStyleSheet(fullStyle);
 
-    QWidget window;
-    window.setWindowTitle("Test Qt QSS Propre");
-    window.resize(300, 200);
+    auto window = std::make_shared<QWidget>();
 
-    QVBoxLayout layout(&window);
-    QPushButton btn1("Button Normal");
-    QPushButton btn2("Button Styled");
-    btn2.setObjectName("specialButton");
+    window->setWindowTitle("Mangrove");
+    window->resize(1920, 1080);
 
-    layout.addWidget(&btn1);
-    layout.addWidget(&btn2);
+    auto plan = std::make_unique<Plan>(window);
 
-    window.show();
-    return app.exec();
+    window->show();
+    return QApplication::exec();
 }
