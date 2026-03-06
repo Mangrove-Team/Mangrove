@@ -16,12 +16,22 @@
 DrawingCanvasBackend::DrawingCanvasBackend(QQuickItem *parent)
     : QQuickPaintedItem(parent), _isDrawing(false), _brushMode(BrushMode::Freehand) {
     setAcceptedMouseButtons(Qt::LeftButton);
+    setAcceptHoverEvents(true);
     setAntialiasing(true);
 
     _pen.setColor(Qt::black);
     _pen.setWidth(2);
     _pen.setCapStyle(Qt::RoundCap);
     _pen.setJoinStyle(Qt::RoundJoin);
+}
+
+void DrawingCanvasBackend::drawLineSegments(QPainter* painter, const std::vector<QPointF>& points, const QPen& pen) {
+    if (points.size() >= 2) {
+        painter->setPen(pen);
+        for (size_t i = 1; i < points.size(); ++i) {
+            painter->drawLine(points[i - 1], points[i]);
+        }
+    }
 }
 
 void DrawingCanvasBackend::paint(QPainter *painter) {
@@ -31,28 +41,25 @@ void DrawingCanvasBackend::paint(QPainter *painter) {
         QPen linePen = _pen;
         linePen.setWidth(line.size);
         linePen.setColor(line.color);
-        painter->setPen(linePen);
+        drawLineSegments(painter, line.points, linePen);
+    }
 
-        if (line.points.size() >= 2) {
-            for (size_t i = 1; i < line.points.size(); ++i) {
-                painter->drawLine(line.points[i - 1], line.points[i]);
-            }
+    if (_ctrlPressed && !_nearbyPoints.isEmpty()) {
+        painter->setPen(QPen(Qt::blue, 2));
+        painter->setBrush(Qt::NoBrush);
+        for (const auto& point : _nearbyPoints) {
+            painter->drawEllipse(point, 8, 8);
         }
     }
 
     if (_isDrawing) {
         painter->setPen(_pen);
-
         if (_brushMode == BrushMode::StraightLine) {
             if (!_currentLine.points.empty()) {
                 painter->drawLine(_currentStart, _currentMousePos);
             }
         } else {
-            if (_currentLine.points.size() >= 2) {
-                for (size_t i = 1; i < _currentLine.points.size(); ++i) {
-                    painter->drawLine(_currentLine.points[i - 1], _currentLine.points[i]);
-                }
-            }
+            drawLineSegments(painter, _currentLine.points, _pen);
         }
     }
 }
@@ -99,10 +106,41 @@ void DrawingCanvasBackend::setBrushMode(BrushMode mode) {
     }
 }
 
+void DrawingCanvasBackend::updateNearbyPoints(const QPointF& pos) {
+    _nearbyPoints.clear();
+    const qreal snapDistance = 10.0;
+
+    for (const auto& line : _lines) {
+        if (line.points.size() >= 2) {
+            if (QLineF(pos, line.points.front()).length() < snapDistance) {
+                _nearbyPoints.append(line.points.front());
+            }
+            if (QLineF(pos, line.points.back()).length() < snapDistance) {
+                _nearbyPoints.append(line.points.back());
+            }
+        }
+    }
+}
+
+void DrawingCanvasBackend::updateCtrlStateAndNearbyPoints(Qt::KeyboardModifiers modifiers, const QPointF& pos) {
+    _ctrlPressed = (modifiers & Qt::ControlModifier);
+
+    if (_ctrlPressed) {
+        updateNearbyPoints(pos);
+    } else if (!_nearbyPoints.isEmpty()) {
+        _nearbyPoints.clear();
+    }
+    update();
+}
+
 void DrawingCanvasBackend::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         _isDrawing = true;
-        _currentStart = event->position();
+        _ctrlPressed = (event->modifiers() & Qt::ControlModifier);
+
+        QPointF pos = applyPositionModifiers(event->position(), event->modifiers(), event->position());
+
+        _currentStart = pos;
         _currentLine.color = _pen.color();
         _currentLine.size = _pen.width();
         _currentLine.points.clear();
@@ -112,26 +150,51 @@ void DrawingCanvasBackend::mousePressEvent(QMouseEvent *event) {
     }
 }
 
-void DrawingCanvasBackend::mouseMoveEvent(QMouseEvent *event) {
-    if (_isDrawing) {
-        _currentMousePos = event->position();
-        _buffer.clear();
+QPointF DrawingCanvasBackend::calculateAngledLine(const QPointF &start, const QPointF &end) {
+    float angleRad = std::atan2(end.y() - start.y(), end.x() - start.x());
+    float angleDeg = angleRad * 180.0f / static_cast<float>(M_PI);
+    float snappedAngleDeg = std::round(angleDeg / 15.0f) * 15.0f;
+    float snappedAngleRad = snappedAngleDeg * static_cast<float>(M_PI) / 180.0f;
+    float distance = std::sqrt(std::pow(end.x() - start.x(), 2) + std::pow(end.y() - start.y(), 2));
+    float newX = start.x() + std::cos(snappedAngleRad) * distance;
+    float newY = start.y() + std::sin(snappedAngleRad) * distance;
+    return QPointF(newX, newY);
+}
 
-        if (_brushMode == BrushMode::Freehand) {
-            _currentLine.points.push_back(_currentMousePos);
-        } else if (_brushMode == BrushMode::StraightLine && event->modifiers() & Qt::ShiftModifier) {
-            float angleRad = std::atan2(_currentMousePos.y() - _currentStart.y(), _currentMousePos.x() - _currentStart.x());
-            float angleDeg = angleRad * 180.0f / static_cast<float>(M_PI);
-            float snappedAngleDeg = std::round(angleDeg / 45.0f) * 45.0f;
-            float snappedAngleRad = snappedAngleDeg * static_cast<float>(M_PI) / 180.0f;
-            float distance = std::sqrt(std::pow(_currentMousePos.x() - _currentStart.x(), 2) + std::pow(_currentMousePos.y() - _currentStart.y(), 2));
-            float newX = _currentStart.x() + std::cos(snappedAngleRad) * distance;
-            float newY = _currentStart.y() + std::sin(snappedAngleRad) * distance;
-            _currentMousePos = QPointF(newX, newY);
+QPointF DrawingCanvasBackend::applyPositionModifiers(const QPointF& pos, Qt::KeyboardModifiers modifiers, const QPointF& start) {
+    QPointF result = pos;
+
+    if (modifiers & Qt::ControlModifier) {
+        updateNearbyPoints(result);
+        if (!_nearbyPoints.isEmpty()) {
+            result = _nearbyPoints.first();
         }
-
-        update();
     }
+
+    if (modifiers & Qt::ShiftModifier) {
+        result = calculateAngledLine(start, result);
+    }
+
+    return result;
+}
+
+void DrawingCanvasBackend::mouseMoveEvent(QMouseEvent *event) {
+    if (!_isDrawing) {
+        updateCtrlStateAndNearbyPoints(event->modifiers(), event->position());
+        return;
+    }
+
+    _ctrlPressed = (event->modifiers() & Qt::ControlModifier);
+    _buffer.clear();
+
+    if (_brushMode == BrushMode::Freehand) {
+        _currentMousePos = event->position();
+        _currentLine.points.push_back(_currentMousePos);
+    } else if (_brushMode == BrushMode::StraightLine) {
+        _currentMousePos = applyPositionModifiers(event->position(), event->modifiers(), _currentStart);
+    }
+
+    update();
 }
 
 void DrawingCanvasBackend::mouseReleaseEvent(QMouseEvent *event) {
@@ -143,15 +206,28 @@ void DrawingCanvasBackend::mouseReleaseEvent(QMouseEvent *event) {
         newLine.color = _pen.color();
 
         if (_brushMode == BrushMode::StraightLine) {
+            QPointF endPos = applyPositionModifiers(event->position(), event->modifiers(), _currentStart);
             newLine.points.push_back(_currentStart);
-            newLine.points.push_back(event->position());
+            newLine.points.push_back(endPos);
         } else {
             newLine.points = _currentLine.points;
         }
 
-        _lines.append(newLine);
+        if (!newLine.points.empty() && std::all_of(newLine.points.begin(), newLine.points.end(),
+            [&](const QPointF& p) { return p == newLine.points.front(); })) {
+            return;
+        }
 
+        _lines.append(newLine);
         _currentLine.points.clear();
-        update();
+
+        updateCtrlStateAndNearbyPoints(event->modifiers(), event->position());
     }
 }
+
+void DrawingCanvasBackend::hoverMoveEvent(QHoverEvent *event) {
+    if (!_isDrawing) {
+        updateCtrlStateAndNearbyPoints(event->modifiers(), event->position());
+    }
+}
+
