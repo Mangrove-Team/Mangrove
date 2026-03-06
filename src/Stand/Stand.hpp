@@ -10,9 +10,7 @@
 
     #include <map>
     #include <memory>
-    #include <QObject>
     #include <type_traits>
-    #include <QStringList>
 
     #include "AConstraint.hpp"
 
@@ -22,6 +20,7 @@ class Stand : public QObject {
     Q_PROPERTY(float x READ getX WRITE setX NOTIFY xChanged)
     Q_PROPERTY(float y READ getY WRITE setY NOTIFY yChanged)
     Q_PROPERTY(QStringList constraints READ getConstraintsForQml NOTIFY constraintsChanged)
+    Q_PROPERTY(bool onMap READ isOnMap WRITE setOnMap NOTIFY onMapChanged)
 
     public:
         explicit Stand(QObject* parent = nullptr) : QObject(parent) {}
@@ -32,9 +31,11 @@ class Stand : public QObject {
         [[nodiscard]] std::shared_ptr<AConstraint> getConstraintByType(Constraint::Type type) const;
         [[nodiscard]] float getX() const;
         [[nodiscard]] float getY() const;
+        [[nodiscard]] bool isOnMap() const;
 
         void setX(float x);
         void setY(float y);
+        void setOnMap(bool onMap);
         void setName(const QString& name);
         void setName(const std::string& name);
         Q_INVOKABLE bool addConstraintByType(int type);
@@ -46,11 +47,13 @@ class Stand : public QObject {
         void xChanged();
         void yChanged();
         void constraintsChanged();
+        void onMapChanged();
 
     private:
         QString _name;
         float _x = 0;
         float _y = 0;
+        bool _onMap = false;
         std::map<Constraint::Type, std::shared_ptr<AConstraint>> _constraints;
 };
 

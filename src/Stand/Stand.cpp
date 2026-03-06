@@ -82,3 +82,12 @@ void Stand::setY(float y) {
     _y = y;
     emit yChanged();
 }
+
+bool Stand::isOnMap() const {
+    return _onMap;
+}
+
+void Stand::setOnMap(const bool onMap) {
+    _onMap = onMap;
+    emit onMapChanged();
+}

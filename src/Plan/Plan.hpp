@@ -34,6 +34,7 @@ class Plan : public QObject {
             void standAdded(std::shared_ptr<Stand> stand);
 
     private:
+            QList<QObject*> _standsForQml;
             QList<std::shared_ptr<Stand>> _stands;
 };
 

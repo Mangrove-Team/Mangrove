@@ -1,55 +1,87 @@
 import QtQuick
 import QtQuick.Controls
 
-Item {
-    id: mapRoot
+Rectangle {
+    id: mapArea
     property var selectedStand: null
 
-    Rectangle {
-        id: mapVisual
-        anchors.fill: parent
-        color: "#2c3e50"
-        radius: 10
-        border.color: "#7079f0"
-        border.width: 2
-        clip: true
+    color: "#2c3e50"
+    radius: 10
+    border.color: "#7079f0"
+    border.width: 2
+    clip: true
 
-        Repeater {
-            model: planData.stands
-            delegate: Rectangle {
-                visible: modelData.x > 0 || modelData.y > 0
+    Repeater {
+        model: planData.stands
+        delegate: Stand {
+            id: standDelegate
+            standData: modelData
+            displayMode: "map"
+            visible: standData.onMap
+            x: standData.x
+            y: standData.y
 
-                x: modelData.x
-                y: modelData.y
-                width: 40; height: 40
-                color: mapRoot.selectedStand === modelData ? "#f1c40f" : "#e74c3c"
-                radius: 20
-                border.color: "white"
-                border.width: 2
+            Popup {
+                id: deleteMenu
+                y: -45
+                x: -30
+                width: 100
+                height: 35
+                padding: 0
 
-                Text {
-                    anchors.centerIn: parent
-                    text: modelData.name[0]
-                    color: "white"
-                    font.bold: true
+                background: Rectangle {
+                    color: "#34495e"
+                    radius: 5
+                    border.color: "#e74c3c"
+                    border.width: 1
                 }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: mapRoot.selectedStand = modelData
+                contentItem: Button {
+                    text: "Supprimer"
+                    flat: true
+                    font.pixelSize: 12
+
+                    contentItem: Text {
+                        text: parent.text
+                        color: "#e74c3c"
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    onClicked: {
+                        standData.onMap = false;
+                        standData.x = 0;
+                        standData.y = 0;
+                        deleteMenu.close();
+                    }
+                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+                onClicked: (mouse) => {
+                    if (mouse.button === Qt.RightButton) {
+                        deleteMenu.open();
+                    } else if (mouse.button === Qt.LeftButton) {
+                        mapArea.selectedStand = standData;
+                    }
                 }
             }
         }
+    }
 
-        DropArea {
-            anchors.fill: parent
-            keys: ["stand"]
-
-            onDropped: (drop) => {
-                let stand = drop.source.modelData;
-                stand.x = drop.x - 20;
-                stand.y = drop.y - 20;
-            }
+    DropArea {
+        anchors.fill: parent
+        keys: ["stand"]
+        onDropped: (drop) => {
+            let data = drop.source.itemData;
+            data.x = drop.x - 20;
+            data.y = drop.y - 20;
+            data.onMap = true;
+            mapArea.selectedStand = data;
         }
     }
 }
