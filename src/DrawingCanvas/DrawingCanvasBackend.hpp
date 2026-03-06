@@ -192,6 +192,14 @@ private:
         int size{};                   ///< Line width
     };
 
+    /**
+     * @brief Draws a visual distance label
+     * @param painter QPainter instance
+     * @param line Line for which to draw the distance indicator
+     * @param pen Pen to use for drawing the label
+     */
+    static void drawDistanceIndicator(QPainter* painter, const Line& line, const QPen& pen);
+
     QVector<Line> _lines;            ///< All completed lines
     QVector<Line> _buffer;           ///< Undo buffer for redo functionality
     QPen _pen;                       ///< Current pen for new drawings

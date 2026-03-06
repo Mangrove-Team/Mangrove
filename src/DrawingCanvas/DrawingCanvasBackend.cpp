@@ -34,6 +34,31 @@ void DrawingCanvasBackend::drawLineSegments(QPainter* painter, const std::vector
     }
 }
 
+void DrawingCanvasBackend::drawDistanceIndicator(QPainter *painter, const Line& line, const QPen& pen) {
+    if (line.points.size() >= 2) {
+        for (size_t i = 1; i < line.points.size(); ++i) {
+            const QPointF& start = line.points[i - 1];
+            const QPointF& end = line.points[i];
+            double distance = std::sqrt(std::pow(end.x() - start.x(), 2) + std::pow(end.y() - start.y(), 2));
+
+            QString distanceText = QString::number(distance, 'f', 1) + " px";
+            QFont font = painter->font();
+            font.setPointSize(10);
+            painter->setFont(font);
+            painter->setPen(pen);
+            painter->save();
+            painter->translate((start + end) / 2);
+            painter->rotate(-QLineF(start, end).angle());
+
+            int textHeight = std::max(16, 20 + line.size);
+            int textOffset = 10 + line.size;
+            painter->drawText(QRect(-50, -textHeight / 2 - textOffset, 100, textHeight), Qt::AlignCenter, distanceText);
+            painter->restore();
+        }
+    }
+
+}
+
 void DrawingCanvasBackend::paint(QPainter *painter) {
     painter->setRenderHint(QPainter::Antialiasing);
 
@@ -42,6 +67,9 @@ void DrawingCanvasBackend::paint(QPainter *painter) {
         linePen.setWidth(line.size);
         linePen.setColor(line.color);
         drawLineSegments(painter, line.points, linePen);
+        if (_brushMode == BrushMode::StraightLine || _brushMode == BrushMode::Rectangle) {
+            drawDistanceIndicator(painter, line, linePen);
+        }
     }
 
     if (_ctrlPressed && !_nearbyPoints.isEmpty()) {
@@ -54,12 +82,9 @@ void DrawingCanvasBackend::paint(QPainter *painter) {
 
     if (_isDrawing) {
         painter->setPen(_pen);
-        if (_brushMode == BrushMode::StraightLine) {
-            if (!_currentLine.points.empty()) {
-                painter->drawLine(_currentStart, _currentMousePos);
-            }
-        } else {
-            drawLineSegments(painter, _currentLine.points, _pen);
+        drawLineSegments(painter, _currentLine.points, _pen);
+        if (_brushMode == BrushMode::StraightLine || _brushMode == BrushMode::Rectangle) {
+            drawDistanceIndicator(painter, _currentLine, _pen);
         }
     }
 }
@@ -112,11 +137,10 @@ void DrawingCanvasBackend::updateNearbyPoints(const QPointF& pos) {
 
     for (const auto& line : _lines) {
         if (line.points.size() >= 2) {
-            if (QLineF(pos, line.points.front()).length() < snapDistance) {
-                _nearbyPoints.append(line.points.front());
-            }
-            if (QLineF(pos, line.points.back()).length() < snapDistance) {
-                _nearbyPoints.append(line.points.back());
+            for (const auto& point : line.points) {
+                if (QLineF(pos, point).length() < snapDistance) {
+                    _nearbyPoints.append(point);
+                }
             }
         }
     }
@@ -192,6 +216,9 @@ void DrawingCanvasBackend::mouseMoveEvent(QMouseEvent *event) {
         _currentLine.points.push_back(_currentMousePos);
     } else if (_brushMode == BrushMode::StraightLine) {
         _currentMousePos = applyPositionModifiers(event->position(), event->modifiers(), _currentStart);
+        _currentLine.points.clear();
+        _currentLine.points.push_back(_currentStart);
+        _currentLine.points.push_back(_currentMousePos);
     } else if (_brushMode == BrushMode::Rectangle) {
         _currentMousePos = applyPositionModifiers(event->position(), event->modifiers(), _currentStart);
         _currentLine.points.clear();
