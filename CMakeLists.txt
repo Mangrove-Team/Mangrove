@@ -28,6 +28,8 @@ qt_add_qml_module(Mangrove
         QML_FILES
         src/style/Main.qml
         src/style/Map.qml
+        src/style/ListStand.qml
+        src/style/Stand.qml
 )
 
 target_include_directories(Mangrove PRIVATE
