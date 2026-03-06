@@ -48,7 +48,10 @@ void DrawingCanvasBackend::drawDistanceIndicator(QPainter *painter, const Line& 
             painter->setPen(pen);
             painter->save();
             painter->translate((start + end) / 2);
-            painter->rotate(-QLineF(start, end).angle());
+            double angle = QLineF(start, end).angle();
+            if (angle <= 270 && angle >= 90)
+                angle += 180;
+            painter->rotate(-angle);
 
             int textHeight = std::max(16, 20 + line.size);
             int textOffset = 10 + line.size;
