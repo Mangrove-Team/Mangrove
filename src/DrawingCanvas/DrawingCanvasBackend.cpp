@@ -68,6 +68,7 @@ void DrawingCanvasBackend::paint(QPainter *painter) {
         linePen.setColor(line.color);
         drawLineSegments(painter, line.points, linePen);
         if (_brushMode == BrushMode::StraightLine || _brushMode == BrushMode::Rectangle) {
+            linePen.setColor(Qt::black);
             drawDistanceIndicator(painter, line, linePen);
         }
     }
@@ -84,7 +85,10 @@ void DrawingCanvasBackend::paint(QPainter *painter) {
         painter->setPen(_pen);
         drawLineSegments(painter, _currentLine.points, _pen);
         if (_brushMode == BrushMode::StraightLine || _brushMode == BrushMode::Rectangle) {
+            QColor originalColor = _pen.color();
+            _pen.setColor(Qt::black);
             drawDistanceIndicator(painter, _currentLine, _pen);
+            _pen.setColor(originalColor);
         }
     }
 }
