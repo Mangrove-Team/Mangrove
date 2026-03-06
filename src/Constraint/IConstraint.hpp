@@ -10,25 +10,14 @@
 
 #include <string>
 #include <QObject>
+#include <typeindex>
 
-namespace Constraint {
-    Q_NAMESPACE
+class IConstraint {
+public:
+    virtual ~IConstraint() = default;
 
-    enum Type {
-        None = 0,
-        Electricity,
-        PMRAccess,
-        Luminosity,
-    };
-    Q_ENUM_NS(Type)
-
-    class IConstraint {
-    public:
-        virtual ~IConstraint() = default;
-
-        [[nodiscard]] virtual std::string& getName() = 0;
-        [[nodiscard]] virtual Type getType() const = 0;
-    };
-}
+    [[nodiscard]] virtual std::string& getName() = 0;
+    [[nodiscard]] virtual std::type_index getType() const = 0;
+};
 
 #endif //MANGROVE_ICONSTRAINT_H

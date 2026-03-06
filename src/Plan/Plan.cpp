@@ -17,7 +17,7 @@ float Plan::getTotalWatt() const {
     float watt = 0.0f;
 
     for (const auto& stand : _stands)
-        if (auto c = stand->getConstraintByType(Constraint::Electricity); c != nullptr)
+        if (auto c = stand->getConstraint<Electricity>(); c != nullptr)
             watt += std::dynamic_pointer_cast<Electricity>(c)->getWatt();
     return watt;
 }
@@ -32,15 +32,6 @@ void Plan::addStand(const std::shared_ptr<Stand>& stand) {
     emit standAdded(stand);
     emit standsChanged();
     emit totalWattChanged();
-}
-
-QList<std::shared_ptr<Stand>> Plan::getStandsByConstraint(const Constraint::Type type) const {
-    QList<std::shared_ptr<Stand>> stands;
-
-    for (const auto& stand : _stands)
-        if (auto& constraints = stand->getConstraints(); constraints.contains(type))
-            stands.push_back(stand);
-    return stands;
 }
 
 QList<QObject*> Plan::getStandsForQml() {

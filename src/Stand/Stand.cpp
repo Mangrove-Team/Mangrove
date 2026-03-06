@@ -21,14 +21,8 @@ QStringList Stand::getConstraintsForQml() const {
     return constraints;
 }
 
-std::map<Constraint::Type, std::shared_ptr<AConstraint>>& Stand::getConstraints() {
+std::map<std::type_index, std::shared_ptr<AConstraint>>& Stand::getConstraints() {
     return _constraints;
-}
-
-std::shared_ptr<AConstraint> Stand::getConstraintByType(const Constraint::Type type) const {
-    if (_constraints.contains(type))
-        return _constraints.at(type);
-    return nullptr;
 }
 
 void Stand::setName(const QString& name) {
@@ -41,30 +35,6 @@ void Stand::setName(const std::string& name) {
     emit nameChanged();
 }
 
-bool Stand::addConstraintByType(const int type) {
-    const auto constraintType = static_cast<Constraint::Type>(type);
-
-    if (constraintType == Constraint::None || getConstraintByType(constraintType) != nullptr)
-        return false;
-
-    switch (constraintType) {
-        case Constraint::Electricity:
-            addConstraint<Electricity>(12.5f);
-            return true;
-        case Constraint::PMRAccess:
-            addConstraint<PmrAccess>();
-            return true;
-        default:
-            return false;
-    }
-}
-
-void Stand::addNextConstraint() {
-    if (addConstraintByType(Constraint::Electricity))
-        return;
-    addConstraintByType(Constraint::PMRAccess);
-}
-
 float Stand::getX() const {
     return _x;
 }
@@ -73,12 +43,12 @@ float Stand::getY() const {
     return _y;
 }
 
-void Stand::setX(float x) {
+void Stand::setX(const float x) {
     _x = x;
     emit xChanged();
 }
 
-void Stand::setY(float y) {
+void Stand::setY(const float y) {
     _y = y;
     emit yChanged();
 }

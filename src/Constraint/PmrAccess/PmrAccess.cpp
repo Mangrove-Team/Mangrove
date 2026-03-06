@@ -9,5 +9,4 @@
 
 PmrAccess::PmrAccess() {
     _name = "PMR access";
-    _type = Constraint::PMRAccess;
 }
