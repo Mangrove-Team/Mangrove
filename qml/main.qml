@@ -99,13 +99,17 @@ ApplicationWindow {
 
                 Button {
                     id: freehandButton
-                    text: "Freehand"
+                    icon.name: "draw-freehand"
+                    icon.source: "qrc:/icons/freehand.svg"
+                    icon.color: "black"
                     checkable: true
                     checked: true
-                    Layout.minimumWidth: 90
+                    implicitWidth: 30
+                    implicitHeight: 30
                     onClicked: {
                         if (checked) {
                             straightLineButton.checked = false
+                            rectangleButton.checked = false
                             canvas.brushMode = DrawingCanvasBackend.Freehand
                         } else {
                             checked = true
@@ -115,14 +119,38 @@ ApplicationWindow {
 
                 Button {
                     id: straightLineButton
-                    text: "Straight Line"
+                    icon.name: "draw-line"
+                    icon.source: "qrc:/icons/slash.svg"
+                    icon.color: "black"
                     checkable: true
                     checked: false
-                    Layout.minimumWidth: 90
+                    implicitWidth: 30
+                    implicitHeight: 30
                     onClicked: {
                         if (checked) {
                             freehandButton.checked = false
+                            rectangleButton.checked = false
                             canvas.brushMode = DrawingCanvasBackend.StraightLine
+                        } else {
+                            checked = true
+                        }
+                    }
+                }
+
+                Button {
+                    id: rectangleButton
+                    icon.name: "draw-square"
+                    icon.source: "qrc:/icons/square.svg"
+                    icon.color: "black"
+                    checkable: true
+                    checked: false
+                    implicitWidth: 30
+                    implicitHeight: 30
+                    onClicked: {
+                        if (checked) {
+                            freehandButton.checked = false
+                            straightLineButton.checked = false
+                            canvas.brushMode = DrawingCanvasBackend.Rectangle
                         } else {
                             checked = true
                         }

@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTORCC OFF)
+set(CMAKE_AUTORCC ON)
 
 
 find_package(Qt6 COMPONENTS Core Gui Quick Qml QuickControls2 REQUIRED)
@@ -28,6 +28,7 @@ qt_add_qml_module(MangroveApp
         VERSION 1.0
         QML_FILES
         qml/main.qml
+        RESOURCES resources.qrc
 )
 
 target_link_libraries(MangroveApp PRIVATE

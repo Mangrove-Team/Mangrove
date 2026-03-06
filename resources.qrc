@@ -2,6 +2,9 @@
 <RCC version="1.0">
     <qresource prefix="/">
         <file>qml/main.qml</file>
+        <file>icons/freehand.svg</file>
+        <file>icons/slash.svg</file>
+        <file>icons/square.svg</file>
     </qresource>
 </RCC>
 

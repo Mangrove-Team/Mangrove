@@ -45,7 +45,8 @@ public:
      */
     enum class BrushMode {
         Freehand,     ///< Free-form drawing mode
-        StraightLine  ///< Straight line drawing mode with angle snapping support
+        StraightLine,  ///< Straight line drawing mode with angle snapping support
+        Rectangle ///< Rectangle drawing mode
     };
     Q_ENUM(BrushMode)
 
@@ -162,7 +163,7 @@ private:
      * @param end Line end point (raw mouse position)
      * @return Angle-snapped end point
      */
-    QPointF calculateAngledLine(const QPointF& start, const QPointF& end);
+    static QPointF calculateAngledLine(const QPointF& start, const QPointF& end);
 
     /**
      * @brief Applies position modifiers (Ctrl for snap, Shift for angle)
@@ -179,7 +180,7 @@ private:
      * @param points Vector of points defining the line
      * @param pen Pen to use for drawing
      */
-    void drawLineSegments(QPainter* painter, const std::vector<QPointF>& points, const QPen& pen);
+    static void drawLineSegments(QPainter* painter, const std::vector<QPointF>& points, const QPen& pen);
 
     /**
      * @struct Line

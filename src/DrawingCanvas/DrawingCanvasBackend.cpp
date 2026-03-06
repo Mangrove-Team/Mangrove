@@ -151,14 +151,14 @@ void DrawingCanvasBackend::mousePressEvent(QMouseEvent *event) {
 }
 
 QPointF DrawingCanvasBackend::calculateAngledLine(const QPointF &start, const QPointF &end) {
-    float angleRad = std::atan2(end.y() - start.y(), end.x() - start.x());
-    float angleDeg = angleRad * 180.0f / static_cast<float>(M_PI);
-    float snappedAngleDeg = std::round(angleDeg / 15.0f) * 15.0f;
-    float snappedAngleRad = snappedAngleDeg * static_cast<float>(M_PI) / 180.0f;
-    float distance = std::sqrt(std::pow(end.x() - start.x(), 2) + std::pow(end.y() - start.y(), 2));
-    float newX = start.x() + std::cos(snappedAngleRad) * distance;
-    float newY = start.y() + std::sin(snappedAngleRad) * distance;
-    return QPointF(newX, newY);
+    double angleRad = std::atan2(end.y() - start.y(), end.x() - start.x());
+    double angleDeg = angleRad * 180.0f / static_cast<float>(M_PI);
+    double snappedAngleDeg = std::round(angleDeg / 15.0f) * 15.0f;
+    double snappedAngleRad = snappedAngleDeg * static_cast<float>(M_PI) / 180.0f;
+    double distance = std::sqrt(std::pow(end.x() - start.x(), 2) + std::pow(end.y() - start.y(), 2));
+    double newX = start.x() + std::cos(snappedAngleRad) * distance;
+    double newY = start.y() + std::sin(snappedAngleRad) * distance;
+    return {newX, newY};
 }
 
 QPointF DrawingCanvasBackend::applyPositionModifiers(const QPointF& pos, Qt::KeyboardModifiers modifiers, const QPointF& start) {
@@ -192,6 +192,14 @@ void DrawingCanvasBackend::mouseMoveEvent(QMouseEvent *event) {
         _currentLine.points.push_back(_currentMousePos);
     } else if (_brushMode == BrushMode::StraightLine) {
         _currentMousePos = applyPositionModifiers(event->position(), event->modifiers(), _currentStart);
+    } else if (_brushMode == BrushMode::Rectangle) {
+        _currentMousePos = applyPositionModifiers(event->position(), event->modifiers(), _currentStart);
+        _currentLine.points.clear();
+        _currentLine.points.push_back(_currentStart);
+        _currentLine.points.emplace_back(_currentMousePos.x(), _currentStart.y());
+        _currentLine.points.push_back(_currentMousePos);
+        _currentLine.points.emplace_back(_currentStart.x(), _currentMousePos.y());
+        _currentLine.points.push_back(_currentStart);
     }
 
     update();
