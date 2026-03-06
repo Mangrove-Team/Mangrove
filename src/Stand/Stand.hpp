@@ -10,9 +10,7 @@
 
     #include <map>
     #include <memory>
-    #include <QObject>
     #include <type_traits>
-    #include <QStringList>
 
     #include "AConstraint.hpp"
 
@@ -28,8 +26,9 @@ class Stand : public QObject {
 
         [[nodiscard]] QString& getName();
         [[nodiscard]] QStringList getConstraintsForQml() const;
-        [[nodiscard]] std::map<Constraint::Type, std::shared_ptr<AConstraint>>& getConstraints();
-        [[nodiscard]] std::shared_ptr<AConstraint> getConstraintByType(Constraint::Type type) const;
+        [[nodiscard]] std::map<std::type_index, std::shared_ptr<AConstraint>>& getConstraints();
+        template<typename T>
+        [[nodiscard]] std::shared_ptr<AConstraint> getConstraint() const;
         [[nodiscard]] float getX() const;
         [[nodiscard]] float getY() const;
 
@@ -37,8 +36,6 @@ class Stand : public QObject {
         void setY(float y);
         void setName(const QString& name);
         void setName(const std::string& name);
-        Q_INVOKABLE bool addConstraintByType(int type);
-        Q_INVOKABLE void addNextConstraint();
         template<typename T, typename ... Args>
         void addConstraint(Args&& ... args);
     signals:
@@ -51,14 +48,20 @@ class Stand : public QObject {
         QString _name;
         float _x = 0;
         float _y = 0;
-        std::map<Constraint::Type, std::shared_ptr<AConstraint>> _constraints;
+        std::map<std::type_index, std::shared_ptr<AConstraint>> _constraints;
 };
+
+template<typename T>
+std::shared_ptr<AConstraint> Stand::getConstraint() const {
+    static_assert(std::is_base_of_v<AConstraint, T>, "T must be a AConstraint");
+    return _constraints.contains(typeid(T)) ? _constraints.at(typeid(T)) : nullptr;
+}
 
 template<typename T, typename... Args>
 void Stand::addConstraint(Args &&... args) {
     static_assert(std::is_base_of_v<AConstraint, T>, "T must be a AConstraint");
     const std::shared_ptr<AConstraint> c = std::make_shared<T>(std::forward<Args>(args)...);
-    if (const auto [_, inserted] = _constraints.emplace(c->getType(), c); inserted)
+    if (const auto [_, inserted] = _constraints.emplace(typeid(T), c); inserted)
         emit constraintsChanged();
 }
 

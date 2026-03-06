@@ -31,15 +31,6 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    qmlRegisterUncreatableMetaObject(
-        Constraint::staticMetaObject,
-        "Mangrove",
-        1,
-        0,
-        "Constraint",
-        "Constraint is an enum namespace"
-    );
-
     const auto plan = std::make_shared<Plan>();
     handleStand1(plan);
     handleStand2(plan);

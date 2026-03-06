@@ -10,16 +10,16 @@
 
 #include "IConstraint.hpp"
 
-class AConstraint : public Constraint::IConstraint {
+class AConstraint : public IConstraint {
 public:
     AConstraint();
     ~AConstraint() override = default;
 
     [[nodiscard]] std::string& getName() override;
-    [[nodiscard]] Constraint::Type getType() const override;
+    [[nodiscard]] std::type_index getType() const override;
 protected:
     std::string _name;
-    Constraint::Type _type;
+    std::type_index _type;
 };
 
 #endif //MANGROVE_ACONSTRAINT_HPP

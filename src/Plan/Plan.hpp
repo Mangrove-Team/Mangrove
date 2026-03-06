@@ -24,7 +24,8 @@ class Plan : public QObject {
 
         [[nodiscard]] float getTotalWatt() const;
         [[nodiscard]] Q_INVOKABLE QList<QObject*> getStandsForQml();
-        [[nodiscard]] Q_INVOKABLE QList<std::shared_ptr<Stand>> getStandsByConstraint(Constraint::Type type) const;
+        template<typename T>
+        [[nodiscard]] QList<std::shared_ptr<Stand>> getStandsByConstraint() const;
 
         void addStand(const std::shared_ptr<Stand>& stand);
 
@@ -37,5 +38,16 @@ class Plan : public QObject {
             QList<std::shared_ptr<Stand>> _stands;
 };
 
+template<typename T>
+QList<std::shared_ptr<Stand>> Plan::getStandsByConstraint() const {
+    QList<std::shared_ptr<Stand>> stands;
+
+    stands.reserve(_stands.size());
+    for (const auto& stand : _stands)
+        if (stand->getConstraints().contains(typeid(T)))
+            stands.push_back(stand);
+    stands.squeeze();
+    return stands;
+}
 
 #endif //MANGROVE_PLAN_HPP
