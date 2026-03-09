@@ -5,6 +5,14 @@ Rectangle {
     id: mapArea
     property var selectedStand: null
 
+    PopUp {
+        id: infoPopup
+        standData: mapArea.selectedStand
+        parent: Overlay.overlay
+        x: (mapArea.width - width) / 2
+        y: 50
+    }
+
     color: "#2c3e50"
     radius: 10
     border.color: "#7079f0"
@@ -67,7 +75,7 @@ Rectangle {
                     if (mouse.button === Qt.RightButton) {
                         deleteMenu.open();
                     } else if (mouse.button === Qt.LeftButton) {
-                        mapArea.selectedStand = standData;
+                        infoPopup.open();
                     }
                 }
             }

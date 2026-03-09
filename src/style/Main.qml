@@ -7,9 +7,11 @@ Window {
     id: rootWindow
     visible: true
     width: 1920
-    height: 1080
-    minimumWidth: 1200
-    minimumHeight: 700
+    height: 1000
+    minimumWidth: 1920
+    minimumHeight: 1000
+    maximumHeight: 1920
+    maximumWidth: 1000
     title: "Mangrove"
     color: "#ffffff"
 
