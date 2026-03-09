@@ -1,7 +1,7 @@
 /*
 // Mangrove Project
 // main.cpp
-// Description: 
+// Description: Qt application entry point
 // Copyright (c) Mangrove. All rights reserved.
 */
 
@@ -9,6 +9,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <qqml.h>
+#include "DrawingCanvas/DrawingCanvasBackend.hpp"
 
 #include "Plan.hpp"
 #include "Electricity.hpp"
@@ -38,6 +39,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("planData", plan.get());
+    qmlRegisterType<DrawingCanvasBackend>("Mangrove", 1, 0, "DrawingCanvasBackend");
 
     const QUrl url("../src/style/Main.qml");
     engine.load(url);

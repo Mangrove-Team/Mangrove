@@ -5,6 +5,7 @@ Rectangle {
     id: ui
     property var standData: null
     property string displayMode: "list"
+    property var selectedStand: null
 
     width: displayMode === "list" ? 280 : 40
     height: displayMode === "list" ? 50 : 40
@@ -12,7 +13,7 @@ Rectangle {
 
     color: {
         if (!standData) return "#34495e"
-        if (displayMode === "map") return (mainMap.selectedStand === standData) ? "#f1c40f" : "#e74c3c"
+        if (displayMode === "map") return (selectedStand === standData) ? "#f1c40f" : "#e74c3c"
         return standData.onMap ? "#2ecc71" : "#34495e"
     }
 
