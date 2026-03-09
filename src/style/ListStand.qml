@@ -10,6 +10,7 @@ Rectangle {
     border.width: 2
 
     property bool isDraggingAny: false
+    property var selectedStand: null
 
     ColumnLayout {
         anchors.fill: parent
@@ -40,6 +41,7 @@ Rectangle {
                     id: proxy
                     standData: model
                     displayMode: "map"
+                    selectedStand: sidebar.selectedStand
                     opacity: 0
                     visible: opacity > 0
                     Drag.active: dragArea.drag.active

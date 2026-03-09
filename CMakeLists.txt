@@ -12,8 +12,11 @@ set(CMAKE_AUTOUIC ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml)
 include(InstallRequiredSystemLibraries)
+qt_policy(SET QTP0001 NEW)
+qt_policy(SET QTP0004 NEW)
 
 add_executable(Mangrove
         src/main.cpp
@@ -23,6 +26,8 @@ add_executable(Mangrove
         src/Constraint/PmrAccess/PmrAccess.cpp
         src/Constraint/Electricity/Electricity.cpp
         src/Constraint/IConstraint.hpp
+        src/DrawingCanvas/DrawingCanvasBackend.cpp
+        src/DrawingCanvas/DrawingCanvasBackend.hpp
 )
 
 target_link_libraries(Mangrove PRIVATE Qt6::Quick)
@@ -35,6 +40,7 @@ qt_add_qml_module(Mangrove
         src/style/Map.qml
         src/style/ListStand.qml
         src/style/Stand.qml
+        src/style/DrawingCanvasView.qml
 )
 
 add_custom_command(TARGET Mangrove POST_BUILD
@@ -47,6 +53,7 @@ target_include_directories(Mangrove PRIVATE
         src/Constraint
         src/Constraint/PmrAccess
         src/Constraint/Electricity
+        src/DrawingCanvas
 )
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/resources

@@ -9,7 +9,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <qqml.h>
-#include "DrawingCanvasBackend.hpp"
+#include "DrawingCanvas/DrawingCanvasBackend.hpp"
 
 #include "Plan.hpp"
 #include "Electricity.hpp"
@@ -39,19 +39,8 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("planData", plan.get());
+    qmlRegisterType<DrawingCanvasBackend>("Mangrove", 1, 0, "DrawingCanvasBackend");
 
-//    qmlRegisterType<DrawingCanvasBackend>("Mangrove", 1, 0, "DrawingCanvasBackend");
-//
-//    QQmlApplicationEngine engine;
-//    const QUrl url(QStringLiteral("qrc:/qt/qml/Mangrove/qml/main.qml"));
-//
-//    QObject::connect(
-//            &engine, &QQmlApplicationEngine::objectCreated,
-//            &app, [url](QObject *obj, const QUrl &objUrl) {
-//                if (!obj && url == objUrl)
-//                    QCoreApplication::exit(-1);
-//            },
-//            Qt::QueuedConnection);
     const QUrl url("../src/style/Main.qml");
     engine.load(url);
 

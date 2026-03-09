@@ -17,6 +17,7 @@ Rectangle {
             id: standDelegate
             standData: modelData
             displayMode: "map"
+            selectedStand: mapArea.selectedStand
             visible: standData.onMap
             x: standData.x
             y: standData.y
