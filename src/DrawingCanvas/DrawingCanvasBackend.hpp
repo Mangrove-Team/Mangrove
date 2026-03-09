@@ -190,6 +190,7 @@ private:
         std::vector<QPointF> points; ///< Points defining the line path
         QColor color;                 ///< Line color
         int size{};                   ///< Line width
+        BrushMode mode;              ///< Drawing mode used for this line
     };
 
     /**

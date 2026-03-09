@@ -70,7 +70,7 @@ void DrawingCanvasBackend::paint(QPainter *painter) {
         linePen.setWidth(line.size);
         linePen.setColor(line.color);
         drawLineSegments(painter, line.points, linePen);
-        if (_brushMode == BrushMode::StraightLine || _brushMode == BrushMode::Rectangle) {
+        if (line.mode == BrushMode::StraightLine || line.mode == BrushMode::Rectangle) {
             linePen.setColor(Qt::black);
             drawDistanceIndicator(painter, line, linePen);
         }
@@ -172,6 +172,7 @@ void DrawingCanvasBackend::mousePressEvent(QMouseEvent *event) {
         QPointF pos = applyPositionModifiers(event->position(), event->modifiers(), event->position());
 
         _currentStart = pos;
+        _currentLine.mode = _brushMode;
         _currentLine.color = _pen.color();
         _currentLine.size = _pen.width();
         _currentLine.points.clear();
@@ -259,6 +260,8 @@ void DrawingCanvasBackend::mouseReleaseEvent(QMouseEvent *event) {
             [&](const QPointF& p) { return p == newLine.points.front(); })) {
             return;
         }
+
+        newLine.mode = _brushMode;
 
         _lines.append(newLine);
         _currentLine.points.clear();
