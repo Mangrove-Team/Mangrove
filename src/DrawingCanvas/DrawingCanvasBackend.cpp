@@ -41,7 +41,7 @@ void DrawingCanvasBackend::drawDistanceIndicator(QPainter *painter, const Line& 
             const QPointF& end = line.points[i];
             double distance = std::sqrt(std::pow(end.x() - start.x(), 2) + std::pow(end.y() - start.y(), 2));
 
-            QString distanceText = QString::number(distance, 'f', 1) + " px";
+            QString distanceText = QString::number(distance, 'f', 1) + " cm";
             QFont font = painter->font();
             font.setPointSize(10);
             painter->setFont(font);
