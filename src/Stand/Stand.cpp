@@ -6,8 +6,6 @@
 */
 
 #include "Stand.hpp"
-#include "PmrAccess.hpp"
-#include "Electricity.hpp"
 
 QString& Stand::getName() {
     return _name;
