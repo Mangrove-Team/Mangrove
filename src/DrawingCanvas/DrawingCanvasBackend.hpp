@@ -113,10 +113,25 @@ public:
      */
     Q_INVOKABLE void redoLastAction();
 
+    /**
+     * @brief Updates the dimensions of the last drawn rectangle
+     * @param width New width in pixels
+     * @param height New height in pixels
+     */
+    Q_INVOKABLE void updateLastRectangleDimensions(qreal width, qreal height, qint32 duplicate = 1);
+
+    /**
+     * @brief Applies new dimensions to the current rectangle being drawn (for real-time updates)
+     * @param width New width in pixels
+     * @param height New height in pixels
+     */
+    Q_INVOKABLE void applyRectangleDimensions(qreal width, qreal height, qint32 duplicate = 1);
+
 signals:
     void penColorChanged();  ///< Emitted when pen color changes
     void penWidthChanged();  ///< Emitted when pen width changes
     void brushModeChanged(); ///< Emitted when brush mode changes
+    void rectangleDrawn(qreal width, qreal height); ///< Emitted when a rectangle is completed
 
 protected:
     /**
@@ -211,6 +226,7 @@ private:
     bool _ctrlPressed = false;       ///< True when Ctrl key is pressed
     QVector<QPointF> _nearbyPoints;  ///< Cached nearby snap points
     Line _currentLine{};             ///< Line currently being drawn
+    QVector<Line> _duplicateLines; ///< Buffer for duplicate lines when updating rectangle dimensions
 };
 
 #endif //MANGROVE_DRAWING_CANVAS_BACKEND_HPP
