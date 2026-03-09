@@ -9,22 +9,15 @@
 #define MANGROVE_ICONSTRAINT_H
 
 #include <string>
+#include <QObject>
+#include <typeindex>
 
-namespace Constraint {
-    enum Type {
-        None = 0,
-        Electricity,
-        PMRAccess,
-        Luminosity,
-    };
+class IConstraint {
+public:
+    virtual ~IConstraint() = default;
 
-    class IConstraint {
-    public:
-        virtual ~IConstraint() = default;
-
-        [[nodiscard]] virtual std::string& getName() = 0;
-        [[nodiscard]] virtual Type getType() const = 0;
-    };
-}
+    [[nodiscard]] virtual std::string& getName() = 0;
+    [[nodiscard]] virtual std::type_index getType() const = 0;
+};
 
 #endif //MANGROVE_ICONSTRAINT_H

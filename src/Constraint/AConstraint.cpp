@@ -7,14 +7,12 @@
 
 #include "AConstraint.hpp"
 
-AConstraint::AConstraint() {
-    _type = Constraint::None;
-}
+AConstraint::AConstraint(): _type(std::type_index(typeid(*this))){}
 
 std::string& AConstraint::getName() {
     return _name;
 }
 
-Constraint::Type AConstraint::getType() const {
+std::type_index AConstraint::getType() const {
     return _type;
 }

@@ -5,28 +5,55 @@
 // Copyright (c) Mangrove. All rights reserved.
 */
 
+#include <QQmlContext>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <QQmlContext>
+#include <qqml.h>
 #include "DrawingCanvasBackend.hpp"
 
-int main(int argc, char *argv[]) {
+#include "Plan.hpp"
+#include "Electricity.hpp"
+#include "IConstraint.hpp"
+
+void handleStand1(const std::shared_ptr<Plan>& plan) {
+    const auto stand = std::make_shared<Stand>();
+    stand->setName(static_cast<std::string>("Stand 1"));
+    stand->addConstraint<Electricity>(12.5);
+    plan->addStand(stand);
+}
+
+void handleStand2(const std::shared_ptr<Plan>& plan) {
+    const auto stand = std::make_shared<Stand>();
+    stand->setName(static_cast<std::string>("Stand 2"));
+    plan->addStand(stand);
+}
+
+int main(int argc, char *argv[])
+{
     QGuiApplication app(argc, argv);
 
-    qmlRegisterType<DrawingCanvasBackend>("Mangrove", 1, 0, "DrawingCanvasBackend");
+    const auto plan = std::make_shared<Plan>();
+    handleStand1(plan);
+    handleStand2(plan);
 
     QQmlApplicationEngine engine;
-    const QUrl url(QStringLiteral("qrc:/qt/qml/Mangrove/qml/main.qml"));
 
-    QObject::connect(
-        &engine, &QQmlApplicationEngine::objectCreated,
-        &app, [url](QObject *obj, const QUrl &objUrl) {
-            if (!obj && url == objUrl)
-                QCoreApplication::exit(-1);
-        },
-        Qt::QueuedConnection);
+    engine.rootContext()->setContextProperty("planData", plan.get());
 
+//    qmlRegisterType<DrawingCanvasBackend>("Mangrove", 1, 0, "DrawingCanvasBackend");
+//
+//    QQmlApplicationEngine engine;
+//    const QUrl url(QStringLiteral("qrc:/qt/qml/Mangrove/qml/main.qml"));
+//
+//    QObject::connect(
+//            &engine, &QQmlApplicationEngine::objectCreated,
+//            &app, [url](QObject *obj, const QUrl &objUrl) {
+//                if (!obj && url == objUrl)
+//                    QCoreApplication::exit(-1);
+//            },
+//            Qt::QueuedConnection);
+    const QUrl url("../src/style/Main.qml");
     engine.load(url);
 
-    return app.exec();
+    return QGuiApplication::exec();
 }
