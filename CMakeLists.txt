@@ -1,8 +1,10 @@
-cmake_minimum_required(VERSION 4.1)
+cmake_minimum_required(VERSION 3.21)
+
 project(Mangrove)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -11,6 +13,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml)
+include(InstallRequiredSystemLibraries)
 
 add_executable(Mangrove
         src/main.cpp
@@ -22,6 +25,13 @@ add_executable(Mangrove
         src/Constraint/IConstraint.hpp
 )
 
+find_package(SFML 3 REQUIRED COMPONENTS Graphics Window System Audio)
+
+target_link_libraries(Mangrove PRIVATE
+        SFML::Graphics
+        SFML::Window
+        SFML::System
+        SFML::Audio
 qt_add_qml_module(Mangrove
         URI "MangroveApp"
         VERSION 1.0
@@ -32,6 +42,10 @@ qt_add_qml_module(Mangrove
         src/style/Stand.qml
 )
 
+add_custom_command(TARGET Mangrove POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/resources
+        $<TARGET_FILE_DIR:Mangrove>/resources
 target_include_directories(Mangrove PRIVATE
         src/Plan
         src/Stand
@@ -40,12 +54,25 @@ target_include_directories(Mangrove PRIVATE
         src/Constraint/Electricity
 )
 
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/resources
+        DESTINATION .
 target_compile_options(Mangrove PRIVATE
         $<$<CONFIG:Debug>:-fsanitize=address -fno-omit-frame-pointer>
 )
 
+install(TARGETS Mangrove
+        DESTINATION .
+        RUNTIME_DEPENDENCIES
+        PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-"
+        POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
 target_link_options(Mangrove PRIVATE
         $<$<CONFIG:Debug>:-fsanitize=address>
 )
+
+set(CPACK_GENERATOR "NSIS")
+set(CPACK_PACKAGE_NAME "Mangrove")
+set(CPACK_PACKAGE_VERSION "0.1.0")
+set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
+include(CPack)
 
 target_link_libraries(Mangrove PRIVATE Qt6::Quick)
