@@ -1,0 +1,72 @@
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+
+Rectangle {
+    id: sidebar
+    color: "#2c3e50"
+    radius: 10
+    border.color: "#7079f0"
+    border.width: 2
+
+    property bool isDraggingAny: false
+
+    ColumnLayout {
+        anchors.fill: parent
+        anchors.margins: 15
+        Text { text: "Liste des Stands"; color: "white"; Layout.alignment: Qt.AlignHCenter }
+
+        ListView {
+            id: listView
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            model: planData.stands
+            spacing: 10
+            clip: !sidebar.isDraggingAny
+
+            delegate: Item {
+                id: delegateRoot
+                width: listView.width
+                height: 50
+                property var itemData: model
+
+                Stand {
+                    standData: model
+                    displayMode: "list"
+                    anchors.fill: parent
+                }
+
+                Stand {
+                    id: proxy
+                    standData: model
+                    displayMode: "map"
+                    opacity: 0
+                    visible: opacity > 0
+                    Drag.active: dragArea.drag.active
+                    Drag.source: delegateRoot
+                    Drag.keys: ["stand"]
+                }
+
+                MouseArea {
+                    id: dragArea
+                    anchors.fill: parent
+                    drag.target: proxy
+                    hoverEnabled: !sidebar.isDraggingAny
+
+                    onPressed: {
+                        proxy.x = mouseX - 20;
+                        proxy.y = mouseY - 20;
+                        proxy.opacity = 0.8;
+                        sidebar.isDraggingAny = true;
+                    }
+                    onReleased: {
+                        proxy.Drag.drop();
+                        proxy.opacity = 0;
+                        proxy.x = 0; proxy.y = 0;
+                        sidebar.isDraggingAny = false;
+                    }
+                }
+            }
+        }
+    }
+}
