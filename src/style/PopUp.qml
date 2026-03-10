@@ -64,6 +64,11 @@ Popup {
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
             }
+            EditButton {
+                onClicked: {
+                    root.close();
+                }
+            }
         }
 
         Item { Layout.fillHeight: true }
@@ -74,8 +79,8 @@ Popup {
             onClicked: root.close()
 
             background: Rectangle {
-                color: parent.hovered ? "#34495e" : "transparent"
-                border.color: "#7079f0"
+                color: parent.hovered ? "#43a44a" : "#2ecc71"
+                border.color: "#43a44a"
                 radius: 4
             }
             contentItem: Text { text: parent.text; color: "white"; horizontalAlignment: Text.AlignHCenter }

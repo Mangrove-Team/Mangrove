@@ -34,9 +34,9 @@ Rectangle {
             Popup {
                 id: actionMenu
                 y: -90
-                x: -30
+                x: (parent.width - width) / 2
                 width: 120
-                height: 70
+                height: 85
                 padding: 5
 
                 background: Rectangle {
@@ -53,7 +53,7 @@ Rectangle {
 
                     Button {
                         width: parent.width
-                        text: "Supprimer"
+                        text: "Retirer"
                         flat: true
                         font.pixelSize: 12
 
@@ -71,42 +71,17 @@ Rectangle {
                             standData.y = 0;
                             actionMenu.close();
                         }
+
+                        background: Rectangle {
+                            color: parent.hovered ? "#d3044a" : "#cecc71"
+                            border.color: "#d3a44a"
+                            radius: 4
+                        }
                     }
 
-                    Button {
-                        width: parent.width
-                        text: "Edit"
-                        flat: true
-                        font.pixelSize: 12
-
-                        contentItem: Text {
-                            text: parent.text
-                            color: "#3498db"
-                            font.bold: true
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
-
+                    EditButton {
                         onClicked: {
                             actionMenu.close();
-
-                            let alreadyOpen = false
-                            for (let i = 0; i < rootWindow.openStands.length; i++) {
-                                if (rootWindow.openStands[i] === standData) {
-                                    alreadyOpen = true
-                                    rootWindow.currentDrawingIndex = i
-                                    break
-                                }
-                            }
-
-                            if (!alreadyOpen) {
-                                let newOpenStands = rootWindow.openStands.slice()
-                                newOpenStands.push(standData)
-                                rootWindow.openStands = newOpenStands
-                                rootWindow.currentDrawingIndex = newOpenStands.length - 1
-                            }
-
-                            rootWindow.currentView = 1
                         }
                     }
                 }
@@ -133,8 +108,8 @@ Rectangle {
         keys: ["stand"]
         onDropped: (drop) => {
             let data = drop.source.itemData;
-            data.x = drop.x - 20;
-            data.y = drop.y - 20;
+            data.x = drop.x - 75;
+            data.y = drop.y - 75;
             data.onMap = true;
             mapArea.selectedStand = data;
         }

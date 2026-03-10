@@ -42,6 +42,7 @@ qt_add_qml_module(Mangrove
         src/style/Stand.qml
         src/style/DrawingCanvasView.qml
         src/style/PopUp.qml
+        src/style/EditButton.qml
 )
 
 add_custom_command(TARGET Mangrove POST_BUILD
