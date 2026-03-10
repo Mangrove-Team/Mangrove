@@ -75,6 +75,7 @@ Rectangle {
                     if (mouse.button === Qt.RightButton) {
                         deleteMenu.open();
                     } else if (mouse.button === Qt.LeftButton) {
+                        infoPopup.standData = standData;
                         infoPopup.open();
                     }
                 }
