@@ -30,7 +30,6 @@ Rectangle {
             x: standData.x
             y: standData.y
 
-
             Popup {
                 id: actionMenu
                 y: -90
