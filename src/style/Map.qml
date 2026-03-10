@@ -22,13 +22,14 @@ Rectangle {
             x: standData.x
             y: standData.y
 
+
             Popup {
-                id: deleteMenu
-                y: -45
+                id: actionMenu
+                y: -90
                 x: -30
-                width: 100
-                height: 35
-                padding: 0
+                width: 120
+                height: 70
+                padding: 5
 
                 background: Rectangle {
                     color: "#34495e"
@@ -37,24 +38,68 @@ Rectangle {
                     border.width: 1
                 }
 
-                contentItem: Button {
-                    text: "Supprimer"
-                    flat: true
-                    font.pixelSize: 12
+                Column {
+                    id: menuLayout
+                    anchors.fill: parent
+                    spacing: 5
 
-                    contentItem: Text {
-                        text: parent.text
-                        color: "#e74c3c"
-                        font.bold: true
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
+                    Button {
+                        width: parent.width
+                        text: "Supprimer"
+                        flat: true
+                        font.pixelSize: 12
+
+                        contentItem: Text {
+                            text: parent.text
+                            color: "#e74c3c"
+                            font.bold: true
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+
+                        onClicked: {
+                            standData.onMap = false;
+                            standData.x = 0;
+                            standData.y = 0;
+                            actionMenu.close();
+                        }
                     }
 
-                    onClicked: {
-                        standData.onMap = false;
-                        standData.x = 0;
-                        standData.y = 0;
-                        deleteMenu.close();
+                    Button {
+                        width: parent.width
+                        text: "Edit"
+                        flat: true
+                        font.pixelSize: 12
+
+                        contentItem: Text {
+                            text: parent.text
+                            color: "#3498db"
+                            font.bold: true
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+
+                        onClicked: {
+                            actionMenu.close();
+
+                            let alreadyOpen = false
+                            for (let i = 0; i < rootWindow.openStands.length; i++) {
+                                if (rootWindow.openStands[i] === standData) {
+                                    alreadyOpen = true
+                                    rootWindow.currentDrawingIndex = i
+                                    break
+                                }
+                            }
+
+                            if (!alreadyOpen) {
+                                let newOpenStands = rootWindow.openStands.slice()
+                                newOpenStands.push(standData)
+                                rootWindow.openStands = newOpenStands
+                                rootWindow.currentDrawingIndex = newOpenStands.length - 1
+                            }
+
+                            rootWindow.currentView = 1
+                        }
                     }
                 }
             }
@@ -65,7 +110,7 @@ Rectangle {
 
                 onClicked: (mouse) => {
                     if (mouse.button === Qt.RightButton) {
-                        deleteMenu.open();
+                        actionMenu.open();
                     } else if (mouse.button === Qt.LeftButton) {
                         mapArea.selectedStand = standData;
                     }
