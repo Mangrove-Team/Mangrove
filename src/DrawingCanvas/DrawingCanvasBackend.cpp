@@ -362,3 +362,33 @@ void DrawingCanvasBackend::hoverMoveEvent(QHoverEvent *event) {
     }
 }
 
+void DrawingCanvasBackend::savePlan(const QString& filePath) {
+    float xmin = std::numeric_limits<float>::max();
+    float xmax = std::numeric_limits<float>::lowest();
+    float ymin = std::numeric_limits<float>::max();
+    float ymax = std::numeric_limits<float>::lowest();
+    for (const auto& line : _lines) {
+        for (auto point : line.points) {
+            if (point.x() < xmin)
+                xmin = point.x();
+            if (point.x() > xmax)
+                xmax = point.x();
+            if (point.y() < ymin)
+                ymin = point.y();
+            if (point.y() > ymax)
+                ymax = point.y();
+        }
+    }
+    QImage image({static_cast<int>(xmax - xmin + 40), static_cast<int>(ymax - ymin + 40)}, QImage::Format_ARGB32);
+    image.fill(Qt::transparent);
+
+    QPainter painter(&image);
+    painter.translate(-xmin + 20, -ymin + 20);
+    paint(&painter);
+    painter.end();
+
+    if (!image.save(filePath + ".png")) {
+        std::cerr << "Failed to save image to " << filePath.toStdString() << std::endl;
+    }
+}
+

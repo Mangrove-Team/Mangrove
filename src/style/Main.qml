@@ -21,6 +21,7 @@ Window {
 
     onSavePlanRequested: {
         if (currentDrawingIndex >= 0 && currentDrawingIndex < openStands.length) {
+            drawingStackLayout.children[currentDrawingIndex].canvasItem.savePlan(openStands[currentDrawingIndex].name);
             let newOpenStands = openStands.slice()
             newOpenStands.splice(currentDrawingIndex, 1)
             openStands = newOpenStands
@@ -74,7 +75,7 @@ Window {
                 Button {
                     text: "Dashboard"
                     checkable: true
-                    checked: rootWindow.currentView === 0
+                    checked: rootWindow.currentDrawingIndex === -1
                     onClicked: {
                         rootWindow.currentView = 0
                         rootWindow.currentDrawingIndex = -1
@@ -89,7 +90,6 @@ Window {
                         checked: rootWindow.currentDrawingIndex === index
                         onClicked: {
                             rootWindow.currentDrawingIndex = index
-                            rootWindow.currentStand = modelData
                         }
                     }
                 }
@@ -145,6 +145,7 @@ Window {
                 model: rootWindow.openStands
 
                 DrawingCanvasView {
+                    id: drawingCanvas
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 

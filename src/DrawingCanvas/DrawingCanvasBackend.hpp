@@ -131,6 +131,8 @@ public:
      */
     Q_INVOKABLE void applyRectangleDimensions(qreal width, qreal height, qint32 duplicate = 1, qreal offsetX = 20);
 
+    Q_INVOKABLE void savePlan(const QString& filePath);
+
 signals:
     void penColorChanged();  ///< Emitted when pen color changes
     void penWidthChanged();  ///< Emitted when pen width changes
