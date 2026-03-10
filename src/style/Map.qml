@@ -5,9 +5,17 @@ Rectangle {
     id: mapArea
     property var selectedStand: null
 
-    color: "#ffffff"
+    PopUp {
+        id: infoPopup
+        standData: mapArea.selectedStand
+        parent: Overlay.overlay
+        x: (mapArea.width - width) / 2
+        y: 50
+    }
+
+    color: "#ecf0f1"
     radius: 10
-    border.color: "#7079f0"
+    border.color: "#a3d4aa"
     border.width: 2
     clip: true
 
@@ -32,7 +40,7 @@ Rectangle {
                 padding: 5
 
                 background: Rectangle {
-                    color: "#34495e"
+                    color: "#ecf0f1"
                     radius: 5
                     border.color: "#e74c3c"
                     border.width: 1
@@ -112,7 +120,8 @@ Rectangle {
                     if (mouse.button === Qt.RightButton) {
                         actionMenu.open();
                     } else if (mouse.button === Qt.LeftButton) {
-                        mapArea.selectedStand = standData;
+                        infoPopup.standData = standData;
+                        infoPopup.open();
                     }
                 }
             }

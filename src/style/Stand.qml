@@ -27,24 +27,23 @@ Item {
         radius: displayMode === "list" ? 8 : 20
         visible: displayMode === "list" || standImage.status !== Image.Ready
 
-        color: {
-            if (!standData) return "#34495e"
-            if (displayMode === "map") return (selectedStand === standData) ? "#f1c40f" : "#e74c3c"
-            return standData.onMap ? "#2ecc71" : "#34495e"
-        }
+    color: {
+        if (!standData) return "#a3d4aa"
+        if (displayMode === "map") return (selectedStand === standData) ? "#f1c40f" : "#e74c3c"
+        return standData.onMap ? "#43a44a": "#a3d4aa"
+    }
 
         border.color: "white"
         border.width: displayMode === "map" ? 2 : 0
         opacity: (displayMode === "list" && standData && standData.onMap) ? 0.5 : 1.0
 
-        Text {
-            anchors.centerIn: parent
-            text: {
-                if (!standData) return ""
-                return displayMode === "list" ? standData.name : standData.name[0].toUpperCase()
-            }
-            color: "white"
-            font.bold: displayMode === "map"
+    Text {
+        anchors.centerIn: parent
+        text: {
+            if (!standData) return ""
+            return displayMode === "list" ? standData.name : standData.name[0].toUpperCase()
         }
+        color: "black"
+        font.bold: displayMode === "map"
     }
 }

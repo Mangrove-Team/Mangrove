@@ -7,11 +7,13 @@ Window {
     id: rootWindow
     visible: true
     width: 1920
-    height: 1080
-    minimumWidth: 1200
-    minimumHeight: 700
+    height: 1000
+    minimumWidth: 1920
+    minimumHeight: 1000
+    maximumHeight: 1920
+    maximumWidth: 1000
     title: "Mangrove"
-    color: "#ffffff"
+    color: "#a3d4aa"
 
     property int currentView: 0
     property var openStands: []
@@ -62,8 +64,8 @@ Window {
             Layout.fillWidth: true
             Layout.preferredHeight: 56
             radius: 10
-            color: "#2c3e50"
-            border.color: "#7079f0"
+            color: "#ecf0f1"
+            border.color: "#a3d4aa"
             border.width: 1
 
             RowLayout {
