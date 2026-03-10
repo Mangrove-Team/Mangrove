@@ -28,7 +28,7 @@ Rectangle {
         id: standImage
         anchors.fill: parent
         source: (standData && displayMode === "map" && standData.hasImage) ? "file:plans/" + standData.name + ".png" : ""
-        fillMode: Image.PreserveAspectFitred
+        fillMode: Image.PreserveAspectFit
         visible: status === Image.Ready && displayMode === "map"
         asynchronous: true
         cache: false

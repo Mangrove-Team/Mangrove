@@ -49,6 +49,7 @@ class Stand : public QObject {
         void yChanged();
         void constraintsChanged();
         void onMapChanged();
+        void imageChanged();
 
     private:
         QString _name;
