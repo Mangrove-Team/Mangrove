@@ -17,16 +17,40 @@ Window {
     property var openStands: []
     property int currentDrawingIndex: -1
 
+    signal savePlanRequested()
+
+    onSavePlanRequested: {
+        if (currentDrawingIndex >= 0 && currentDrawingIndex < openStands.length) {
+            let newOpenStands = openStands.slice()
+            newOpenStands.splice(currentDrawingIndex, 1)
+            openStands = newOpenStands
+
+            if (newOpenStands.length === 0) {
+                currentDrawingIndex = -1
+            } else if (currentDrawingIndex >= newOpenStands.length) {
+                currentDrawingIndex = newOpenStands.length - 1
+            }
+        }
+    }
+
     Shortcut {
         sequence: "Ctrl+Z"
-        enabled: rootWindow.currentView === 1
-        onActivated: drawingView.canvasItem.undoLastAction()
+        enabled: rootWindow.currentDrawingIndex >= 0
+        onActivated: {
+            if (drawingStackLayout.children[currentDrawingIndex]) {
+                drawingStackLayout.children[currentDrawingIndex].canvasItem.undoLastAction()
+            }
+        }
     }
 
     Shortcut {
         sequence: "Ctrl+Y"
-        enabled: rootWindow.currentView === 1
-        onActivated: drawingView.canvasItem.redoLastAction()
+        enabled: rootWindow.currentDrawingIndex >= 0
+        onActivated: {
+            if (drawingStackLayout.children[currentDrawingIndex]) {
+                drawingStackLayout.children[currentDrawingIndex].canvasItem.redoLastAction()
+            }
+        }
     }
 
     ColumnLayout {
@@ -63,14 +87,22 @@ Window {
                         text: modelData.name
                         checkable: true
                         checked: rootWindow.currentDrawingIndex === index
-                        onClicked: rootWindow.currentDrawingIndex = index
+                        onClicked: {
+                            rootWindow.currentDrawingIndex = index
+                            rootWindow.currentStand = modelData
+                        }
                     }
                 }
 
                 Item { Layout.fillWidth: true }
 
                 Label {
-                    text: rootWindow.currentView === 0 ? "Stand management" : "Canvas editor"
+                    text: {
+                        if (rootWindow.currentDrawingIndex >= 0 && rootWindow.currentDrawingIndex < rootWindow.openStands.length) {
+                            return "Editing: " + rootWindow.openStands[rootWindow.currentDrawingIndex].name
+                        }
+                        return "Stand management"
+                    }
                     color: "white"
                 }
             }
@@ -115,6 +147,10 @@ Window {
                 DrawingCanvasView {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+
+                    onSavePlanRequested: {
+                        rootWindow.savePlanRequested()
+                    }
                 }
             }
         }
