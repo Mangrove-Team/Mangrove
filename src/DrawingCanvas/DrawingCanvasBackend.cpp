@@ -133,7 +133,11 @@ void DrawingCanvasBackend::updateLastRectangleDimensions(qreal width, qreal heig
         return;
     }
 
-    QPointF topLeft = baseLine.points[0];
+    qreal minX = std::min(baseLine.points[0].x(), baseLine.points[2].x());
+    qreal minY = std::min(baseLine.points[0].y(), baseLine.points[2].y());
+    QPointF topLeft(minX, minY);
+
+    baseLine.points[0] = topLeft;
     baseLine.points[1] = QPointF(topLeft.x() + width, topLeft.y());
     baseLine.points[2] = QPointF(topLeft.x() + width, topLeft.y() + height);
     baseLine.points[3] = QPointF(topLeft.x(), topLeft.y() + height);
@@ -165,8 +169,12 @@ void DrawingCanvasBackend::applyRectangleDimensions(qreal width, qreal height, q
     }
 
     Line baseLine = _lines.last();
-    QPointF topLeft = baseLine.points[0];
 
+    qreal minX = std::min(baseLine.points[0].x(), baseLine.points[2].x());
+    qreal minY = std::min(baseLine.points[0].y(), baseLine.points[2].y());
+    QPointF topLeft(minX, minY);
+
+    baseLine.points[0] = topLeft;
     baseLine.points[1] = QPointF(topLeft.x() + width, topLeft.y());
     baseLine.points[2] = QPointF(topLeft.x() + width, topLeft.y() + height);
     baseLine.points[3] = QPointF(topLeft.x(), topLeft.y() + height);
