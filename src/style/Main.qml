@@ -13,7 +13,7 @@ Window {
     maximumHeight: 1920
     maximumWidth: 1000
     title: "Mangrove"
-    color: "#ffffff"
+    color: "#a3d4aa"
 
     property int currentView: 0
 
@@ -38,8 +38,8 @@ Window {
             Layout.fillWidth: true
             Layout.preferredHeight: 56
             radius: 10
-            color: "#2c3e50"
-            border.color: "#7079f0"
+            color: "#ecf0f1"
+            border.color: "#a3d4aa"
             border.width: 1
 
             RowLayout {

@@ -13,9 +13,9 @@ Rectangle {
         y: 50
     }
 
-    color: "#2c3e50"
+    color: "#ecf0f1"
     radius: 10
-    border.color: "#7079f0"
+    border.color: "#a3d4aa"
     border.width: 2
     clip: true
 
@@ -39,7 +39,7 @@ Rectangle {
                 padding: 0
 
                 background: Rectangle {
-                    color: "#34495e"
+                    color: "#ecf0f1"
                     radius: 5
                     border.color: "#e74c3c"
                     border.width: 1

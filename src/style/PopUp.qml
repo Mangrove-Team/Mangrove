@@ -7,8 +7,8 @@ Popup {
 
     property var standData: null
 
-    width: 300
-    height: 220
+    width: parent.width * 0.7
+    height: parent.height * 0.7
     padding: 20
     modal: false
     focus: true
@@ -20,9 +20,9 @@ Popup {
     }
 
     background: Rectangle {
-        color: "#2c3e50"
+        color: "#a3d4aa"
         radius: 12
-        border.color: "#7079f0"
+        border.color: "#43a44a"
         border.width: 2
         layer.enabled: true
     }
@@ -32,7 +32,7 @@ Popup {
 
         Text {
             text: standData ? standData.name : "Détails"
-            color: "#7079f0"
+            color: "black"
             font.pixelSize: 22
             font.bold: true
             Layout.alignment: Qt.AlignHCenter
@@ -45,22 +45,22 @@ Popup {
             rowSpacing: 8
             columnSpacing: 15
 
-            Text { text: "Position :"; color: "#bdc3c7"; font.pixelSize: 13 }
+            Text { text: "Position :"; color: "black"; font.pixelSize: 13 }
             Text {
                 text: standData ? `X: ${Math.round(standData.x)} | Y: ${Math.round(standData.y)}` : "-"
                 color: "white"; font.bold: true
             }
 
-            Text { text: "Puissance :"; color: "#bdc3c7"; font.pixelSize: 13 }
+            Text { text: "Puissance :"; color: "black"; font.pixelSize: 13 }
             Text {
                 text: standData ? "1500 Watts" : "0 W"
-                color: "#f1c40f"; font.bold: true
+                color: "black"
             }
 
-            Text { text: "Contraintes :"; color: "#bdc3c7"; font.pixelSize: 13 }
+            Text { text: "Contraintes :"; color: "black"; font.pixelSize: 13 }
             Text {
                 text: (standData && standData.constraints.length > 0) ? standData.constraints.join(", ") : "Aucune"
-                color: "#2ecc71"
+                color: "black"
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
             }

@@ -4,9 +4,9 @@ import QtQuick.Layouts
 
 Rectangle {
     id: sidebar
-    color: "#2c3e50"
+    color: "#ecf0f1"
     radius: 10
-    border.color: "#7079f0"
+    border.color: "#a3d4aa"
     border.width: 2
 
     property bool isDraggingAny: false
@@ -15,7 +15,7 @@ Rectangle {
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 15
-        Text { text: "Liste des Stands"; color: "white"; Layout.alignment: Qt.AlignHCenter }
+        Text { text: "Liste des Stands"; color: "black"; Layout.alignment: Qt.AlignHCenter }
 
         ListView {
             id: listView

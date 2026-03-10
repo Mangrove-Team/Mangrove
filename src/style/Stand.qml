@@ -12,9 +12,9 @@ Rectangle {
     radius: displayMode === "list" ? 8 : 20
 
     color: {
-        if (!standData) return "#34495e"
+        if (!standData) return "#a3d4aa"
         if (displayMode === "map") return (selectedStand === standData) ? "#f1c40f" : "#e74c3c"
-        return standData.onMap ? "#2ecc71" : "#34495e"
+        return standData.onMap ? "#43a44a": "#a3d4aa"
     }
 
     border.color: "white"
@@ -27,7 +27,7 @@ Rectangle {
             if (!standData) return ""
             return displayMode === "list" ? standData.name : standData.name[0].toUpperCase()
         }
-        color: "white"
+        color: "black"
         font.bold: displayMode === "map"
     }
 }
