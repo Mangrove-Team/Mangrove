@@ -5,7 +5,7 @@ Rectangle {
     id: mapArea
     property var selectedStand: null
 
-    color: "#2c3e50"
+    color: "#ffffff"
     radius: 10
     border.color: "#7079f0"
     border.width: 2

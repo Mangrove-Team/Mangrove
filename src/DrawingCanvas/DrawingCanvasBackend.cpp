@@ -11,6 +11,7 @@
 #include <QMouseEvent>
 #include <QQuickItem>
 #include <QtQuick/QQuickPaintedItem>
+#include <QDir>
 #include <iostream>
 
 DrawingCanvasBackend::DrawingCanvasBackend(QQuickItem *parent)
@@ -363,6 +364,11 @@ void DrawingCanvasBackend::hoverMoveEvent(QHoverEvent *event) {
 }
 
 void DrawingCanvasBackend::savePlan(const QString& filePath) {
+    QDir plansDir;
+    if (!plansDir.exists("plans")) {
+        plansDir.mkpath("plans");
+    }
+
     float xmin = std::numeric_limits<float>::max();
     float xmax = std::numeric_limits<float>::lowest();
     float ymin = std::numeric_limits<float>::max();
@@ -387,7 +393,7 @@ void DrawingCanvasBackend::savePlan(const QString& filePath) {
     paint(&painter);
     painter.end();
 
-    if (!image.save(filePath + ".png")) {
+    if (!image.save("plans/" + filePath + ".png")) {
         std::cerr << "Failed to save image to " << filePath.toStdString() << std::endl;
     }
 }

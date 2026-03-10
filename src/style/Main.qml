@@ -21,7 +21,6 @@ Window {
 
     onSavePlanRequested: {
         if (currentDrawingIndex >= 0 && currentDrawingIndex < openStands.length) {
-            drawingStackLayout.children[currentDrawingIndex].canvasItem.savePlan(openStands[currentDrawingIndex].name);
             let newOpenStands = openStands.slice()
             newOpenStands.splice(currentDrawingIndex, 1)
             openStands = newOpenStands
@@ -150,6 +149,7 @@ Window {
                     Layout.fillHeight: true
 
                     onSavePlanRequested: {
+                        canvasItem.savePlan(modelData.name)
                         rootWindow.savePlanRequested()
                     }
                 }
