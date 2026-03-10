@@ -257,6 +257,56 @@ Item {
                             rectangleDimensionMenu.getSafeSpacing()
                         )
                     }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        propagateComposedEvents: true
+                        acceptedButtons: Qt.NoButton
+
+                        property int accumulatedDelta: 0
+                        property int threshold: 120
+
+                        onWheel: function(wheel) {
+                            accumulatedDelta += wheel.angleDelta.y
+
+                            if (Math.abs(accumulatedDelta) >= threshold) {
+                                let steps = Math.floor(Math.abs(accumulatedDelta) / threshold)
+                                let direction = accumulatedDelta > 0 ? -1 : 1
+
+                                let widthModifier = 5
+                                if (wheel.modifiers & Qt.ControlModifier) {
+                                    widthModifier = 0.1
+                                }
+                                if (wheel.angleDelta.y < 0) {
+                                    let newWidth = rectangleDimensionMenu.getSafeWidth()
+                                    if (wheel.modifiers & Qt.ShiftModifier) {
+                                        newWidth = Math.round(newWidth + widthModifier)
+                                    } else {
+                                        newWidth += widthModifier
+                                    }
+                                    widthInput.text = Math.max(0.1, newWidth).toFixed(1)
+                                } else if (wheel.angleDelta.y > 0) {
+                                    let newWidth = rectangleDimensionMenu.getSafeWidth()
+                                    if (wheel.modifiers & Qt.ShiftModifier) {
+                                        newWidth = Math.round(newWidth - widthModifier)
+                                    } else {
+                                        newWidth -= widthModifier
+                                    }
+                                    widthInput.text = Math.max(0.1, newWidth).toFixed(1)
+                                }
+                                canvas.updateLastRectangleDimensions(
+                                    rectangleDimensionMenu.getSafeWidth(),
+                                    rectangleDimensionMenu.getSafeHeight(),
+                                    rectangleDimensionMenu.getSafeDuplicate(),
+                                    rectangleDimensionMenu.getSafeSpacing()
+                                )
+                                accumulatedDelta = 0
+                            }
+                            wheel.accepted = false
+                        }
+
+                    }
+
                 }
             }
 
@@ -281,6 +331,55 @@ Item {
                             rectangleDimensionMenu.getSafeDuplicate(),
                             rectangleDimensionMenu.getSafeSpacing()
                         )
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        propagateComposedEvents: true
+                        acceptedButtons: Qt.NoButton
+
+                        property int accumulatedDelta: 0
+                        property int threshold: 120
+
+                        onWheel: function(wheel) {
+                            accumulatedDelta += wheel.angleDelta.y
+
+                            if (Math.abs(accumulatedDelta) >= threshold) {
+                                let steps = Math.floor(Math.abs(accumulatedDelta) / threshold)
+                                let direction = accumulatedDelta > 0 ? -1 : 1
+
+                                let heightModifier = 5
+                                if (wheel.modifiers & Qt.ControlModifier) {
+                                    heightModifier = 0.1
+                                }
+                                if (wheel.angleDelta.y < 0) {
+                                    let newHeight = rectangleDimensionMenu.getSafeHeight()
+                                    if (wheel.modifiers & Qt.ShiftModifier) {
+                                        newHeight = Math.round(newHeight + heightModifier)
+                                    } else {
+                                        newHeight += heightModifier
+                                    }
+                                    heightInput.text = Math.max(0.1, newHeight).toFixed(1)
+                                } else if (wheel.angleDelta.y > 0) {
+                                    let newHeight = rectangleDimensionMenu.getSafeHeight()
+                                    if (wheel.modifiers & Qt.ShiftModifier) {
+                                        newHeight = Math.round(newHeight - heightModifier)
+                                    } else {
+                                        newHeight -= heightModifier
+                                    }
+                                    heightInput.text = Math.max(0.1, newHeight).toFixed(1)
+                                }
+                                canvas.updateLastRectangleDimensions(
+                                    rectangleDimensionMenu.getSafeWidth(),
+                                    rectangleDimensionMenu.getSafeHeight(),
+                                    rectangleDimensionMenu.getSafeDuplicate(),
+                                    rectangleDimensionMenu.getSafeSpacing()
+                                )
+                                accumulatedDelta = 0
+                            }
+                            wheel.accepted = false
+                        }
+
                     }
                 }
             }
@@ -307,12 +406,52 @@ Item {
                             rectangleDimensionMenu.getSafeSpacing()
                         )
                     }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        propagateComposedEvents: true
+                        acceptedButtons: Qt.NoButton
+
+                        property int accumulatedDelta: 0
+                        property int threshold: 120
+
+                        onWheel: function(wheel) {
+                            accumulatedDelta += wheel.angleDelta.y
+
+                            if (Math.abs(accumulatedDelta) >= threshold) {
+                                let steps = Math.floor(Math.abs(accumulatedDelta) / threshold)
+                                let direction = accumulatedDelta > 0 ? -1 : 1
+                                let duplicateModifier = 1
+                                if (wheel.modifiers & Qt.ControlModifier) {
+                                    duplicateModifier = 5
+                                }
+                                if (wheel.angleDelta.y < 0) {
+                                    let newDuplicate = rectangleDimensionMenu.getSafeDuplicate()
+                                    newDuplicate += duplicateModifier
+                                    duplicateInput.text = Math.max(1, newDuplicate).toString()
+                                } else if (wheel.angleDelta.y > 0) {
+                                    let newDuplicate = rectangleDimensionMenu.getSafeDuplicate()
+                                    newDuplicate -= duplicateModifier
+                                    duplicateInput.text = Math.max(1, newDuplicate).toString()
+                                }
+                                canvas.updateLastRectangleDimensions(
+                                    rectangleDimensionMenu.getSafeWidth(),
+                                    rectangleDimensionMenu.getSafeHeight(),
+                                    rectangleDimensionMenu.getSafeDuplicate(),
+                                    rectangleDimensionMenu.getSafeSpacing()
+                                )
+                                accumulatedDelta = 0
+                            }
+                            wheel.accepted = false
+                        }
+
+                    }
                 }
             }
 
             RowLayout {
                 spacing: 8
-                visible: rectangleDimensionMenu.getSafeDuplicate() > 1
+                enabled: rectangleDimensionMenu.getSafeDuplicate() > 1
                 Label {
                     text: "Spacing:"
                     Layout.minimumWidth: 50
@@ -332,6 +471,48 @@ Item {
                             rectangleDimensionMenu.getSafeDuplicate(),
                             rectangleDimensionMenu.getSafeSpacing()
                         )
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        propagateComposedEvents: true
+                        acceptedButtons: Qt.NoButton
+
+                        property int accumulatedDelta: 0
+                        property int threshold: 120
+
+                        onWheel: function(wheel) {
+                            accumulatedDelta += wheel.angleDelta.y
+
+                            if (Math.abs(accumulatedDelta) >= threshold) {
+                                let steps = Math.floor(Math.abs(accumulatedDelta) / threshold)
+                                let direction = accumulatedDelta > 0 ? -1 : 1
+
+                                let spacingModifier = 5
+                                if (wheel.modifiers & Qt.ControlModifier) {
+                                    spacingModifier = 0.1
+                                }
+
+                                let newSpacing = rectangleDimensionMenu.getSafeSpacing()
+                                if (wheel.modifiers & Qt.ShiftModifier) {
+                                    newSpacing = Math.round(newSpacing + (direction * spacingModifier * steps))
+                                } else {
+                                    newSpacing += (direction * spacingModifier * steps)
+                                }
+
+                                spaceInput.text = Math.max(0, newSpacing).toFixed(1)
+                                canvas.updateLastRectangleDimensions(
+                                    rectangleDimensionMenu.getSafeWidth(),
+                                    rectangleDimensionMenu.getSafeHeight(),
+                                    rectangleDimensionMenu.getSafeDuplicate(),
+                                    rectangleDimensionMenu.getSafeSpacing()
+                                )
+
+                                accumulatedDelta = 0
+                            }
+
+                            wheel.accepted = false
+                        }
                     }
                 }
             }
