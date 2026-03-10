@@ -65,12 +65,14 @@ void DrawingCanvasBackend::drawDistanceIndicator(QPainter *painter, const Line& 
 void DrawingCanvasBackend::paint(QPainter *painter) {
     painter->setRenderHint(QPainter::Antialiasing);
 
-    for (const auto& line : _lines) {
+    QVector<Line> allLines = _lines;
+    allLines.append(_duplicateLines);
+    for (const auto& line : allLines) {
         QPen linePen = _pen;
         linePen.setWidth(line.size);
         linePen.setColor(line.color);
         drawLineSegments(painter, line.points, linePen);
-        if (_brushMode == BrushMode::StraightLine || _brushMode == BrushMode::Rectangle) {
+        if (line.mode == BrushMode::StraightLine || line.mode == BrushMode::Rectangle) {
             linePen.setColor(Qt::black);
             drawDistanceIndicator(painter, line, linePen);
         }
@@ -115,6 +117,84 @@ void DrawingCanvasBackend::redoLastAction() {
         _buffer.removeLast();
         update();
     }
+}
+
+void DrawingCanvasBackend::updateLastRectangleDimensions(qreal width, qreal height, qint32 duplicate, qreal offsetX) {
+    if (_lines.isEmpty() || _lines.last().mode != BrushMode::Rectangle) {
+        return;
+    }
+
+    if (width <= 0 || height <= 0 || duplicate < 1) {
+        return;
+    }
+
+    Line baseLine = _lines.last();
+    if (baseLine.points.size() != 5) {
+        return;
+    }
+
+    qreal minX = std::min(baseLine.points[0].x(), baseLine.points[2].x());
+    qreal minY = std::min(baseLine.points[0].y(), baseLine.points[2].y());
+    QPointF topLeft(minX, minY);
+
+    baseLine.points[0] = topLeft;
+    baseLine.points[1] = QPointF(topLeft.x() + width, topLeft.y());
+    baseLine.points[2] = QPointF(topLeft.x() + width, topLeft.y() + height);
+    baseLine.points[3] = QPointF(topLeft.x(), topLeft.y() + height);
+    baseLine.points[4] = topLeft;
+    _lines.last() = baseLine;
+
+    _duplicateLines.clear();
+    if (duplicate > 1) {
+        for (qint32 i = 1; i < duplicate; ++i) {
+            Line newLine = baseLine;
+            qreal offsetXComputed = (width + offsetX) * i;
+            for (auto& point : newLine.points) {
+                point += QPointF(offsetXComputed, 0);
+            }
+            _duplicateLines.push_back(newLine);
+        }
+    }
+
+    update();
+}
+
+void DrawingCanvasBackend::applyRectangleDimensions(qreal width, qreal height, qint32 duplicate, qreal offsetX) {
+    if (_lines.isEmpty() || _lines.last().mode != BrushMode::Rectangle) {
+        return;
+    }
+
+    if (width <= 0 || height <= 0 || duplicate < 1) {
+        return;
+    }
+
+    Line baseLine = _lines.last();
+
+    qreal minX = std::min(baseLine.points[0].x(), baseLine.points[2].x());
+    qreal minY = std::min(baseLine.points[0].y(), baseLine.points[2].y());
+    QPointF topLeft(minX, minY);
+
+    baseLine.points[0] = topLeft;
+    baseLine.points[1] = QPointF(topLeft.x() + width, topLeft.y());
+    baseLine.points[2] = QPointF(topLeft.x() + width, topLeft.y() + height);
+    baseLine.points[3] = QPointF(topLeft.x(), topLeft.y() + height);
+    baseLine.points[4] = topLeft;
+    _lines.last() = baseLine;
+
+    if (duplicate > 1) {
+        for (qint32 i = 1; i < duplicate; ++i) {
+            Line newLine = baseLine;
+            qreal offsetXComputed = (width + offsetX) * i;
+            for (auto& point : newLine.points) {
+                point += QPointF(offsetXComputed, 0);
+            }
+            _lines.push_back(newLine);
+        }
+    }
+
+    _duplicateLines.clear();
+
+    update();
 }
 
 void DrawingCanvasBackend::setPenColor(const QColor &color) {
@@ -172,6 +252,7 @@ void DrawingCanvasBackend::mousePressEvent(QMouseEvent *event) {
         QPointF pos = applyPositionModifiers(event->position(), event->modifiers(), event->position());
 
         _currentStart = pos;
+        _currentLine.mode = _brushMode;
         _currentLine.color = _pen.color();
         _currentLine.size = _pen.width();
         _currentLine.points.clear();
@@ -260,8 +341,16 @@ void DrawingCanvasBackend::mouseReleaseEvent(QMouseEvent *event) {
             return;
         }
 
+        newLine.mode = _brushMode;
+
         _lines.append(newLine);
         _currentLine.points.clear();
+
+        if (_brushMode == BrushMode::Rectangle && newLine.points.size() >= 2) {
+            qreal width = std::abs(newLine.points[2].x() - newLine.points[0].x());
+            qreal height = std::abs(newLine.points[2].y() - newLine.points[0].y());
+            emit rectangleDrawn(width, height);
+        }
 
         updateCtrlStateAndNearbyPoints(event->modifiers(), event->position());
     }
