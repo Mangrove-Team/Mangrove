@@ -117,15 +117,19 @@ public:
      * @brief Updates the dimensions of the last drawn rectangle
      * @param width New width in pixels
      * @param height New height in pixels
+     * @param duplicate Number of duplicate rectangles to create with the same dimensions
+     * @param offsetX Horizontal offset in pixels for each duplicate rectangle
      */
-    Q_INVOKABLE void updateLastRectangleDimensions(qreal width, qreal height, qint32 duplicate = 1);
+    Q_INVOKABLE void updateLastRectangleDimensions(qreal width, qreal height, qint32 duplicate = 1, qreal offsetX = 20);
 
     /**
      * @brief Applies new dimensions to the current rectangle being drawn (for real-time updates)
      * @param width New width in pixels
      * @param height New height in pixels
+     * @param duplicate Number of duplicate rectangles to create with the same dimensions
+     * @param offsetX Horizontal offset in pixels for each duplicate rectangle
      */
-    Q_INVOKABLE void applyRectangleDimensions(qreal width, qreal height, qint32 duplicate = 1);
+    Q_INVOKABLE void applyRectangleDimensions(qreal width, qreal height, qint32 duplicate = 1, qreal offsetX = 20);
 
 signals:
     void penColorChanged();  ///< Emitted when pen color changes

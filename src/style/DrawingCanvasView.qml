@@ -164,9 +164,11 @@ Item {
                 rectangleDimensionMenu.rectangleWidth = width
                 rectangleDimensionMenu.rectangleHeight = height
                 rectangleDimensionMenu.duplicateRect = 1
+                rectangleDimensionMenu.spacing = 20
 
                 widthInput.text = width.toFixed(1)
                 heightInput.text = height.toFixed(1)
+                spaceInput.text = "20.0"
                 duplicateInput.text = "1"
                 rectangleDimensionMenu.visible = true
             }
@@ -184,7 +186,7 @@ Item {
         id: rectangleDimensionMenu
         visible: false
         width: 240
-        height: 180
+        height: contentLayout.implicitHeight + 20
         color: "#e0e0e0"
         border.color: "#555"
         border.width: 2
@@ -198,6 +200,7 @@ Item {
 
         property real rectangleWidth: 0
         property real rectangleHeight: 0
+        property real spacing: 20
         property int duplicateRect: 1
 
         function getSafeWidth() {
@@ -215,7 +218,13 @@ Item {
             return (isNaN(d) || d < 1) ? 1 : d
         }
 
+        function getSafeSpacing() {
+            var s = parseFloat(spaceInput.text)
+            return (isNaN(s) || s < 0) ? spacing : s
+        }
+
         ColumnLayout {
+            id: contentLayout
             anchors.fill: parent
             anchors.margins: 10
             spacing: 8
@@ -237,12 +246,15 @@ Item {
                     Layout.fillWidth: true
                     text: rectangleDimensionMenu.rectangleWidth.toFixed(1)
                     selectByMouse: true
-                    validator: DoubleValidator { bottom: 0.1; decimals: 2 }
+                    validator: DoubleValidator {
+                        bottom: 0.1; decimals: 2
+                    }
                     onAccepted: {
                         canvas.updateLastRectangleDimensions(
                             rectangleDimensionMenu.getSafeWidth(),
                             rectangleDimensionMenu.getSafeHeight(),
-                            rectangleDimensionMenu.getSafeDuplicate()
+                            rectangleDimensionMenu.getSafeDuplicate(),
+                            rectangleDimensionMenu.getSafeSpacing()
                         )
                     }
                 }
@@ -259,12 +271,15 @@ Item {
                     Layout.fillWidth: true
                     text: rectangleDimensionMenu.rectangleHeight.toFixed(1)
                     selectByMouse: true
-                    validator: DoubleValidator { bottom: 0.1; decimals: 2 }
+                    validator: DoubleValidator {
+                        bottom: 0.1; decimals: 2
+                    }
                     onAccepted: {
                         canvas.updateLastRectangleDimensions(
                             rectangleDimensionMenu.getSafeWidth(),
                             rectangleDimensionMenu.getSafeHeight(),
-                            rectangleDimensionMenu.getSafeDuplicate()
+                            rectangleDimensionMenu.getSafeDuplicate(),
+                            rectangleDimensionMenu.getSafeSpacing()
                         )
                     }
                 }
@@ -281,12 +296,41 @@ Item {
                     Layout.fillWidth: true
                     text: rectangleDimensionMenu.duplicateRect.toString()
                     selectByMouse: true
-                    validator: IntValidator { bottom: 1 }
+                    validator: IntValidator {
+                        bottom: 1
+                    }
                     onAccepted: {
                         canvas.updateLastRectangleDimensions(
                             rectangleDimensionMenu.getSafeWidth(),
                             rectangleDimensionMenu.getSafeHeight(),
-                            rectangleDimensionMenu.getSafeDuplicate()
+                            rectangleDimensionMenu.getSafeDuplicate(),
+                            rectangleDimensionMenu.getSafeSpacing()
+                        )
+                    }
+                }
+            }
+
+            RowLayout {
+                spacing: 8
+                visible: rectangleDimensionMenu.getSafeDuplicate() > 1
+                Label {
+                    text: "Spacing:"
+                    Layout.minimumWidth: 50
+                }
+                TextField {
+                    id: spaceInput
+                    Layout.fillWidth: true
+                    text: rectangleDimensionMenu.spacing.toFixed(1)
+                    selectByMouse: true
+                    validator: DoubleValidator {
+                        bottom: 0 ; decimals: 2
+                    }
+                    onAccepted: {
+                        canvas.updateLastRectangleDimensions(
+                            rectangleDimensionMenu.getSafeWidth(),
+                            rectangleDimensionMenu.getSafeHeight(),
+                            rectangleDimensionMenu.getSafeDuplicate(),
+                            rectangleDimensionMenu.getSafeSpacing()
                         )
                     }
                 }
@@ -302,7 +346,8 @@ Item {
                         canvas.updateLastRectangleDimensions(
                             rectangleDimensionMenu.getSafeWidth(),
                             rectangleDimensionMenu.getSafeHeight(),
-                            rectangleDimensionMenu.getSafeDuplicate()
+                            rectangleDimensionMenu.getSafeDuplicate(),
+                            rectangleDimensionMenu.getSafeSpacing()
                         )
                     }
                 }
@@ -314,7 +359,8 @@ Item {
                         canvas.applyRectangleDimensions(
                             rectangleDimensionMenu.getSafeWidth(),
                             rectangleDimensionMenu.getSafeHeight(),
-                            rectangleDimensionMenu.getSafeDuplicate()
+                            rectangleDimensionMenu.getSafeDuplicate(),
+                            rectangleDimensionMenu.getSafeSpacing()
                         )
                     }
                 }

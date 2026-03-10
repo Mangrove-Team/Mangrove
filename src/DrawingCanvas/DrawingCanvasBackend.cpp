@@ -119,7 +119,7 @@ void DrawingCanvasBackend::redoLastAction() {
     }
 }
 
-void DrawingCanvasBackend::updateLastRectangleDimensions(qreal width, qreal height, qint32 duplicate) {
+void DrawingCanvasBackend::updateLastRectangleDimensions(qreal width, qreal height, qint32 duplicate, qreal offsetX) {
     if (_lines.isEmpty() || _lines.last().mode != BrushMode::Rectangle) {
         return;
     }
@@ -144,9 +144,9 @@ void DrawingCanvasBackend::updateLastRectangleDimensions(qreal width, qreal heig
     if (duplicate > 1) {
         for (qint32 i = 1; i < duplicate; ++i) {
             Line newLine = baseLine;
-            qreal offsetX = (width + 20) * i;
+            qreal offsetXComputed = (width + offsetX) * i;
             for (auto& point : newLine.points) {
-                point += QPointF(offsetX, 0);
+                point += QPointF(offsetXComputed, 0);
             }
             _duplicateLines.push_back(newLine);
         }
@@ -155,7 +155,7 @@ void DrawingCanvasBackend::updateLastRectangleDimensions(qreal width, qreal heig
     update();
 }
 
-void DrawingCanvasBackend::applyRectangleDimensions(qreal width, qreal height, qint32 duplicate) {
+void DrawingCanvasBackend::applyRectangleDimensions(qreal width, qreal height, qint32 duplicate, qreal offsetX) {
     if (_lines.isEmpty() || _lines.last().mode != BrushMode::Rectangle) {
         return;
     }
@@ -176,9 +176,9 @@ void DrawingCanvasBackend::applyRectangleDimensions(qreal width, qreal height, q
     if (duplicate > 1) {
         for (qint32 i = 1; i < duplicate; ++i) {
             Line newLine = baseLine;
-            qreal offsetX = (width + 20) * i;
+            qreal offsetXComputed = (width + offsetX) * i;
             for (auto& point : newLine.points) {
-                point += QPointF(offsetX, 0);
+                point += QPointF(offsetXComputed, 0);
             }
             _lines.push_back(newLine);
         }
