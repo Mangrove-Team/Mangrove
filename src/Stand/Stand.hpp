@@ -21,7 +21,7 @@ class Stand : public QObject {
     Q_PROPERTY(float y READ getY WRITE setY NOTIFY yChanged)
     Q_PROPERTY(QStringList constraints READ getConstraintsForQml NOTIFY constraintsChanged)
     Q_PROPERTY(bool onMap READ isOnMap WRITE setOnMap NOTIFY onMapChanged)
-    Q_PROPERTY(bool hasImage READ hasImage NOTIFY imageChanged)
+    Q_PROPERTY(bool hasImage READ hasImage NOTIFY hasImageChanged)
 
     public:
         explicit Stand(QObject* parent = nullptr) : QObject(parent) {}
@@ -49,7 +49,7 @@ class Stand : public QObject {
         void yChanged();
         void constraintsChanged();
         void onMapChanged();
-        void imageChanged();
+        void hasImageChanged();
 
     private:
         QString _name;

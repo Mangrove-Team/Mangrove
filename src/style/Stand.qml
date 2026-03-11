@@ -7,6 +7,8 @@ Rectangle {
     property string displayMode: "list"
     property var selectedStand: null
 
+    property real imageVersion: Date.now()
+
     width: displayMode === "list" ? 280 : 150
     height: displayMode === "list" ? 50 : 150
     radius: displayMode === "list" ? 8 : 20
@@ -24,10 +26,17 @@ Rectangle {
     border.width: displayMode === "map" ? 2 : 0
     opacity: (displayMode === "list" && standData && standData.onMap) ? 0.5 : 1.0
 
+    Connections {
+        target: standData
+        function onHasImageChanged() {
+            ui.imageVersion = Date.now()
+        }
+    }
+
     Image {
         id: standImage
         anchors.fill: parent
-        source: (standData && displayMode === "map" && standData.hasImage) ? "file:plans/" + standData.name + ".png" : ""
+        source: (standData && displayMode === "map" && standData.hasImage) ? "file:plans/" + standData.name + ".png?v=" + ui.imageVersion : ""
         fillMode: Image.PreserveAspectFit
         visible: status === Image.Ready && displayMode === "map"
         asynchronous: true

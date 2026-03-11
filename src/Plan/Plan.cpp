@@ -41,7 +41,7 @@ QList<QObject*> Plan::getStandsForQml() {
 void Plan::notifyStandImageChanged(const QString& standName) {
     for (const auto& stand : _stands) {
         if (stand->getName() == standName) {
-            emit stand->imageChanged();
+            emit stand->hasImageChanged();
             break;
         }
     }
