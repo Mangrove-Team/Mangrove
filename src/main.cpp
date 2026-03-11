@@ -5,39 +5,18 @@
 // Copyright (c) Mangrove. All rights reserved.
 */
 
-#include <QQmlContext>
-#include <QGuiApplication>
-#include <QQmlApplicationEngine>
 #include <qqml.h>
-#include "DrawingCanvas/DrawingCanvasBackend.hpp"
+#include <QQmlContext>
+#include <QQmlApplicationEngine>
 
 #include "Plan.hpp"
-#include "Electricity.hpp"
-#include "IConstraint.hpp"
-#include "PmrAccess.hpp"
-
-void handleStand1(const std::shared_ptr<Plan>& plan) {
-    const auto stand = std::make_shared<Stand>();
-    stand->setName(static_cast<std::string>("Stand 1"));
-    stand->addConstraint<Electricity>(12.5);
-    stand->addConstraint<PmrAccess>();
-    plan->addStand(stand);
-}
-
-void handleStand2(const std::shared_ptr<Plan>& plan) {
-    const auto stand = std::make_shared<Stand>();
-    stand->setName(static_cast<std::string>("Stand 2"));
-    stand->addConstraint<Electricity>(20.0);
-    plan->addStand(stand);
-}
+#include "DrawingCanvas/DrawingCanvasBackend.hpp"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
     const auto plan = std::make_shared<Plan>();
-    handleStand1(plan);
-    handleStand2(plan);
 
     QQmlApplicationEngine engine;
 

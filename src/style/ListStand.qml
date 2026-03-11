@@ -12,6 +12,17 @@ Rectangle {
     property bool isDraggingAny: false
     property var selectedStand: null
 
+    Button {
+        text: "Add stand"
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        anchors.topMargin: 10
+        onClicked: {
+            const nextIndex = planData.stands.length + 1
+            planData.addStandFromQml("Stand " + nextIndex)
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 15
