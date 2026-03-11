@@ -5,15 +5,13 @@
 // Copyright (c) Mangrove. All rights reserved.
 */
 
-#include <QQmlContext>
-#include <QGuiApplication>
-#include <QQmlApplicationEngine>
 #include <qqml.h>
-#include "DrawingCanvas/DrawingCanvasBackend.hpp"
+#include <QQmlContext>
+#include <QQmlApplicationEngine>
 
 #include "Plan.hpp"
 #include "Electricity.hpp"
-#include "IConstraint.hpp"
+#include "DrawingCanvas/DrawingCanvasBackend.hpp"
 #include "PmrAccess.hpp"
 
 void handleStand1(const std::shared_ptr<Plan>& plan) {
