@@ -61,7 +61,7 @@ void DrawingCanvasBackend::drawDistanceIndicator(QPainter *painter, const Line& 
 void DrawingCanvasBackend::paint(QPainter *painter) {
     painter->setRenderHint(QPainter::Antialiasing);
 
-    QVector<Line>& allLines = _lines;
+    QVector<Line> allLines = _lines;
     allLines.append(_duplicateLines);
     for (const auto& line : allLines) {
         QPen& linePen = _pen;
