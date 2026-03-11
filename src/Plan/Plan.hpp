@@ -28,6 +28,7 @@ class Plan : public QObject {
         [[nodiscard]] QList<std::shared_ptr<Stand>> getStandsByConstraint() const;
 
         void addStand(const std::shared_ptr<Stand>& stand);
+        Q_INVOKABLE void notifyStandImageChanged(const QString& standName);
 
         signals:
             void standsChanged();

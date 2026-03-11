@@ -5,9 +5,17 @@ Rectangle {
     id: mapArea
     property var selectedStand: null
 
-    color: "#2c3e50"
+    PopUp {
+        id: infoPopup
+        standData: mapArea.selectedStand
+        parent: Overlay.overlay
+        x: (mapArea.width - width) / 2
+        y: 50
+    }
+
+    color: "#ecf0f1"
     radius: 10
-    border.color: "#7079f0"
+    border.color: "#a3d4aa"
     border.width: 2
     clip: true
 
@@ -23,38 +31,57 @@ Rectangle {
             y: standData.y
 
             Popup {
-                id: deleteMenu
-                y: -45
-                x: -30
-                width: 100
-                height: 35
-                padding: 0
+                id: actionMenu
+                y: -90
+                x: (parent.width - width) / 2
+                width: 120
+                height: 85
+                padding: 5
 
                 background: Rectangle {
-                    color: "#34495e"
+                    color: "#ecf0f1"
                     radius: 5
                     border.color: "#e74c3c"
                     border.width: 1
                 }
 
-                contentItem: Button {
-                    text: "Supprimer"
-                    flat: true
-                    font.pixelSize: 12
+                Column {
+                    id: menuLayout
+                    anchors.fill: parent
+                    spacing: 5
 
-                    contentItem: Text {
-                        text: parent.text
-                        color: "#e74c3c"
-                        font.bold: true
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
+                    Button {
+                        width: parent.width
+                        text: "Retirer"
+                        flat: true
+                        font.pixelSize: 12
+
+                        contentItem: Text {
+                            text: parent.text
+                            color: "#e74c3c"
+                            font.bold: true
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+
+                        onClicked: {
+                            standData.onMap = false;
+                            standData.x = 0;
+                            standData.y = 0;
+                            actionMenu.close();
+                        }
+
+                        background: Rectangle {
+                            color: parent.hovered ? "#d3044a" : "#cecc71"
+                            border.color: "#d3a44a"
+                            radius: 4
+                        }
                     }
 
-                    onClicked: {
-                        standData.onMap = false;
-                        standData.x = 0;
-                        standData.y = 0;
-                        deleteMenu.close();
+                    EditButton {
+                        onClicked: {
+                            actionMenu.close();
+                        }
                     }
                 }
             }
@@ -65,9 +92,10 @@ Rectangle {
 
                 onClicked: (mouse) => {
                     if (mouse.button === Qt.RightButton) {
-                        deleteMenu.open();
+                        actionMenu.open();
                     } else if (mouse.button === Qt.LeftButton) {
-                        mapArea.selectedStand = standData;
+                        infoPopup.standData = standData;
+                        infoPopup.open();
                     }
                 }
             }
@@ -79,8 +107,8 @@ Rectangle {
         keys: ["stand"]
         onDropped: (drop) => {
             let data = drop.source.itemData;
-            data.x = drop.x - 20;
-            data.y = drop.y - 20;
+            data.x = drop.x - 75;
+            data.y = drop.y - 75;
             data.onMap = true;
             mapArea.selectedStand = data;
         }

@@ -7,6 +7,8 @@ Item {
     id: root
     property alias canvasItem: canvas
 
+    signal savePlanRequested()
+
     ColumnLayout {
         anchors.fill: parent
         spacing: 8
@@ -146,6 +148,18 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                 }
                 onClicked: colorDialog.open()
+            }
+
+            Button {
+                id: saveButton
+                text: "Save Plan"
+                Layout.minimumWidth: 120
+                background: Rectangle {
+                    color: "#2ecc71"
+                    border.width: 2
+                    radius: 4
+                }
+                onClicked: savePlanRequested()
             }
 
             Item { Layout.fillWidth: true }

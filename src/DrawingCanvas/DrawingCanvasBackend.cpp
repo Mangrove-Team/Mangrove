@@ -11,7 +11,9 @@
 #include <QMouseEvent>
 #include <QQuickItem>
 #include <QtQuick/QQuickPaintedItem>
+#include <QDir>
 #include <iostream>
+#include <QSvgGenerator>
 
 DrawingCanvasBackend::DrawingCanvasBackend(QQuickItem *parent)
     : QQuickPaintedItem(parent), _isDrawing(false), _brushMode(BrushMode::Freehand) {
@@ -360,5 +362,52 @@ void DrawingCanvasBackend::hoverMoveEvent(QHoverEvent *event) {
     if (!_isDrawing) {
         updateCtrlStateAndNearbyPoints(event->modifiers(), event->position());
     }
+}
+
+void DrawingCanvasBackend::savePlan(const QString& filePath) {
+    QDir plansDir;
+    if (!plansDir.exists("plans")) {
+        plansDir.mkpath("plans");
+    }
+
+    float xmin = std::numeric_limits<float>::max();
+    float xmax = std::numeric_limits<float>::lowest();
+    float ymin = std::numeric_limits<float>::max();
+    float ymax = std::numeric_limits<float>::lowest();
+
+    QVector<Line> allLines = _lines;
+    allLines.append(_duplicateLines);
+
+    for (const auto& line : allLines) {
+        for (auto point : line.points) {
+            if (point.x() < xmin)
+                xmin = point.x();
+            if (point.x() > xmax)
+                xmax = point.x();
+            if (point.y() < ymin)
+                ymin = point.y();
+            if (point.y() > ymax)
+                ymax = point.y();
+        }
+    }
+
+    if (xmin > xmax || ymin > ymax) {
+        xmin = 0; xmax = 100; ymin = 0; ymax = 100;
+    }
+
+    int width = static_cast<int>(xmax - xmin + 40);
+    int height = static_cast<int>(ymax - ymin + 40);
+
+    QSvgGenerator generator;
+    generator.setFileName("plans/" + filePath + ".svg");
+    generator.setSize(QSize(width, height));
+    generator.setViewBox(QRect(0, 0, width, height));
+    generator.setResolution(96);
+
+    QPainter painter;
+    painter.begin(&generator);
+    painter.translate(-xmin + 20, -ymin + 20);
+    paint(&painter);
+    painter.end();
 }
 

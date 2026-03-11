@@ -7,24 +7,53 @@ Window {
     id: rootWindow
     visible: true
     width: 1920
-    height: 1080
-    minimumWidth: 1200
-    minimumHeight: 700
+    height: 1000
+    minimumWidth: 1920
+    minimumHeight: 1000
+    maximumHeight: 1920
+    maximumWidth: 1000
     title: "Mangrove"
-    color: "#ffffff"
+    color: "#a3d4aa"
 
     property int currentView: 0
+    property var openStands: []
+    property int currentDrawingIndex: -1
+
+    signal savePlanRequested()
+
+    onSavePlanRequested: {
+        if (currentDrawingIndex >= 0 && currentDrawingIndex < openStands.length) {
+            let newOpenStands = openStands.slice()
+            newOpenStands.splice(currentDrawingIndex, 1)
+            openStands = newOpenStands
+
+            if (newOpenStands.length === 0) {
+                currentDrawingIndex = -1
+            } else if (currentDrawingIndex >= newOpenStands.length) {
+                currentDrawingIndex = newOpenStands.length - 1
+            }
+
+        }
+    }
 
     Shortcut {
         sequence: "Ctrl+Z"
-        enabled: rootWindow.currentView === 1
-        onActivated: drawingView.canvasItem.undoLastAction()
+        enabled: rootWindow.currentDrawingIndex >= 0
+        onActivated: {
+            if (drawingStackLayout.children[currentDrawingIndex]) {
+                drawingStackLayout.children[currentDrawingIndex].canvasItem.undoLastAction()
+            }
+        }
     }
 
     Shortcut {
         sequence: "Ctrl+Y"
-        enabled: rootWindow.currentView === 1
-        onActivated: drawingView.canvasItem.redoLastAction()
+        enabled: rootWindow.currentDrawingIndex >= 0
+        onActivated: {
+            if (drawingStackLayout.children[currentDrawingIndex]) {
+                drawingStackLayout.children[currentDrawingIndex].canvasItem.redoLastAction()
+            }
+        }
     }
 
     ColumnLayout {
@@ -36,8 +65,8 @@ Window {
             Layout.fillWidth: true
             Layout.preferredHeight: 56
             radius: 10
-            color: "#2c3e50"
-            border.color: "#7079f0"
+            color: "#ecf0f1"
+            border.color: "#a3d4aa"
             border.width: 1
 
             RowLayout {
@@ -48,60 +77,86 @@ Window {
                 Button {
                     text: "Dashboard"
                     checkable: true
-                    checked: rootWindow.currentView === 0
-                    onClicked: rootWindow.currentView = 0
+                    checked: rootWindow.currentDrawingIndex === -1
+                    onClicked: {
+                        rootWindow.currentView = 0
+                        rootWindow.currentDrawingIndex = -1
+                    }
                 }
 
-                Button {
-                    text: "Drawing"
-                    checkable: true
-                    checked: rootWindow.currentView === 1
-                    onClicked: rootWindow.currentView = 1
+                Repeater {
+                    model: openStands
+                    delegate: Button {
+                        text: modelData.name
+                        checkable: true
+                        checked: rootWindow.currentDrawingIndex === index
+                        onClicked: {
+                            rootWindow.currentDrawingIndex = index
+                        }
+                    }
                 }
 
                 Item { Layout.fillWidth: true }
 
                 Label {
-                    text: rootWindow.currentView === 0 ? "Stand management" : "Canvas editor"
+                    text: {
+                        if (rootWindow.currentDrawingIndex >= 0 && rootWindow.currentDrawingIndex < rootWindow.openStands.length) {
+                            return "Editing: " + rootWindow.openStands[rootWindow.currentDrawingIndex].name
+                        }
+                        return "Stand management"
+                    }
                     color: "white"
                 }
             }
         }
 
-        StackLayout {
+        Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            currentIndex: rootWindow.currentView
+            visible: rootWindow.currentDrawingIndex === -1
 
-            Item {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+            RowLayout {
+                anchors.fill: parent
+                spacing: 12
 
-                RowLayout {
-                    anchors.fill: parent
-                    spacing: 12
-
-                    Map {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Layout.minimumWidth: 900
-                        selectedStand: selectedStand
-                    }
-
-                    ListStand {
-                        Layout.preferredWidth: 320
-                        Layout.fillHeight: true
-                        selectedStand: selectedStand
-                    }
+                Map {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    Layout.minimumWidth: 900
+                    selectedStand: selectedStand
                 }
 
-                property var selectedStand: null
+                ListStand {
+                    Layout.preferredWidth: 320
+                    Layout.fillHeight: true
+                    selectedStand: selectedStand
+                }
             }
 
-            DrawingCanvasView {
-                id: drawingView
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+            property var selectedStand: null
+        }
+
+        StackLayout {
+            id: drawingStackLayout
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            visible: rootWindow.currentDrawingIndex >= 0
+            currentIndex: rootWindow.currentDrawingIndex
+
+            Repeater {
+                model: rootWindow.openStands
+
+                DrawingCanvasView {
+                    id: drawingCanvas
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    onSavePlanRequested: {
+                        canvasItem.savePlan(modelData.name)
+                        planData.notifyStandImageChanged(modelData.name)
+                        rootWindow.savePlanRequested()
+                    }
+                }
             }
         }
     }

@@ -6,6 +6,7 @@
 */
 
 #include "Stand.hpp"
+#include <QFile>
 
 QString& Stand::getName() {
     return _name;
@@ -58,4 +59,8 @@ bool Stand::isOnMap() const {
 void Stand::setOnMap(const bool onMap) {
     _onMap = onMap;
     emit onMapChanged();
+}
+
+bool Stand::hasImage() const {
+    return QFile::exists("plans/" + _name + ".svg");
 }

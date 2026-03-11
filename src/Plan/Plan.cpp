@@ -37,3 +37,12 @@ void Plan::addStand(const std::shared_ptr<Stand>& stand) {
 QList<QObject*> Plan::getStandsForQml() {
     return _standsForQml;
 }
+
+void Plan::notifyStandImageChanged(const QString& standName) {
+    for (const auto& stand : _stands) {
+        if (stand->getName() == standName) {
+            emit stand->hasImageChanged();
+            break;
+        }
+    }
+}
