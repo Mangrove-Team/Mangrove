@@ -38,6 +38,12 @@ QList<QObject*> Plan::getStandsForQml() {
     return _standsForQml;
 }
 
+void Plan::addStandFromQml(const QString& name) {
+    const auto stand = std::make_shared<Stand>();
+    stand->setName(name);
+    addStand(stand);
+}
+
 void Plan::notifyStandImageChanged(const QString& standName) {
     for (const auto& stand : _stands) {
         if (stand->getName() == standName) {
