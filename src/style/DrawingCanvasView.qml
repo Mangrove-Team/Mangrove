@@ -164,27 +164,36 @@ Item {
 
             Item { Layout.fillWidth: true }
         }
-    }
+        }
 
-        DrawingCanvasBackend {
-            id: canvas
+        Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            penColor: "black"
-            penWidth: 2
-            brushMode: DrawingCanvasBackend.Freehand
+            color: "white"
+            border.color: "black"
+            border.width: 2
+            radius: 4
 
-            onRectangleDrawn: function(width, height) {
-                rectangleDimensionMenu.rectangleWidth = width
-                rectangleDimensionMenu.rectangleHeight = height
-                rectangleDimensionMenu.duplicateRect = 1
-                rectangleDimensionMenu.spacing = 20
+            DrawingCanvasBackend {
+                id: canvas
+                anchors.fill: parent
+                anchors.margins: 0
+                penColor: "black"
+                penWidth: 2
+                brushMode: DrawingCanvasBackend.Freehand
 
-                widthInput.text = width.toFixed(1)
-                heightInput.text = height.toFixed(1)
-                spaceInput.text = "20.0"
-                duplicateInput.text = "1"
-                rectangleDimensionMenu.visible = true
+                onRectangleDrawn: function(width, height) {
+                    rectangleDimensionMenu.rectangleWidth = width
+                    rectangleDimensionMenu.rectangleHeight = height
+                    rectangleDimensionMenu.duplicateRect = 1
+                    rectangleDimensionMenu.spacing = 20
+
+                    widthInput.text = width.toFixed(1)
+                    heightInput.text = height.toFixed(1)
+                    spaceInput.text = "20.0"
+                    duplicateInput.text = "1"
+                    rectangleDimensionMenu.visible = true
+                }
             }
         }
 
