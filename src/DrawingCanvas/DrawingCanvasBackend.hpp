@@ -8,17 +8,9 @@
 #ifndef MANGROVE_DRAWING_CANVAS_BACKEND_HPP
 #define MANGROVE_DRAWING_CANVAS_BACKEND_HPP
 
-#include <QObject>
-#include <QQuickItem>
-#include <QtQuick/QQuickPaintedItem>
-#include <QColor>
-#include <QPainter>
 #include <QVector>
-#include <QPoint>
-#include <QPen>
-#include <QMouseEvent>
-#include <QHoverEvent>
-#include <cmath>
+#include <QPainter>
+#include <QtQuick/QQuickPaintedItem>
 
 /**
  * @class DrawingCanvasBackend
@@ -66,7 +58,7 @@ public:
      * @brief Gets the current pen color
      * @return Current pen color
      */
-    QColor penColor() const { return _pen.color(); }
+    [[nodiscard]] QColor penColor() const { return _pen.color(); }
 
     /**
      * @brief Sets the pen color for new drawings
@@ -78,7 +70,7 @@ public:
      * @brief Gets the current pen width
      * @return Current pen width in pixels
      */
-    int penWidth() const { return _pen.width(); }
+    [[nodiscard]] int penWidth() const { return _pen.width(); }
 
     /**
      * @brief Sets the pen width for new drawings
@@ -90,7 +82,7 @@ public:
      * @brief Gets the current brush mode
      * @return Current brush mode
      */
-    BrushMode brushMode() const { return _brushMode; }
+    [[nodiscard]] BrushMode brushMode() const { return _brushMode; }
 
     /**
      * @brief Sets the brush mode (Freehand or StraightLine)
