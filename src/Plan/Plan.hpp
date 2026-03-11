@@ -13,8 +13,6 @@
     #include "Stand.hpp"
 
 class Plan : public QObject {
-
-    // The Q_OBJECT macro is necessary for any class that defines signals, slots, or properties and enables the meta-object features of Qt.
     Q_OBJECT
     Q_PROPERTY(QList<QObject*> stands READ getStandsForQml NOTIFY standsChanged)
     Q_PROPERTY(float totalWatt READ getTotalWatt NOTIFY totalWattChanged)
@@ -43,10 +41,11 @@ class Plan : public QObject {
 template<typename T>
 QList<std::shared_ptr<Stand>> Plan::getStandsByConstraint() const {
     QList<std::shared_ptr<Stand>> stands;
+    const auto type = std::type_index(typeid(T));
 
     stands.reserve(_stands.size());
     for (const auto& stand : _stands)
-        if (stand->getConstraints().contains(typeid(T)))
+        if (stand->getConstraints().contains(type))
             stands.push_back(stand);
     stands.squeeze();
     return stands;
