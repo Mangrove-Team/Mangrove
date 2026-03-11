@@ -13,7 +13,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml Svg)
 include(InstallRequiredSystemLibraries)
 qt_policy(SET QTP0001 NEW)
 qt_policy(SET QTP0004 NEW)
@@ -30,7 +30,7 @@ add_executable(Mangrove
         src/DrawingCanvas/DrawingCanvasBackend.hpp
 )
 
-target_link_libraries(Mangrove PRIVATE Qt6::Quick)
+target_link_libraries(Mangrove PRIVATE Qt6::Quick Qt6::Svg)
 
 qt_add_qml_module(Mangrove
         URI "MangroveApp"

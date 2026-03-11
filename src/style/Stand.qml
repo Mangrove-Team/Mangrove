@@ -9,8 +9,18 @@ Rectangle {
 
     property real imageVersion: Date.now()
 
-    width: displayMode === "list" ? 280 : 150
-    height: displayMode === "list" ? 50 : 150
+    width: {
+        if (displayMode === "list") return 280;
+        if (displayMode === "map" && standImage.status === Image.Ready) return standImage.implicitWidth;
+        return 150;
+    }
+
+    height: {
+        if (displayMode === "list") return 50;
+        if (displayMode === "map" && standImage.status === Image.Ready) return standImage.implicitHeight;
+        return 150;
+    }
+
     radius: displayMode === "list" ? 8 : 20
 
     color: {
@@ -28,6 +38,7 @@ Rectangle {
 
     Connections {
         target: standData
+        ignoreUnknownSignals: true
         function onHasImageChanged() {
             ui.imageVersion = Date.now()
         }
@@ -36,7 +47,7 @@ Rectangle {
     Image {
         id: standImage
         anchors.fill: parent
-        source: (standData && displayMode === "map" && standData.hasImage) ? "file:plans/" + standData.name + ".png?v=" + ui.imageVersion : ""
+        source: (standData && displayMode === "map" && standData.hasImage) ? "file:plans/" + standData.name + ".svg?v=" + ui.imageVersion : ""
         fillMode: Image.PreserveAspectFit
         visible: status === Image.Ready && displayMode === "map"
         asynchronous: true

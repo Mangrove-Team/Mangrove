@@ -62,5 +62,5 @@ void Stand::setOnMap(const bool onMap) {
 }
 
 bool Stand::hasImage() const {
-    return QFile::exists("plans/" + _name + ".png");
+    return QFile::exists("plans/" + _name + ".svg");
 }

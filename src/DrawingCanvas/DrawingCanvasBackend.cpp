@@ -13,6 +13,7 @@
 #include <QtQuick/QQuickPaintedItem>
 #include <QDir>
 #include <iostream>
+#include <QSvgGenerator>
 
 DrawingCanvasBackend::DrawingCanvasBackend(QQuickItem *parent)
     : QQuickPaintedItem(parent), _isDrawing(false), _brushMode(BrushMode::Freehand) {
@@ -373,7 +374,11 @@ void DrawingCanvasBackend::savePlan(const QString& filePath) {
     float xmax = std::numeric_limits<float>::lowest();
     float ymin = std::numeric_limits<float>::max();
     float ymax = std::numeric_limits<float>::lowest();
-    for (const auto& line : _lines) {
+
+    QVector<Line> allLines = _lines;
+    allLines.append(_duplicateLines);
+
+    for (const auto& line : allLines) {
         for (auto point : line.points) {
             if (point.x() < xmin)
                 xmin = point.x();
@@ -385,16 +390,24 @@ void DrawingCanvasBackend::savePlan(const QString& filePath) {
                 ymax = point.y();
         }
     }
-    QImage image({static_cast<int>(xmax - xmin + 40), static_cast<int>(ymax - ymin + 40)}, QImage::Format_ARGB32);
-    image.fill(Qt::transparent);
 
-    QPainter painter(&image);
+    if (xmin > xmax || ymin > ymax) {
+        xmin = 0; xmax = 100; ymin = 0; ymax = 100;
+    }
+
+    int width = static_cast<int>(xmax - xmin + 40);
+    int height = static_cast<int>(ymax - ymin + 40);
+
+    QSvgGenerator generator;
+    generator.setFileName("plans/" + filePath + ".svg");
+    generator.setSize(QSize(width, height));
+    generator.setViewBox(QRect(0, 0, width, height));
+    generator.setResolution(96);
+
+    QPainter painter;
+    painter.begin(&generator);
     painter.translate(-xmin + 20, -ymin + 20);
     paint(&painter);
     painter.end();
-
-    if (!image.save("plans/" + filePath + ".png")) {
-        std::cerr << "Failed to save image to " << filePath.toStdString() << std::endl;
-    }
 }
 
