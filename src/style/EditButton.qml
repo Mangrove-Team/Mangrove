@@ -23,22 +23,6 @@ Button {
     }
 
     onClicked: {
-        let alreadyOpen = false
-        for (let i = 0; i < rootWindow.openStands.length; i++) {
-            if (rootWindow.openStands[i] === standData) {
-                alreadyOpen = true
-                rootWindow.currentDrawingIndex = i
-                break
-            }
-        }
-
-        if (!alreadyOpen) {
-            let newOpenStands = rootWindow.openStands.slice()
-            newOpenStands.push(standData)
-            rootWindow.openStands = newOpenStands
-            rootWindow.currentDrawingIndex = newOpenStands.length - 1
-        }
-
-        rootWindow.currentView = 1
+        rootWindow.drawModeEnabled = true
     }
 }

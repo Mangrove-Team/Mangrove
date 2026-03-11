@@ -1,207 +1,33 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Dialogs
 import Mangrove
 Item {
     id: root
     property alias canvasItem: canvas
+    property alias canvasEnabled: canvas.enabled
+    property alias penColor: canvas.penColor
+    property alias penWidth: canvas.penWidth
+    property alias brushMode: canvas.brushMode
 
-    signal savePlanRequested()
-
-    ColumnLayout {
+    DrawingCanvasBackend {
+        id: canvas
         anchors.fill: parent
-        spacing: 8
+        penColor: "black"
+        penWidth: 2
+        brushMode: DrawingCanvasBackend.Freehand
 
-        Rectangle {
-        Layout.fillWidth: true
-        Layout.preferredHeight: 60
-        color: "#f0f0f0"
-        radius: 8
+        onRectangleDrawn: function(width, height) {
+            rectangleDimensionMenu.rectangleWidth = width
+            rectangleDimensionMenu.rectangleHeight = height
+            rectangleDimensionMenu.duplicateRect = 1
+            rectangleDimensionMenu.spacing = 20
 
-        RowLayout {
-            anchors.fill: parent
-            anchors.leftMargin: 10
-            anchors.rightMargin: 10
-            spacing: 10
-
-            Button {
-                text: "Clear Canvas"
-                Layout.minimumWidth: 120
-                onClicked: canvas.clearCanvas()
-            }
-
-            Item { width: 20 }
-
-            Label { text: "Pen Width:" }
-
-            Button {
-                text: "-"
-                implicitWidth: 30
-                implicitHeight: 30
-                enabled: penWidthSlider.value > penWidthSlider.from
-                onClicked: penWidthSlider.value = Math.max(penWidthSlider.from, penWidthSlider.value - 2)
-            }
-
-            Label {
-                text: Math.round(penWidthSlider.value)
-                Layout.minimumWidth: 30
-                horizontalAlignment: Text.AlignHCenter
-            }
-
-            Button {
-                text: "+"
-                implicitWidth: 30
-                implicitHeight: 30
-                enabled: penWidthSlider.value < penWidthSlider.to
-                onClicked: penWidthSlider.value = Math.min(penWidthSlider.to, penWidthSlider.value + 2)
-            }
-
-            Slider {
-                id: penWidthSlider
-                from: 1
-                to: 20
-                value: 2
-                stepSize: 1
-                visible: false
-                onValueChanged: canvas.penWidth = Math.round(value)
-            }
-
-            Item { width: 20 }
-
-            Label { text: "Brush:" }
-
-            Button {
-                id: freehandButton
-                icon.source: "../../icons/freehand.svg"
-                checkable: true
-                checked: true
-                implicitWidth: 30
-                implicitHeight: 30
-                onClicked: {
-                    if (checked) {
-                        straightLineButton.checked = false
-                        rectangleButton.checked = false
-                        canvas.brushMode = DrawingCanvasBackend.Freehand
-                    } else {
-                        checked = true
-                    }
-                }
-            }
-
-            Button {
-                id: straightLineButton
-                icon.source: "../../icons/slash.svg"
-                checkable: true
-                implicitWidth: 30
-                implicitHeight: 30
-                onClicked: {
-                    if (checked) {
-                        freehandButton.checked = false
-                        rectangleButton.checked = false
-                        canvas.brushMode = DrawingCanvasBackend.StraightLine
-                    } else {
-                        checked = true
-                    }
-                }
-            }
-
-            Button {
-                id: rectangleButton
-                icon.source: "../../icons/square.svg"
-                checkable: true
-                implicitWidth: 30
-                implicitHeight: 30
-                onClicked: {
-                    if (checked) {
-                        freehandButton.checked = false
-                        straightLineButton.checked = false
-                        canvas.brushMode = DrawingCanvasBackend.Rectangle
-                    } else {
-                        checked = true
-                    }
-                }
-            }
-
-            Item { width: 20 }
-
-            Button {
-                id: colorButton
-                text: "Choose Color"
-                Layout.minimumWidth: 120
-                background: Rectangle {
-                    color: canvas.penColor
-                    border.color: "#555"
-                    border.width: 2
-                    radius: 4
-                }
-                contentItem: Text {
-                    text: colorButton.text
-                    color: {
-                        const r = canvas.penColor.r
-                        const g = canvas.penColor.g
-                        const b = canvas.penColor.b
-                        const lightness = 0.299 * r + 0.587 * g + 0.114 * b
-                        return lightness > 0.5 ? "black" : "white"
-                    }
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-                onClicked: colorDialog.open()
-            }
-
-            Button {
-                id: saveButton
-                text: "Save Plan"
-                Layout.minimumWidth: 120
-                background: Rectangle {
-                    color: "#2ecc71"
-                    border.width: 2
-                    radius: 4
-                }
-                onClicked: savePlanRequested()
-            }
-
-            Item { Layout.fillWidth: true }
-        }
-        }
-
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            color: "white"
-            border.color: "black"
-            border.width: 2
-            radius: 4
-
-            DrawingCanvasBackend {
-                id: canvas
-                anchors.fill: parent
-                anchors.margins: 0
-                penColor: "black"
-                penWidth: 2
-                brushMode: DrawingCanvasBackend.Freehand
-
-                onRectangleDrawn: function(width, height) {
-                    rectangleDimensionMenu.rectangleWidth = width
-                    rectangleDimensionMenu.rectangleHeight = height
-                    rectangleDimensionMenu.duplicateRect = 1
-                    rectangleDimensionMenu.spacing = 20
-
-                    widthInput.text = width.toFixed(1)
-                    heightInput.text = height.toFixed(1)
-                    spaceInput.text = "20.0"
-                    duplicateInput.text = "1"
-                    rectangleDimensionMenu.visible = true
-                }
-            }
-        }
-
-        ColorDialog {
-            id: colorDialog
-            title: "Choose Pen Color"
-            selectedColor: canvas.penColor
-            onAccepted: canvas.penColor = selectedColor
+            widthInput.text = width.toFixed(1)
+            heightInput.text = height.toFixed(1)
+            spaceInput.text = "20.0"
+            duplicateInput.text = "1"
+            rectangleDimensionMenu.visible = true
         }
     }
 
@@ -293,9 +119,6 @@ Item {
                             accumulatedDelta += wheel.angleDelta.y
 
                             if (Math.abs(accumulatedDelta) >= threshold) {
-                                let steps = Math.floor(Math.abs(accumulatedDelta) / threshold)
-                                let direction = accumulatedDelta > 0 ? -1 : 1
-
                                 let widthModifier = 5
                                 if (wheel.modifiers & Qt.ControlModifier) {
                                     widthModifier = 0.1
@@ -368,9 +191,6 @@ Item {
                             accumulatedDelta += wheel.angleDelta.y
 
                             if (Math.abs(accumulatedDelta) >= threshold) {
-                                let steps = Math.floor(Math.abs(accumulatedDelta) / threshold)
-                                let direction = accumulatedDelta > 0 ? -1 : 1
-
                                 let heightModifier = 5
                                 if (wheel.modifiers & Qt.ControlModifier) {
                                     heightModifier = 0.1
@@ -442,8 +262,6 @@ Item {
                             accumulatedDelta += wheel.angleDelta.y
 
                             if (Math.abs(accumulatedDelta) >= threshold) {
-                                let steps = Math.floor(Math.abs(accumulatedDelta) / threshold)
-                                let direction = accumulatedDelta > 0 ? -1 : 1
                                 let duplicateModifier = 1
                                 if (wheel.modifiers & Qt.ControlModifier) {
                                     duplicateModifier = 5
