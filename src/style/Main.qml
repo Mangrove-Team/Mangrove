@@ -32,6 +32,7 @@ Window {
             } else if (currentDrawingIndex >= newOpenStands.length) {
                 currentDrawingIndex = newOpenStands.length - 1
             }
+
         }
     }
 
@@ -152,6 +153,7 @@ Window {
 
                     onSavePlanRequested: {
                         canvasItem.savePlan(modelData.name)
+                        planData.notifyStandImageChanged(modelData.name)
                         rootWindow.savePlanRequested()
                     }
                 }
