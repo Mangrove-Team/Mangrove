@@ -64,11 +64,6 @@ Popup {
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
             }
-            EditButton {
-                onClicked: {
-                    root.close();
-                }
-            }
         }
 
         Item { Layout.fillHeight: true }

@@ -12,13 +12,13 @@ Rectangle {
     width: {
         if (displayMode === "list") return 280;
         if (displayMode === "map" && standImage.status === Image.Ready) return standImage.implicitWidth;
-        return 150;
+        return 40;
     }
 
     height: {
         if (displayMode === "list") return 50;
         if (displayMode === "map" && standImage.status === Image.Ready) return standImage.implicitHeight;
-        return 150;
+        return 40;
     }
 
     radius: displayMode === "list" ? 8 : 20
@@ -27,7 +27,7 @@ Rectangle {
         if (!standData) return "#a3d4aa"
         if (displayMode === "map") {
             if (standImage.status === Image.Ready) return "transparent"
-            return (selectedStand === standData) ? "#f1c40f" : "#e74c3c"
+            return (selectedStand === standData) ? "#f1c40f" : "#a3d4aa"
         }
         return standData.onMap ? "#43a44a" : "#a3d4aa"
     }
@@ -59,7 +59,7 @@ Rectangle {
         visible: !(displayMode === "map" && standImage.status === Image.Ready)
         text: {
             if (!standData) return ""
-            return displayMode === "list" ? standData.name : standData.name[0].toUpperCase()
+            return displayMode === "list" ? standData.name : standData.name[standData.name.length - 1]
         }
         color: "black"
         font.bold: displayMode === "map"

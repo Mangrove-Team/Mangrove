@@ -12,21 +12,55 @@ Rectangle {
     property bool isDraggingAny: false
     property var selectedStand: null
 
-    Button {
-        text: "Add stand"
-        anchors.horizontalCenter: parent.horizontalCenter
+    Item {
+        id: header
+        width: parent.width
+        height: 60
         anchors.top: parent.top
-        anchors.topMargin: 10
-        onClicked: {
-            const nextIndex = planData.stands.length + 1
-            planData.addStandFromQml("Stand " + nextIndex)
+        z: 2
+
+        Text {
+            id: titleText
+            text: "Liste des Exposants"
+            color: "black"
+            font.bold: true
+            font.pixelSize: 18
+
+            anchors.left: parent.left
+            anchors.leftMargin: 20
+            anchors.verticalCenter: parent.verticalCenter
         }
+
+        Button {
+            text: "Ajouter"
+
+            anchors.right: parent.right
+            anchors.rightMargin: 15
+            anchors.verticalCenter: parent.verticalCenter
+
+            width: 80
+            height: 35
+
+            onClicked: {
+                const nextIndex = planData.stands.length + 1
+                planData.addStandFromQml("Exposant " + nextIndex)
+            }
+        }
+    }
+
+    Rectangle {
+        id: separator
+        width: parent.width - 40
+        height: 1
+        color: "#dcdde1"
+        anchors.top: header.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
     }
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 15
-        Text { text: "Liste des Stands"; color: "black"; Layout.alignment: Qt.AlignHCenter }
+        anchors.margins: 10
+        anchors.topMargin: 70
 
         ListView {
             id: listView
@@ -67,8 +101,8 @@ Rectangle {
                     hoverEnabled: !sidebar.isDraggingAny
 
                     onPressed: {
-                        proxy.x = mouseX - 20;
-                        proxy.y = mouseY - 20;
+                        proxy.x = mouseX - 10;
+                        proxy.y = mouseY - 10;
                         proxy.opacity = 0.8;
                         sidebar.isDraggingAny = true;
                     }
