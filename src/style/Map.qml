@@ -77,12 +77,6 @@ Rectangle {
                             radius: 4
                         }
                     }
-
-                    EditButton {
-                        onClicked: {
-                            actionMenu.close();
-                        }
-                    }
                 }
             }
 
@@ -107,8 +101,8 @@ Rectangle {
         keys: ["stand"]
         onDropped: (drop) => {
             let data = drop.source.itemData;
-            data.x = drop.x - 75;
-            data.y = drop.y - 75;
+            data.x = drop.x - 10;
+            data.y = drop.y - 10;
             data.onMap = true;
             mapArea.selectedStand = data;
         }
