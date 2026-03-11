@@ -27,6 +27,8 @@ Rectangle {
         if (!standData) return "#a3d4aa"
         if (displayMode === "map") {
             if (standImage.status === Image.Ready) return "transparent"
+            if (standData.name === "Exposant 5" && standData.onMap) return "#e67e22"
+            if (standData.name === "Exposant 6" && standData.onMap) return "#e74c3c"
             return (selectedStand === standData) ? "#f1c40f" : "#a3d4aa"
         }
         return standData.onMap ? "#43a44a" : "#a3d4aa"
