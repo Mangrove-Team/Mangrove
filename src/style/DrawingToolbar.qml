@@ -98,7 +98,7 @@ Rectangle {
 
         Button {
             id: freehandButton
-            icon.source: "../../icons/freehand.svg"
+            icon.source: "qrc:/icons/freehand.svg"
             checkable: true; checked: true
             implicitWidth: 30; implicitHeight: 30
             enabled: toolbar.drawModeEnabled
@@ -115,7 +115,7 @@ Rectangle {
 
         Button {
             id: straightLineButton
-            icon.source: "../../icons/slash.svg"
+            icon.source: "qrc:/icons/slash.svg"
             checkable: true
             implicitWidth: 30
             implicitHeight: 30
@@ -133,7 +133,7 @@ Rectangle {
 
         Button {
             id: rectangleButton
-            icon.source: "../../icons/square.svg"
+            icon.source: "qrc:/icons/square.svg"
             checkable: true
             implicitWidth: 30
             implicitHeight: 30

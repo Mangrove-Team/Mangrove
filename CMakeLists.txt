@@ -19,6 +19,7 @@ qt_policy(SET QTP0001 NEW)
 qt_policy(SET QTP0004 NEW)
 
 add_executable(Mangrove
+        resources.qrc
         src/main.cpp
         src/Plan/Plan.cpp
         src/Stand/Stand.cpp
