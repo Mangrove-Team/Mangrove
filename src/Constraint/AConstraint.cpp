@@ -27,7 +27,7 @@ std::string& AConstraint::getName() {
 }
 
 std::type_index AConstraint::getType() const {
-    return _type;
+    return typeid(*this);
 }
 
 bool AConstraint::registerType(const QString& id, Factory factory) {

@@ -29,7 +29,7 @@ class Stand : public QObject {
 
         [[nodiscard]] QString& getName();
         [[nodiscard]] QStringList getConstraintsForQml() const;
-        static [[nodiscard]] QStringList getAvailableConstraintsForQml() ;
+        [[nodiscard]] static QStringList getAvailableConstraintsForQml() ;
         [[nodiscard]] std::map<std::type_index, std::shared_ptr<AConstraint>>& getConstraints();
         template<typename T>
         [[nodiscard]] std::shared_ptr<AConstraint> getConstraint() const;
