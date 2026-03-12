@@ -362,7 +362,7 @@ Item {
                 spacing: 8
                 Layout.fillWidth: true
                 Button {
-                    text: "Apply"
+                    text: "Appliquer"
                     Layout.fillWidth: true
                     onClicked: {
                         canvas.updateLastRectangleDimensions(
@@ -374,7 +374,7 @@ Item {
                     }
                 }
                 Button {
-                    text: "Close"
+                    text: "Fermer"
                     Layout.fillWidth: true
                     onClicked: {
                         rectangleDimensionMenu.visible = false
