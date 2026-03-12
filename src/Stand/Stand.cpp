@@ -5,8 +5,9 @@
 // Copyright (c) Mangrove. All rights reserved.
 */
 
-#include "Stand.hpp"
 #include <QFile>
+
+#include "Stand.hpp"
 
 QString& Stand::getName() {
     return _name;
@@ -18,6 +19,10 @@ QStringList Stand::getConstraintsForQml() const {
     for (const auto &val: _constraints | std::views::values)
         constraints.append(QString::fromStdString(val->getName()));
     return constraints;
+}
+
+QStringList Stand::getAvailableConstraintsForQml() {
+    return AConstraint::registeredConstraintIds();
 }
 
 std::map<std::type_index, std::shared_ptr<AConstraint>>& Stand::getConstraints() {
@@ -63,4 +68,12 @@ void Stand::setOnMap(const bool onMap) {
 
 bool Stand::hasImage() const {
     return QFile::exists("plans/" + _name + ".svg");
+}
+
+void Stand::addConstraintFromQml(const QString& type) {
+    const std::shared_ptr<AConstraint> constraint = AConstraint::createFromId(type);
+    if (!constraint)
+        return;
+    if (const auto [_, inserted] = _constraints.emplace(constraint->getType(), constraint); inserted)
+        emit constraintsChanged();
 }

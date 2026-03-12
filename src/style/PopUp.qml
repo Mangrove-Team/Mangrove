@@ -51,18 +51,39 @@ Popup {
                 color: "white"; font.bold: true
             }
 
-            Text { text: "Puissance :"; color: "black"; font.pixelSize: 13 }
-            Text {
-                text: standData ? "1500 Watts" : "0 W"
-                color: "black"
-            }
-
             Text { text: "Contraintes :"; color: "black"; font.pixelSize: 13 }
             Text {
                 text: (standData && standData.constraints.length > 0) ? standData.constraints.join(", ") : "Aucune"
                 color: "black"
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
+            }
+
+            Button {
+                id: addConstraintButton
+                text: "Ajouter une contrainte"
+                enabled: standData !== null
+                onClicked: constraintMenu.open()
+            }
+        }
+
+        Menu {
+            id: constraintMenu
+            x: addConstraintButton.x
+            y: addConstraintButton.y + addConstraintButton.height
+
+            Instantiator {
+                model: standData ? standData.availableConstraints : []
+
+                delegate: MenuItem {
+                    required property string modelData
+                    text: modelData
+                    enabled: standData && standData.constraints.indexOf(modelData) === -1
+                    onTriggered: standData.addConstraintFromQml(modelData)
+                }
+
+                onObjectAdded: (index, object) => constraintMenu.insertItem(index, object)
+                onObjectRemoved: (index, object) => constraintMenu.removeItem(object)
             }
         }
 

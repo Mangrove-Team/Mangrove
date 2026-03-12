@@ -12,7 +12,7 @@
 
 class Electricity : public AConstraint {
 public:
-    explicit Electricity(float watt);
+    explicit Electricity(float watt = 10.0f);
 
     [[nodiscard]] float getWatt() const;
 private:

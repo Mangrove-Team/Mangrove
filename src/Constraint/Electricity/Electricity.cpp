@@ -7,6 +7,12 @@
 
 #include "Electricity.hpp"
 
+namespace {
+[[maybe_unused]] const bool electricityRegistered = AConstraint::registerType("Electricity", [] {
+    return std::make_shared<Electricity>();
+});
+}
+
 Electricity::Electricity(const float watt) {
     _watt = watt;
     _name = "Electricity";
