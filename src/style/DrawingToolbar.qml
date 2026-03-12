@@ -25,7 +25,7 @@ Rectangle {
 
         Button {
             id: drawModeButton
-            text: toolbar.drawModeEnabled ? "Draw: ON" : "Draw: OFF"
+            text: toolbar.drawModeEnabled ? "Dessiner: ON" : "Dessiner: OFF"
             checkable: true
             checked: toolbar.drawModeEnabled
             Layout.minimumWidth: 110
@@ -45,7 +45,7 @@ Rectangle {
         }
 
         Button {
-            text: "Clear"
+            text: "Effacer"
             Layout.minimumWidth: 80
             enabled: toolbar.drawModeEnabled
             onClicked: toolbar.clearRequested()
@@ -54,7 +54,7 @@ Rectangle {
         Item { width: 10 }
 
         Label {
-            text: "Pen Width:"
+            text: "Taille du pinceau:"
             opacity: toolbar.drawModeEnabled ? 1 : 0.4
         }
 
@@ -92,7 +92,7 @@ Rectangle {
         Item { width: 10 }
 
         Label {
-            text: "Brush:"
+            text: "Pinceau:"
             opacity: toolbar.drawModeEnabled ? 1 : 0.4
         }
 
@@ -151,7 +151,7 @@ Rectangle {
 
         Button {
             id: colorButton
-            text: "Color"
+            text: "Couleur"
             Layout.minimumWidth: 80
             enabled: toolbar.drawModeEnabled
             background: Rectangle {
