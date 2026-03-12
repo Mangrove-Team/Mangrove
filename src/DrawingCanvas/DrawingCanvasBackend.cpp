@@ -64,7 +64,7 @@ void DrawingCanvasBackend::paint(QPainter *painter) {
     QVector<Line> allLines = _lines;
     allLines.append(_duplicateLines);
     for (const auto& line : allLines) {
-        QPen& linePen = _pen;
+        QPen linePen = _pen;
         linePen.setWidth(line.size);
         linePen.setColor(line.color);
         drawLineSegments(painter, line.points, linePen);
@@ -154,7 +154,9 @@ void DrawingCanvasBackend::applyRectangleDimensions(const qreal width, const qre
     if (width <= 0 || height <= 0 || duplicate < 1)
         return;
 
-    Line& baseLine = _lines.last();
+    Line baseLine = _lines.last();
+    if (baseLine.points.size() != 5)
+        return;
 
     const qreal minX = std::min(baseLine.points[0].x(), baseLine.points[2].x());
     const qreal minY = std::min(baseLine.points[0].y(), baseLine.points[2].y());
