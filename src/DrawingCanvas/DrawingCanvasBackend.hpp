@@ -123,6 +123,10 @@ public:
      */
     Q_INVOKABLE void applyRectangleDimensions(qreal width, qreal height, qint32 duplicate = 1, qreal offsetX = 20);
 
+    /**
+     * @brief Saves the current canvas content to an image file
+     * @param filePath Path to save the image
+     */
     Q_INVOKABLE void savePlan(const QString& filePath);
 
 signals:
