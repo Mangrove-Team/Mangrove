@@ -6,6 +6,7 @@
 */
 
 #include <QFile>
+#include <QVariantMap>
 
 #include "Stand.hpp"
 
@@ -19,6 +20,22 @@ QStringList Stand::getConstraintsForQml() const {
     for (const auto &val: _constraints | std::views::values)
         constraints.append(QString::fromStdString(val->getName()));
     return constraints;
+}
+
+QVariantList Stand::getConstraintCardsForQml() const {
+    QVariantList cards;
+    cards.reserve(static_cast<qsizetype>(_constraints.size()));
+
+    for (const auto& constraint : _constraints | std::views::values) {
+        QVariantMap card;
+        const QString name = QString::fromStdString(constraint->getName());
+
+        card.insert("name", name);
+        card.insert("fields", constraint->getFieldsForQml());
+
+        cards.append(card);
+    }
+    return cards;
 }
 
 QStringList Stand::getAvailableConstraintsForQml() {
@@ -76,4 +93,16 @@ void Stand::addConstraintFromQml(const QString& type) {
         return;
     if (const auto [_, inserted] = _constraints.emplace(constraint->getType(), constraint); inserted)
         emit constraintsChanged();
+}
+
+bool Stand::setFieldFromQml(const QString& constraintName, const QString& fieldName, const QVariant& value) {
+    for (const auto& constraint : _constraints | std::views::values) {
+        if (const QString name = QString::fromStdString(constraint->getName()); name.compare(constraintName, Qt::CaseInsensitive) != 0)
+            continue;
+        if (!constraint->setFieldFromQml(fieldName, value))
+            return false;
+        emit constraintsChanged();
+        return true;
+    }
+    return false;
 }

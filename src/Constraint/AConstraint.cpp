@@ -30,12 +30,27 @@ std::type_index AConstraint::getType() const {
     return typeid(*this);
 }
 
-bool AConstraint::registerType(const QString& id, Factory factory) {
-    const QString normalizedId = normalizeConstraintId(id);
-    const QString displayId = id.trimmed();
-    if (normalizedId.isEmpty() || displayId.isEmpty() || !factory)
+QVariantList AConstraint::getFieldsForQml() const {
+    return {};
+}
+
+bool AConstraint::setFieldFromQml(const QString& fieldName, const QVariant& value) {
+    Q_UNUSED(fieldName)
+    Q_UNUSED(value)
+    return false;
+}
+
+bool AConstraint::registerType(Factory factory) {
+    if (!factory)
         return false;
-    constraintRegistry().insert(normalizedId, RegisteredConstraint{displayId, std::move(factory)});
+    const auto instance = factory();
+    if (!instance)
+        return false;
+    const QString displayName = QString::fromStdString(instance->getName());
+    const QString normalizedId = normalizeConstraintId(displayName);
+    if (normalizedId.isEmpty())
+        return false;
+    constraintRegistry().insert(normalizedId, RegisteredConstraint{displayName, std::move(factory)});
     return true;
 }
 

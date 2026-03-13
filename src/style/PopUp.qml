@@ -51,19 +51,90 @@ Popup {
                 color: "white"; font.bold: true
             }
 
-            Text { text: "Contraintes :"; color: "black"; font.pixelSize: 13 }
-            Text {
-                text: (standData && standData.constraints.length > 0) ? standData.constraints.join(", ") : "Aucune"
-                color: "black"
-                Layout.fillWidth: true
-                wrapMode: Text.WordWrap
-            }
-
             Button {
                 id: addConstraintButton
                 text: "Ajouter une contrainte"
                 enabled: standData !== null
                 onClicked: constraintMenu.open()
+            }
+        }
+
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 8
+
+            Component { id: doubleValidatorComponent; DoubleValidator {} }
+            Component { id: intValidatorComponent;    IntValidator    {} }
+
+            Text {
+                text: "Cartes des contraintes"
+                color: "black"
+                font.bold: true
+                visible: standData && standData.constraintCards.length > 0
+            }
+
+            Repeater {
+                model: standData ? standData.constraintCards : []
+
+                delegate: Rectangle {
+                    required property var modelData
+                    property var cardData: modelData
+                    Layout.fillWidth: true
+                    radius: 8
+                    border.width: 1
+                    border.color: "#43a44a"
+                    color: "#dff2e2"
+                    implicitHeight: cardContent.implicitHeight + 16
+
+                    ColumnLayout {
+                        id: cardContent
+                        anchors.fill: parent
+                        anchors.margins: 8
+                        spacing: 8
+
+                        Text {
+                            text: cardData.name
+                            color: "black"
+                            font.bold: true
+                        }
+
+                        Repeater {
+                            model: cardData.fields
+
+                            delegate: RowLayout {
+                                required property var modelData
+                                spacing: 6
+                                visible: modelData.type === "number" || modelData.type === "string" || modelData.type === "int"
+
+                                Text {
+                                    text: modelData.label
+                                    color: "black"
+                                }
+
+                                TextField {
+                                    text: String(modelData.value)
+                                    inputMethodHints: modelData.type === "number" || modelData.type === "int"
+                                        ? Qt.ImhFormattedNumbersOnly
+                                        : Qt.ImhNone
+                                    validator: modelData.type === "number"
+                                        ? doubleValidatorComponent.createObject(null, { bottom: modelData.min !== undefined ? Number(modelData.min) : -1e9 })
+                                        : modelData.type === "int"
+                                            ? intValidatorComponent.createObject(null, { bottom: modelData.min !== undefined ? parseInt(modelData.min) : -2147483647 })
+                                            : null
+                                    onEditingFinished: {
+                                        if (!standData || text.length === 0)
+                                            return;
+                                        let val;
+                                        if (modelData.type === "number")      val = Number(text);
+                                        else if (modelData.type === "int")    val = parseInt(text);
+                                        else                                  val = text;
+                                        standData.setFieldFromQml(cardData.name, modelData.name, val);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 

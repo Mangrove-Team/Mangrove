@@ -20,6 +20,7 @@ class Stand : public QObject {
     Q_PROPERTY(float x READ getX WRITE setX NOTIFY xChanged)
     Q_PROPERTY(float y READ getY WRITE setY NOTIFY yChanged)
     Q_PROPERTY(QStringList constraints READ getConstraintsForQml NOTIFY constraintsChanged)
+    Q_PROPERTY(QVariantList constraintCards READ getConstraintCardsForQml NOTIFY constraintsChanged)
     Q_PROPERTY(QStringList availableConstraints READ getAvailableConstraintsForQml CONSTANT)
     Q_PROPERTY(bool onMap READ isOnMap WRITE setOnMap NOTIFY onMapChanged)
     Q_PROPERTY(bool hasImage READ hasImage NOTIFY hasImageChanged)
@@ -29,6 +30,7 @@ class Stand : public QObject {
 
         [[nodiscard]] QString& getName();
         [[nodiscard]] QStringList getConstraintsForQml() const;
+        [[nodiscard]] QVariantList getConstraintCardsForQml() const;
         [[nodiscard]] static QStringList getAvailableConstraintsForQml() ;
         [[nodiscard]] std::map<std::type_index, std::shared_ptr<AConstraint>>& getConstraints();
         template<typename T>
@@ -46,6 +48,7 @@ class Stand : public QObject {
         template<typename T, typename ... Args>
         void addConstraint(Args&& ... args);
         Q_INVOKABLE void addConstraintFromQml(const QString& type);
+        Q_INVOKABLE bool setFieldFromQml(const QString& constraintName, const QString& fieldName, const QVariant& value);
     signals:
         void nameChanged();
         void xChanged();

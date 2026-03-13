@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <functional>
+#include <QVariantList>
 
 #include "IConstraint.hpp"
 
@@ -26,8 +27,10 @@ public:
 
     [[nodiscard]] std::string& getName() override;
     [[nodiscard]] std::type_index getType() const override;
+    [[nodiscard]] virtual QVariantList getFieldsForQml() const;
+    virtual bool setFieldFromQml(const QString& fieldName, const QVariant& value);
 
-    static bool registerType(const QString& id, Factory factory);
+    static bool registerType(Factory factory);
     static std::shared_ptr<AConstraint> createFromId(const QString& id);
     static QStringList registeredConstraintIds();
 protected:
