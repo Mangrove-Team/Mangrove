@@ -12,9 +12,11 @@
 
 class Electricity : public AConstraint {
 public:
-    explicit Electricity(float watt);
+    explicit Electricity(float watt = 10.0f);
 
     [[nodiscard]] float getWatt() const;
+    [[nodiscard]] QVariantList getFieldsForQml() const override;
+    bool setFieldFromQml(const QString& fieldName, const QVariant& value) override;
 private:
     float _watt;
 };
