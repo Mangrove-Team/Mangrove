@@ -14,5 +14,5 @@ namespace {
 }
 
 PmrAccess::PmrAccess() {
-    _name = "accés PMR";
+    _name = "accès PMR";
 }
