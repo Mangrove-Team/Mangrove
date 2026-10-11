@@ -57,6 +57,10 @@ Pour lancer les vérifications sur tout le dépôt sans commiter :
 pre-commit run --all-files
 ```
 
+## CI et tests
+
+La CI (GitHub Actions) vérifie le formatage, compile le projet et lance les tests à chaque push. Pour savoir comment écrire des tests compatibles et lire les résultats : [docs/CI.md](docs/CI.md).
+
 ## Convention de commit
 
 Les messages de commit suivent [Conventional Commits](https://www.conventionalcommits.org/fr/) :

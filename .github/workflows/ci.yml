@@ -62,6 +62,9 @@ jobs:
         run: pre-commit run clang-tidy --all-files
 
       - name: Test
+        env:
+          # No display on the runner: Qt renders off-screen.
+          QT_QPA_PLATFORM: offscreen
         run: ctest --test-dir build --output-on-failure --output-junit test-results.xml
 
       - name: Test report
