@@ -11,7 +11,7 @@ Requirements: CMake ≥ 3.25, a C++20 compiler (GCC ≥ 13, Clang ≥ 17, MSVC 2
 ```sh
 cmake -S . -B build              # system Qt (MANGROVE_USE_VCPKG=OFF by default)
 cmake --build build
-ctest --test-dir build           # every test (guide: docs/TESTING.md)
+ctest --test-dir build           # every test (guide: Documentation/guides/TESTING.md)
 cmake --build build --target all_qmllint   # lint every QML module
 ./build/Mangrove
 ```
@@ -61,10 +61,10 @@ tests/ui/        End-to-end tests of the real window (bars, shortcuts), offscree
 tests/fuzz/      libFuzzer targets (-DMANGROVE_FUZZ=ON, Clang).
 tests/i18n/      Checks that every displayed text has its French translation.
 translations/    mangrove_fr.ts: the French translation of every displayed text.
-docs/            Guides: TESTING.md (running and writing tests), QML_BUTTON.md and
-                 APP_BUTTON.md (adding a button), TRANSLATIONS.md (French interface),
-                 ALERTS.md (plugging in the constraint algorithm).
-Documentation/   One page per source file, in the same tree (Documentation/README.md).
+Documentation/   One page per source file, in the same tree (Documentation/README.md),
+                 and the guides in Documentation/guides/: TESTING.md (running and writing
+                 tests), QML_BUTTON.md and APP_BUTTON.md (adding a button), TRANSLATIONS.md
+                 (French interface), ALERTS.md (plugging in the constraint algorithm).
 ```
 
 For now the interface is only the bars: top bar (document, undo / redo), toolbar on the left,
@@ -119,7 +119,7 @@ hold no logic: they place `ActionButton`s and `TextLabel`s.
    `qmlRegisterType` nor `setContextProperty`.
 8. **Every displayed text is written in English in the code**, inside `qsTr()` (QML) or `tr()`
    (C++), **and translated into French** in `translations/mangrove_fr.ts`. Never French in the code
-   ([docs/TRANSLATIONS.md](docs/TRANSLATIONS.md)).
+   ([Documentation/guides/TRANSLATIONS.md](Documentation/guides/TRANSLATIONS.md)).
 
 Other conventions: the core compiles with `-Wconversion -Wshadow -Wold-style-cast`; the build must
 stay warning-free (`-DMANGROVE_WARNINGS_AS_ERRORS=ON` checks it in CI). Formatting:
@@ -132,17 +132,17 @@ layer: indented namespaces and `public:`/`private:`). clangd uses the same files
 |------------------------------------------|---------------------------------------------------------------------------------------------------------|
 | A piece of plan data (aisle, wall, zone…) | `src/core/plan/` (+ tests in `tests/core/`)                                                            |
 | A geometric primitive                     | `src/core/geometry/Geometry.h`                                                                          |
-| Alerts from the constraint algorithm      | `Editor::setAlerts()`; the app checks nothing itself — see [docs/ALERTS.md](docs/ALERTS.md)              |
+| Alerts from the constraint algorithm      | `Editor::setAlerts()`; the app checks nothing itself — see [Documentation/guides/ALERTS.md](Documentation/guides/ALERTS.md)              |
 | An undoable action                        | `src/app/commands/<name>/` (derive from `APlanCommand`; merge id in `CommandIds.hpp`)                  |
 | A document mutation                       | `src/app/PlanDocument.{hpp,cpp}` (private, + accessor in `APlanCommand.hpp`)                            |
 | A tool                                    | `src/app/tools/<name>/` (class derived from `ATool`) + a value in `Editor::ToolKind`, registration in the `Editor` constructor and a `ToolAction` in `qml/Mangrove/Shell/EditorActions.qml` |
-| A command (button and/or shortcut)        | an `AppAction` in `qml/Mangrove/Shell/EditorActions.qml`, then an `ActionButton` in the bar you want — see [docs/QML_BUTTON.md](docs/QML_BUTTON.md) and [docs/APP_BUTTON.md](docs/APP_BUTTON.md) |
+| A command (button and/or shortcut)        | an `AppAction` in `qml/Mangrove/Shell/EditorActions.qml`, then an `ActionButton` in the bar you want — see [Documentation/guides/QML_BUTTON.md](Documentation/guides/QML_BUTTON.md) and [Documentation/guides/APP_BUTTON.md](Documentation/guides/APP_BUTTON.md) |
 | Data exposed to QML                       | `src/app/models/` or a property of `Editor`                                                             |
 | A zoom / pan setting                      | `src/app/ViewTransform.{hpp,cpp}`                                                                       |
 | A color, a size, a font                   | `qml/Mangrove/Theme/Theme.qml`                                                                          |
 | A reusable component                      | `qml/Mangrove/Controls/` (with no dependency on `Editor`)                                               |
 | An icon                                   | `qml/Mangrove/Theme/Icons.qml` (an SVG path on a 24 × 24 grid)                                          |
-| A text shown to the user                  | `qsTr()` / `tr()` in English, then its French translation in `translations/mangrove_fr.ts` — see [docs/TRANSLATIONS.md](docs/TRANSLATIONS.md) |
+| A text shown to the user                  | `qsTr()` / `tr()` in English, then its French translation in `translations/mangrove_fr.ts` — see [Documentation/guides/TRANSLATIONS.md](Documentation/guides/TRANSLATIONS.md) |
 | A text style                              | `qml/Mangrove/Controls/TextLabel.qml` (a value of `TextLabel.Style`)                                    |
 | The plan canvas                           | a new QML module (see below), shown as the content of `qml/Mangrove/Shell/Workspace.qml`                |
 | A bar                                     | `qml/Mangrove/Shell/` (root `Bar`, with its `edge`) then dock it in the `DockLayout` of `qml/Main.qml`  |
@@ -150,4 +150,4 @@ layer: indented namespaces and `public:`/`private:`). clangd uses the same files
 | A keyboard shortcut                       | the `shortcuts` field of the matching action in `qml/Mangrove/Shell/EditorActions.qml`                  |
 | A new QML module                          | `qml/Mangrove/<Name>/CMakeLists.txt` + `add_subdirectory` in `qml/CMakeLists.txt` + link and `Q_IMPORT_QML_PLUGIN` in `CMakeLists.txt` / `src/main.cpp` |
 | Any source file                           | its page in `Documentation/`, at the same path (`src/app/Editor.cpp` → `Documentation/src/app/Editor.md`) |
-| A test                                    | `tests/core/`, `tests/app/`, `tests/ui/`, `tests/i18n/` or `tests/fuzz/` — see [docs/TESTING.md](docs/TESTING.md)      |
+| A test                                    | `tests/core/`, `tests/app/`, `tests/ui/`, `tests/i18n/` or `tests/fuzz/` — see [Documentation/guides/TESTING.md](Documentation/guides/TESTING.md)      |

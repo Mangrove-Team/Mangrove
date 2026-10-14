@@ -73,7 +73,7 @@ mangrove_enable_warnings(Mangrove)
 # The .qm is embedded in mangrove_app (":/i18n/mangrove_fr.qm"), so the app and
 # the tests load the same file. After adding or changing a text, run
 #   cmake --build build --target update_translations
-# then translate it in translations/mangrove_fr.ts (see docs/TRANSLATIONS.md).
+# then translate it in translations/mangrove_fr.ts (see Documentation/guides/TRANSLATIONS.md).
 # ---------------------------------------------------------------------------
 qt_add_translations(
     TARGETS mangrove_app

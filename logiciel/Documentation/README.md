@@ -8,7 +8,7 @@ One page per source file, stored in the same tree as the code:
 - Every `.qml` file has its page.
 
 For the big picture (layers, rules, "Where do I add X?"), read the
-[project README](../README.md) first. Tests are described in [docs/TESTING.md](../docs/TESTING.md).
+[project README](../README.md) first. Tests are described in [guides/TESTING.md](guides/TESTING.md).
 
 ## Structure of a page
 
@@ -25,6 +25,14 @@ For the big picture (layers, rules, "Where do I add X?"), read the
 | `A…` | abstract class: the shared part of an interface | `ATool`, `APlanCommand` |
 
 In QML, the bases to inherit from are `Surface`, `Bar`, `SidePanel` and `AppAction`.
+
+## Guides
+
+- [TESTING](guides/TESTING.md) — Running the tests, and which test to write for which change
+- [QML_BUTTON](guides/QML_BUTTON.md) — Adding a button whose action `Editor` can already do
+- [APP_BUTTON](guides/APP_BUTTON.md) — Adding a button that needs new C++ in `Editor`
+- [TRANSLATIONS](guides/TRANSLATIONS.md) — Translating the interface into French
+- [ALERTS](guides/ALERTS.md) — Plugging the constraint algorithm into the app
 
 ## Contents
 
