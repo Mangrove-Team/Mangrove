@@ -23,7 +23,7 @@ class DeleteStandCommand final : public APlanCommand {
 
 If the command must merge: a value in [CommandIds](CommandIds.md), then `id()` and `mergeWith()`.
 
-A complete example (command, `Editor`, QML, tests) is in [docs/APP_BUTTON.md](../../../../docs/APP_BUTTON.md).
+A complete example (command, `Editor`, QML, tests) is in [guides/APP_BUTTON.md](../../../guides/APP_BUTTON.md).
 
 ## Links
 

@@ -12,7 +12,7 @@ message is built on the app side by `AlertModel::message`.
 ## Links
 
 Produced by the constraint algorithm (written separately) and handed to `Editor::setAlerts()`
-([docs/ALERTS.md](../../../../docs/ALERTS.md)); displayed through
+([guides/ALERTS.md](../../../guides/ALERTS.md)); displayed through
 [AlertModel](../../app/models/alert/AlertModel.md).
 
 ---

@@ -20,7 +20,7 @@ Loads the French translation of the interface. Texts are written in English in t
 ## Caveats
 
 - A text missing from the `.ts` file, or left untranslated, is shown in English: run
-  `update_translations` after adding a text (see [docs/TRANSLATIONS.md](../../../docs/TRANSLATIONS.md)).
+  `update_translations` after adding a text (see [guides/TRANSLATIONS.md](../../guides/TRANSLATIONS.md)).
 - Installing a translator after the QML is loaded needs `QQmlEngine::retranslate()` to update the
   texts already shown (`tst_ui::interfaceIsInFrench` does this).
 

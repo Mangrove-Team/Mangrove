@@ -29,7 +29,7 @@ New kind of alert: add its message in `message()`.
 ## Links
 
 Owned by [Editor](../../Editor.md) (`Editor.alerts`), filled through `Editor::setAlerts()` by the
-constraint algorithm ([docs/ALERTS.md](../../../../../docs/ALERTS.md)); displayed by
+constraint algorithm ([guides/ALERTS.md](../../../../guides/ALERTS.md)); displayed by
 [AlertsPanel](../../../../qml/Mangrove/Panels/AlertsPanel.md).
 
 ---

@@ -21,7 +21,7 @@ The single entry point from QML into the application, exposed as the `Editor` QM
 - `undo`, `redo` and switching tools cancel the current gesture first.
 - **No constraint is checked here.** The constraint algorithm hands its alerts to `setAlerts()`;
   the editor passes them to `AlertModel` and marks every stand they name as `inConflict` in
-  `StandModel` ([docs/ALERTS.md](../../../docs/ALERTS.md)).
+  `StandModel` ([guides/ALERTS.md](../../guides/ALERTS.md)).
 
 ## API exposed to QML
 
