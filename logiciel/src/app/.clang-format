@@ -1,0 +1,20 @@
+# Mangrove Project - C++ formatting of src/app only.
+# Inherits ../../.clang-format and indents namespaces and access specifiers:
+#
+#   namespace mangrove::app {
+#
+#       class Editor : public QObject {
+#           public:
+#               void undo();
+#       }; // class Editor
+#
+#   } // namespace mangrove::app
+---
+BasedOnStyle: InheritParentConfig
+NamespaceIndentation: All
+IndentAccessModifiers: true
+# Header blocks keep their one-line "// Description: ..." as written.
+ReflowComments: Never
+SpaceInEmptyBlock: true
+# Q_PROPERTY lines stay on one line, as Qt writes them.
+WhitespaceSensitiveMacros: [QML_UNCREATABLE, Q_PROPERTY]
