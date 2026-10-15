@@ -103,6 +103,7 @@ In QML, the bases to inherit from are `Surface`, `Bar`, `SidePanel` and `AppActi
       - [Toolbar](qml/Mangrove/Shell/Toolbar.md) — Vertical bar on the left: one button per tool of `EditorActions.tools`, in order
       - [StatusBar](qml/Mangrove/Shell/StatusBar.md) — Bottom bar: the name of the active tool on the left, the application version on the right
       - [Workspace](qml/Mangrove/Shell/Workspace.md) — Central area, between the bars
+      - [Ruler](qml/Mangrove/Shell/Ruler.md) — Graduated bar along one edge of the plan, in meters, following the zoom and the pan of `Editor.view`
     - **Panels/**
       - [AlertsPanel](qml/Mangrove/Panels/AlertsPanel.md) — Side panel of constraint violations: an "Alerts" title with a counter, then one card per alert, or "No issues on this plan."
 
