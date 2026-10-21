@@ -7,7 +7,6 @@ import Mangrove.Theme
 Item {
     id: root
 
-    // Key of Icons.paths.
     property string name
     property color color: Theme.textPrimary
 

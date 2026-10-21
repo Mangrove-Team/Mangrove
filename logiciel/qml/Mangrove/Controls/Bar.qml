@@ -17,7 +17,6 @@ Surface {
     property int rightPadding: root.padding
     property int topPadding: root.padding
     property int bottomPadding: root.padding
-    // Space between two items of the same group.
     property int spacing: Theme.spacing4
 
     readonly property int flow: root.horizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom

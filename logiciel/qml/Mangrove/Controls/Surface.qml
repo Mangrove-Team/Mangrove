@@ -8,8 +8,6 @@ import Mangrove.Theme
 Rectangle {
     id: root
 
-    // Window edge the surface is docked to: Qt.TopEdge, Qt.BottomEdge,
-    // Qt.LeftEdge or Qt.RightEdge.
     property int edge: Qt.TopEdge
     // Height of a top or bottom surface, width of a left or right one.
     property int thickness: 0

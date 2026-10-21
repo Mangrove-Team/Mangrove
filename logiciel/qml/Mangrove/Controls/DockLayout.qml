@@ -14,7 +14,6 @@ Item {
     property Item rightDock
     property Item bottomDock
 
-    // Hosts one docked item and makes it fill the cell the layout gives it.
     component Dock: Item {
         id: dock
 

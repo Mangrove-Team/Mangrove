@@ -18,7 +18,6 @@ namespace mangrove::app {
 
     class APlanCommand : public QUndoCommand {
         public:
-            // A command always knows how to go both ways.
             void redo() override = 0;
             void undo() override = 0;
 
