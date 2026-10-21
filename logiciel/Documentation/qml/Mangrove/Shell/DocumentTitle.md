@@ -2,7 +2,8 @@
 
 > QML · module `Mangrove.Shell` — [`DocumentTitle.qml`](../../../../qml/Mangrove/Shell/DocumentTitle.qml)
 
-"Mangrove / *document name*", as shown in the top bar.
+"*logo* / *document name*", as shown in the top bar. The logo is `Theme.logo` (`objectName: "logo"`),
+`Theme.logoSize` wide, with "Mangrove" as accessible name.
 
 ## Properties
 

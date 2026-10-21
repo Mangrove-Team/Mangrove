@@ -86,6 +86,14 @@ private slots:
         verifyBarsSurroundWorkspace();
     }
 
+    // The logo is an SVG: it only loads if the Qt SVG image plugin is deployed.
+    void topBarShowsLogo()
+    {
+        QQuickItem *logo = item("logo");
+        QTRY_COMPARE(logo->property("status").toInt(), 1); // Image.Ready
+        QVERIFY(logo->property("paintedWidth").toReal() > 0);
+    }
+
     void startsWithSelectToolAndEmptyHistory()
     {
         QCOMPARE(m_editor->activeTool(), Editor::ToolKind::Select);

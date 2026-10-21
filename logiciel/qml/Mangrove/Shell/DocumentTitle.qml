@@ -4,7 +4,7 @@ import QtQuick.Layouts
 import Mangrove.Controls
 import Mangrove.Theme
 
-// "Mangrove / <document>", as shown in the top bar.
+// "<logo> / <document>", as shown in the top bar.
 RowLayout {
     id: root
 
@@ -12,9 +12,15 @@ RowLayout {
 
     spacing: Theme.spacing8
 
-    TextLabel {
-        text: "Mangrove"
-        strong: true
+    Image {
+        objectName: "logo"
+        Layout.preferredWidth: Theme.logoSize
+        Layout.preferredHeight: Theme.logoSize
+        source: Theme.logo
+        sourceSize: Qt.size(Theme.logoSize, Theme.logoSize)
+        fillMode: Image.PreserveAspectFit
+        Accessible.role: Accessible.Graphic
+        Accessible.name: "Mangrove"
     }
 
     TextLabel {

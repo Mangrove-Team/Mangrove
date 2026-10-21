@@ -13,6 +13,7 @@ Singleton, single source of colors, spacings, radii, strokes, fonts, icon sizes 
 | Radii and strokes | `radiusSmall` (2), `radiusMedium` (4), `radiusButton` (6, icon buttons), `borderWidth` |
 | Typography | `fontSans` (Inter), `fontMono` (JetBrains Mono), `fontFeatures` (tabular figures), `fontSizeSmall` (11), `fontSizeBody` (13), `fontSizeTitle` (15) |
 | Icons | `iconSize` (18), `iconStrokeWidth` (1.5) |
+| Logo | `logo` (`images/mangrove-logo.svg`), `logoSize` (24) |
 | Layout | `windowWidth/Height`, `windowMinimumWidth/Height`, `topBarHeight` (44), `statusBarHeight` (26), `toolButtonSize` (36), `barButtonSize` (28), `toolbarWidth`, `panelWidth` (288), `disabledOpacity`, `tooltipDelay` |
 | Fonts | Inter and JetBrains Mono, regular and semi-bold, embedded (OFL license, `fonts/OFL-*.txt`), loaded by `FontLoader` |
 

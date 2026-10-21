@@ -98,7 +98,7 @@ In QML, the bases to inherit from are `Surface`, `Bar`, `SidePanel` and `AppActi
       - [ToolAction](qml/Mangrove/Shell/ToolAction.md) — An `AppAction` that activates an editor tool: it is `active` when `Editor.activeTool` equals its `kind`, and triggering it makes `kind` the active tool
       - [EditorActions](qml/Mangrove/Shell/EditorActions.md) — Singleton, registry of every editor command
       - [KeyboardShortcuts](qml/Mangrove/Shell/KeyboardShortcuts.md) — Binds the shortcuts of every action in `EditorActions` (tools and commands), whatever bars are shown: removing the toolbar does not remove V or R
-      - [DocumentTitle](qml/Mangrove/Shell/DocumentTitle.md) — "Mangrove / *document name*", as shown in the top bar
+      - [DocumentTitle](qml/Mangrove/Shell/DocumentTitle.md) — "*logo* / *document name*", as shown in the top bar
       - [TopBar](qml/Mangrove/Shell/TopBar.md) — Top bar: the document title on the left, the Undo / Redo buttons on the right
       - [Toolbar](qml/Mangrove/Shell/Toolbar.md) — Vertical bar on the left: one button per tool of `EditorActions.tools`, in order
       - [StatusBar](qml/Mangrove/Shell/StatusBar.md) — Bottom bar: the name of the active tool on the left, the application version on the right

@@ -51,6 +51,10 @@ QtObject {
     readonly property int iconSize: 18
     readonly property real iconStrokeWidth: 1.5
 
+    // --- Logo ---------------------------------------------------------------
+    readonly property url logo: Qt.resolvedUrl("images/mangrove-logo.svg")
+    readonly property int logoSize: 24
+
     // --- Layout and behavior ------------------------------------------------
     readonly property int windowWidth: 1280
     readonly property int windowHeight: 800

@@ -44,7 +44,7 @@ src/app/         QML module "Mangrove.App" (static): bridge between core and QML
   commands/        APlanCommand; add/AddStandCommand, move/MoveStandCommand
   tools/           ITool, IToolContext, ATool, PointerEvent; select/SelectTool, stand/StandTool
 qml/Mangrove/    Display-only QML modules, each one static:
-  Theme/           Theme (tokens) and Icons (SVG paths) singletons + Inter and JetBrains Mono fonts
+  Theme/           Theme (tokens) and Icons (SVG paths) singletons + Inter and JetBrains Mono fonts, logo
   Controls/        generic building blocks, with no dependency on Editor:
                      Surface → Bar, SidePanel   (anything docked on an edge)
                      DockLayout                 (top / left / center / right / bottom)
@@ -139,7 +139,7 @@ layer: indented namespaces and `public:`/`private:`). clangd uses the same files
 | A command (button and/or shortcut)        | an `AppAction` in `qml/Mangrove/Shell/EditorActions.qml`, then an `ActionButton` in the bar you want — see [Documentation/guides/QML_BUTTON.md](Documentation/guides/QML_BUTTON.md) and [Documentation/guides/APP_BUTTON.md](Documentation/guides/APP_BUTTON.md) |
 | Data exposed to QML                       | `src/app/models/` or a property of `Editor`                                                             |
 | A zoom / pan setting                      | `src/app/ViewTransform.{hpp,cpp}`                                                                       |
-| A color, a size, a font                   | `qml/Mangrove/Theme/Theme.qml`                                                                          |
+| A color, a size, a font, the logo         | `qml/Mangrove/Theme/Theme.qml` (the logo file is in `qml/Mangrove/Theme/images/`)                       |
 | A reusable component                      | `qml/Mangrove/Controls/` (with no dependency on `Editor`)                                               |
 | An icon                                   | `qml/Mangrove/Theme/Icons.qml` (an SVG path on a 24 × 24 grid)                                          |
 | A text shown to the user                  | `qsTr()` / `tr()` in English, then its French translation in `translations/mangrove_fr.ts` — see [Documentation/guides/TRANSLATIONS.md](Documentation/guides/TRANSLATIONS.md) |

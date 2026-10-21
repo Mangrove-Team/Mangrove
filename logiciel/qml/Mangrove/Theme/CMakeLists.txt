@@ -15,6 +15,7 @@ qt_add_qml_module(mangrove_theme
         fonts/Inter-SemiBold.ttf
         fonts/JetBrainsMono-Regular.ttf
         fonts/JetBrainsMono-SemiBold.ttf
+        images/mangrove-logo.svg
 )
 
 target_link_libraries(mangrove_theme PRIVATE Qt6::Quick)
