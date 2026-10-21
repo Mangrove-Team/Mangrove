@@ -1,0 +1,85 @@
+# =============================================================================
+# Mangrove - logiciel (Qt 6 / QML / CMake / vcpkg)
+# =============================================================================
+
+# --- Build outputs (CMake presets) -------------------------------------------
+build/
+install/
+out/
+_CPack_Packages/
+Mangrove-*.tar.gz
+Mangrove-*.zip
+Mangrove-*-win64.exe
+
+# --- vcpkg ---------------------------------------------------------------------
+# Cloned automatically by cmake/VcpkgBootstrap.cmake
+external/vcpkg/
+vcpkg_installed/
+vcpkg-manifest-install.log
+
+# --- CMake (in-source builds, should not happen with presets) -----------------
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+Testing/
+compile_commands.json
+CMakeUserPresets.json
+*.cbp
+
+# --- Qt generated files --------------------------------------------------------
+*_autogen/
+.qt/
+.rcc/
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.qmlc
+*.jsc
+*.qm
+*.qmlproject.user
+*.pro.user
+*.pro.user.*
+CMakeLists.txt.user
+CMakeLists.txt.user.*
+
+# --- Compiled objects and binaries ---------------------------------------------
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dll
+*.exe
+*.dylib
+*.pdb
+*.ilk
+*.exp
+*.idb
+
+# --- IDEs ----------------------------------------------------------------------
+# CLion / JetBrains
+.idea/
+cmake-build-*/
+# VS Code
+.vscode/
+# Visual Studio
+.vs/
+*.vcxproj.user
+*.suo
+# clangd
+.cache/
+
+# --- OS / editors --------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+
+# --- Personal experiments (never committed) -----------------------------------
+personal-test/

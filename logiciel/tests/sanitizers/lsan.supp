@@ -1,0 +1,5 @@
+# LeakSanitizer suppressions: leaks inside system libraries we do not own.
+# Add a line per confirmed third-party leak, with the reason. Never suppress our own code.
+# fontconfig keeps charsets parsed from its XML config for the process lifetime
+# (first FontLoader / font lookup). Not reachable from our code.
+leak:libfontconfig.so
