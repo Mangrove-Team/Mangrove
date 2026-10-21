@@ -34,8 +34,8 @@ AbstractButton {
     }
 
     background: Rectangle {
-        radius: Theme.radiusSmall
-        color: root.active ? Theme.accent
+        radius: Theme.radiusButton
+        color: root.active ? Theme.brand
              : !root.enabled ? "transparent"
              : root.down ? Theme.bgPressed
              : root.hovered ? Theme.bgSubtle

@@ -10,7 +10,7 @@ Square button showing an icon. It knows nothing about the editor: the caller dec
 |---|---|
 | `iconName` | icon ([Icons](../Theme/Icons.md)) |
 | `tooltip` | tooltip (also the button's accessible name) |
-| `active` | checked state: `accent` background, white icon |
+| `active` | checked state: `brand` background, white icon |
 | `size` | side of the button (`Theme.toolButtonSize` by default) |
 | `enabled` | when disabled: icon at 35 % opacity |
 

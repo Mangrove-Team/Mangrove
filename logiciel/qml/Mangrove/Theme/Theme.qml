@@ -5,20 +5,27 @@ import QtQuick
 // Single source of every color, spacing, radius, stroke and font of the UI.
 QtObject {
     // --- Colors -------------------------------------------------------------
-    readonly property color bgChrome: "#f4f4f3"
+    // Three families that never mix: one brand color, status colors that
+    // always carry information, and neutrals for everything else. A color that
+    // is not neutral on screen must mean something.
+
+    // Neutrals: light grays, white and ink.
+    readonly property color bgChrome: "#f7f8f8"
     readonly property color bgPanel: "#ffffff"
-    readonly property color bgCanvas: "#ebebe8"
-    readonly property color bgSubtle: "#f0f0ee"
-    readonly property color bgPressed: "#e4e4e1"
-    readonly property color borderDefault: "#e0e0dd"
-    readonly property color borderStrong: "#8a8a87"
-    readonly property color textPrimary: "#1c1c1c"
-    readonly property color textMuted: "#6b6b68"
+    readonly property color bgCanvas: "#eceeee"
+    readonly property color bgSubtle: "#f0f2f2"
+    readonly property color bgPressed: "#e3e6e6"
+    readonly property color borderDefault: "#dce0e0"
+    readonly property color borderStrong: "#8a9191"
+    readonly property color textPrimary: "#161b1b"
+    readonly property color textMuted: "#5c6464"
     readonly property color textInverse: "#ffffff"
-    readonly property color accent: "#1c1c1c"
-    // Constraint alerts: counter, alert cards and stands in conflict.
-    readonly property color warning: "#c2410c"
-    readonly property color warningSubtle: "#fdeee4"
+    readonly property color brand: "#17853c"
+    readonly property color warning: "#b45309"
+    readonly property color warningSubtle: "#fcf1e2"
+    readonly property color conflict: "#c42b1c"
+    readonly property color conflictSubtle: "#fbeae8"
+    readonly property color selection: "#1d6fd8"
 
     // --- Spacing ------------------------------------------------------------
     readonly property int spacing4: 4
@@ -27,8 +34,9 @@ QtObject {
     readonly property int spacing16: 16
 
     // --- Radii and strokes --------------------------------------------------
-    readonly property int radiusSmall: 6
-    readonly property int radiusMedium: 8
+    readonly property int radiusSmall: 2
+    readonly property int radiusMedium: 4
+    readonly property int radiusButton: 6
     readonly property int borderWidth: 1
 
     // --- Typography ---------------------------------------------------------

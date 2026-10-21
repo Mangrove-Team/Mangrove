@@ -11,8 +11,7 @@ Surface {
     property string title
     // Shown in a badge next to the title; a negative value hides the badge.
     property int count: -1
-    // Color of the counter when it is not zero.
-    property color badgeColor: Theme.accent
+    property color badgeColor: Theme.textPrimary
     default property alias content: body.data
 
     edge: Qt.RightEdge

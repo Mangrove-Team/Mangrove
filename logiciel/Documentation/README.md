@@ -86,7 +86,7 @@ In QML, the bases to inherit from are `Surface`, `Bar`, `SidePanel` and `AppActi
       - [SidePanel](qml/Mangrove/Controls/SidePanel.md) — Base of side panels: a `Surface` docked on the right by default, `Theme.panelWidth` wide, with a title, a counter and a content area
       - [DockLayout](qml/Mangrove/Controls/DockLayout.md) — Window layout: up to four items on the edges, around a central item
       - [TextLabel](qml/Mangrove/Controls/TextLabel.md) — Every text of the interface
-      - [Badge](qml/Mangrove/Controls/Badge.md) — Counter pill
+      - [Badge](qml/Mangrove/Controls/Badge.md) — Counter tag
       - [Card](qml/Mangrove/Controls/Card.md) — Rounded block holding a wrapping text; its height follows the text
       - [ModelList](qml/Mangrove/Controls/ModelList.md) — Vertical list of the rows of a model, or a message when the model is empty
       - [Icon](qml/Mangrove/Controls/Icon.md) — Line icon drawn from the `Icons` paths: crisp at any size and in any color
