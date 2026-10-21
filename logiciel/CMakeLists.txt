@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
 
-# Must run before project(): optionally picks the vcpkg toolchain that installs Qt.
 include(cmake/VcpkgBootstrap.cmake)
 
 project(Mangrove
@@ -52,8 +51,6 @@ set_target_properties(Mangrove PROPERTIES
         MACOSX_BUNDLE TRUE
 )
 
-# Static QML modules: link each backing library and its plugin
-# (imported in main.cpp with Q_IMPORT_QML_PLUGIN).
 target_link_libraries(Mangrove PRIVATE
         Qt6::Core
         Qt6::Gui
@@ -95,13 +92,9 @@ install(TARGETS Mangrove
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-# Only bundle Qt when it comes from vcpkg: a system Qt is already installed
-# on the machine and is used as-is.
 if(MANGROVE_USE_VCPKG)
     set(mangrove_deploy_options "")
     if(UNIX AND NOT APPLE)
-        # Never ship system libraries (glibc, ld-linux, libGL, X11...):
-        # only what comes from vcpkg_installed/ is bundled.
         list(APPEND mangrove_deploy_options
                 POST_EXCLUDE_REGEXES "^/lib" "^/usr/lib" "^/usr/local/lib")
     endif()

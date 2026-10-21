@@ -11,7 +11,6 @@
 #include <QQmlApplicationEngine>
 #include <QtQml/qqmlextensionplugin.h>
 
-// Every QML module is a static plugin: import each one explicitly.
 Q_IMPORT_QML_PLUGIN(Mangrove_AppPlugin)
 Q_IMPORT_QML_PLUGIN(Mangrove_ThemePlugin)
 Q_IMPORT_QML_PLUGIN(Mangrove_ControlsPlugin)
