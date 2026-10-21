@@ -11,6 +11,7 @@ qt_add_qml_module(mangrove_controls
         Bar.qml
         SidePanel.qml
         DockLayout.qml
+
         # Content
         TextLabel.qml
         Badge.qml
@@ -18,6 +19,7 @@ qt_add_qml_module(mangrove_controls
         ModelList.qml
         Icon.qml
         IconToolButton.qml
+
         # Actions
         AppAction.qml
         ActionButton.qml

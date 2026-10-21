@@ -6,23 +6,41 @@ qt_add_qml_module(mangrove_app
     VERSION 1.0
     STATIC
     SOURCES
+        Editor.cpp
+        Translation.cpp
+        PlanDocument.cpp
+        ViewTransform.cpp
+
+        Editor.hpp
+        Translation.hpp
         Conversions.hpp
-        Editor.hpp Editor.cpp
-        PlanDocument.hpp PlanDocument.cpp
-        Translation.hpp Translation.cpp
-        ViewTransform.hpp ViewTransform.cpp
-        models/stand/StandModel.hpp models/stand/StandModel.cpp
-        models/alert/AlertModel.hpp models/alert/AlertModel.cpp
+        PlanDocument.hpp
+        ViewTransform.hpp
+
+        models/stand/StandModel.cpp
+        models/alert/AlertModel.cpp
+        models/stand/StandModel.hpp
+        models/alert/AlertModel.hpp
+
+        commands/APlanCommand.cpp
+        commands/add/AddStandCommand.cpp
+        commands/move/MoveStandCommand.cpp
+
         commands/CommandIds.hpp
-        commands/APlanCommand.hpp commands/APlanCommand.cpp
-        commands/add/AddStandCommand.hpp commands/add/AddStandCommand.cpp
-        commands/move/MoveStandCommand.hpp commands/move/MoveStandCommand.cpp
+        commands/APlanCommand.hpp
+        commands/add/AddStandCommand.hpp
+        commands/move/MoveStandCommand.hpp
+
+        tools/ATool.cpp
+        tools/stand/StandTool.cpp
+        tools/select/SelectTool.cpp
+
+        tools/ITool.hpp
+        tools/ATool.hpp
         tools/PointerEvent.hpp
         tools/IToolContext.hpp
-        tools/ITool.hpp
-        tools/ATool.hpp tools/ATool.cpp
-        tools/select/SelectTool.hpp tools/select/SelectTool.cpp
-        tools/stand/StandTool.hpp tools/stand/StandTool.cpp
+        tools/stand/StandTool.hpp
+        tools/select/SelectTool.hpp
 )
 add_library(Mangrove::App ALIAS mangrove_app)
 
