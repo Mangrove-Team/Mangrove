@@ -44,7 +44,7 @@ src/app/         QML module "Mangrove.App" (static): bridge between core and QML
   commands/        APlanCommand; add/AddStandCommand, move/MoveStandCommand
   tools/           ITool, IToolContext, ATool, PointerEvent; select/SelectTool, stand/StandTool
 qml/Mangrove/    Display-only QML modules, each one static:
-  Theme/           Theme (tokens) and Icons (SVG paths) singletons + IBM Plex fonts
+  Theme/           Theme (tokens) and Icons (SVG paths) singletons + Inter and JetBrains Mono fonts
   Controls/        generic building blocks, with no dependency on Editor:
                      Surface → Bar, SidePanel   (anything docked on an edge)
                      DockLayout                 (top / left / center / right / bottom)

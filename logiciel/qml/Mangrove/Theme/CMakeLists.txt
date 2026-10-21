@@ -11,10 +11,10 @@ qt_add_qml_module(mangrove_theme
         Theme.qml
         Icons.qml
     RESOURCES
-        fonts/IBMPlexSans.ttf
-        fonts/IBMPlexMono-Regular.ttf
-        fonts/IBMPlexMono-Medium.ttf
-        fonts/IBMPlexMono-SemiBold.ttf
+        fonts/Inter-Regular.ttf
+        fonts/Inter-SemiBold.ttf
+        fonts/JetBrainsMono-Regular.ttf
+        fonts/JetBrainsMono-SemiBold.ttf
 )
 
 target_link_libraries(mangrove_theme PRIVATE Qt6::Quick)

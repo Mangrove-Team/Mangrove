@@ -12,6 +12,9 @@ Every text of the interface. You pick a style; font, size, weight and color foll
 | `muted` | dimmed color |
 | `strong` | semi-bold; true by default for `Title` |
 
+Every style uses tabular figures (`Theme.fontFeatures`). `Mono` is for technical values only
+(coordinates, measures, stand references), never for free text.
+
 By default, a text that is too long is cut with "…" on the right. For a wrapping text:
 `wrapMode: Text.Wrap` and `elide: Text.ElideNone`.
 

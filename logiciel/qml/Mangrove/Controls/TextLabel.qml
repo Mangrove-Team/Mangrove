@@ -20,6 +20,7 @@ Text {
     color: root.muted ? Theme.textMuted : Theme.textPrimary
     elide: Text.ElideRight
     font.family: root.textStyle === TextLabel.Mono ? Theme.fontMono : Theme.fontSans
+    font.features: Theme.fontFeatures
     font.pixelSize: root.textStyle === TextLabel.Title ? Theme.fontSizeTitle
                   : root.textStyle === TextLabel.Body ? Theme.fontSizeBody
                   : Theme.fontSizeSmall

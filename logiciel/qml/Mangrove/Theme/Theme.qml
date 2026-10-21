@@ -34,6 +34,7 @@ QtObject {
     // --- Typography ---------------------------------------------------------
     readonly property string fontSans: sansLoader.name
     readonly property string fontMono: monoLoader.name
+    readonly property var fontFeatures: ({ "tnum": 1 })
     readonly property int fontSizeSmall: 11
     readonly property int fontSizeBody: 13
     readonly property int fontSizeTitle: 15
@@ -57,9 +58,9 @@ QtObject {
     readonly property int tooltipDelay: 500
     readonly property int rulerSize: 24
 
-    // --- Bundled fonts (OFL, see fonts/OFL.txt) -----------------------------
-    readonly property FontLoader sansLoader: FontLoader { source: "fonts/IBMPlexSans.ttf" }
-    readonly property FontLoader monoLoader: FontLoader { source: "fonts/IBMPlexMono-Regular.ttf" }
-    readonly property FontLoader monoMediumLoader: FontLoader { source: "fonts/IBMPlexMono-Medium.ttf" }
-    readonly property FontLoader monoSemiBoldLoader: FontLoader { source: "fonts/IBMPlexMono-SemiBold.ttf" }
+    // --- Bundled fonts (OFL, see fonts/OFL-*.txt) ---------------------------
+    readonly property FontLoader sansLoader: FontLoader { source: "fonts/Inter-Regular.ttf" }
+    readonly property FontLoader sansSemiBoldLoader: FontLoader { source: "fonts/Inter-SemiBold.ttf" }
+    readonly property FontLoader monoLoader: FontLoader { source: "fonts/JetBrainsMono-Regular.ttf" }
+    readonly property FontLoader monoSemiBoldLoader: FontLoader { source: "fonts/JetBrainsMono-SemiBold.ttf" }
 }
