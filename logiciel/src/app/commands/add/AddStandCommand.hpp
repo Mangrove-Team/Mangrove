@@ -9,7 +9,11 @@
 
 #include <QCoreApplication>
 
+#include "PlanDocument.hpp"
 #include "commands/APlanCommand.hpp"
+#include "geometry/Geometry.h"
+#include "plan/Ids.h"
+#include "plan/Stand.h"
 
 namespace mangrove::app {
 

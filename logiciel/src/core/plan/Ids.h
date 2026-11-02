@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <functional>
 
@@ -23,8 +24,8 @@ struct StandId {
 
 template<>
 struct std::hash<mangrove::core::StandId> {
-    std::size_t operator()(mangrove::core::StandId id) const noexcept
+    std::size_t operator()(mangrove::core::StandId standId) const noexcept
     {
-        return std::hash<std::uint64_t>{}(id.value);
+        return std::hash<std::uint64_t>{}(standId.value);
     }
 };

@@ -10,10 +10,13 @@
 #include "PlanDocument.hpp"
 #include "ViewTransform.hpp"
 #include "constraints/Alert.h"
+#include "geometry/Geometry.h"
 #include "models/alert/AlertModel.hpp"
 #include "models/stand/StandModel.hpp"
+#include "plan/Ids.h"
 #include "tools/ITool.hpp"
 #include "tools/IToolContext.hpp"
+#include "tools/PointerEvent.hpp"
 
 #include <QObject>
 #include <QPointF>
@@ -28,9 +31,10 @@
 
 namespace mangrove::app {
 
-    class Editor : public QObject, private IToolContext {
+    class Editor final : public QObject, private IToolContext {
 
             Q_OBJECT
+            Q_DISABLE_COPY_MOVE(Editor)
             QML_ELEMENT
             QML_SINGLETON
 
@@ -46,7 +50,7 @@ namespace mangrove::app {
 
         public:
             // Add a value here and register the tool in the constructor to add a tool.
-            enum class ToolKind {
+            enum class ToolKind : quint8 {
                 Select,
                 Stand,
             };
@@ -93,10 +97,10 @@ namespace mangrove::app {
             [[nodiscard]] const core::Plan &plan() const override;
             [[nodiscard]] double snapStep() const override;
             [[nodiscard]] core::StandId selectedStand() const override;
-            void selectStand(core::StandId id) override;
+            void selectStand(core::StandId standId) override;
             void setPreview(std::optional<core::RectM> rect) override;
             core::StandId addStand(const core::RectM &rect) override;
-            void moveStand(core::StandId id, core::Vec2 topLeft) override;
+            void moveStand(core::StandId standId, core::Vec2 topLeft) override;
 
             [[nodiscard]] ITool &currentTool() const;
             [[nodiscard]] std::optional<PointerEvent> pointer(QPointF screenPos) const;

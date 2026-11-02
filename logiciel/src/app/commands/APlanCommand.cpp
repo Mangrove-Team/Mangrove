@@ -6,7 +6,14 @@
 */
 
 #include "commands/APlanCommand.hpp"
+#include "PlanDocument.hpp"
+#include "geometry/Geometry.h"
+#include "plan/Ids.h"
+#include "plan/Plan.h"
+#include "plan/Stand.h"
 
+#include <cstddef>
+#include <optional>
 #include <utility>
 
 namespace mangrove::app {
@@ -25,14 +32,14 @@ namespace mangrove::app {
         return _document.insertStand(index, std::move(stand));
     }
 
-    std::optional<core::Stand> APlanCommand::removeStand(core::StandId id)
+    std::optional<core::Stand> APlanCommand::removeStand(core::StandId standId)
     {
-        return _document.removeStand(id);
+        return _document.removeStand(standId);
     }
 
-    bool APlanCommand::setStandRect(core::StandId id, const core::RectM &rect)
+    bool APlanCommand::setStandRect(core::StandId standId, const core::RectM &rect)
     {
-        return _document.setStandRect(id, rect);
+        return _document.setStandRect(standId, rect);
     }
 
 } // namespace mangrove::app

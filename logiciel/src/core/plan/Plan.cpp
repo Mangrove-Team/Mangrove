@@ -6,59 +6,72 @@
 */
 
 #include "plan/Plan.h"
+#include "geometry/Geometry.h"
+#include "plan/Ids.h"
+#include "plan/Stand.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <format>
 #include <iterator>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 namespace mangrove::core {
 
 Plan::Plan(const RectM &hall) : m_hall(hall)
 { }
 
-const Stand *Plan::find(StandId id) const noexcept
+const Stand *Plan::find(StandId standId) const noexcept
 {
-    const auto index = indexOf(id);
+    const auto index = indexOf(standId);
     return index ? &m_stands[*index] : nullptr;
 }
 
-std::optional<std::size_t> Plan::indexOf(StandId id) const noexcept
+std::optional<std::size_t> Plan::indexOf(StandId standId) const noexcept
 {
-    if (!id)
+    if (!standId) {
         return std::nullopt;
-    const auto it = std::ranges::find(m_stands, id, &Stand::id);
-    if (it == m_stands.end())
+    }
+    const auto found = std::ranges::find(m_stands, standId, &Stand::id);
+    if (found == m_stands.end()) {
         return std::nullopt;
-    return static_cast<std::size_t>(std::distance(m_stands.begin(), it));
+    }
+    return static_cast<std::size_t>(std::distance(m_stands.begin(), found));
 }
 
 StandId Plan::standAt(Vec2 point) const noexcept
 {
-    const auto it = std::ranges::find_if(m_stands.rbegin(), m_stands.rend(),
-        [point](const Stand &s) { return s.rect.contains(point); });
-    return it == m_stands.rend() ? StandId{} : it->id;
+    const auto found = std::ranges::find_if(m_stands.rbegin(), m_stands.rend(),
+        [point](const Stand &candidate) { return candidate.rect.contains(point); });
+    return found == m_stands.rend() ? StandId{} : found->id;
 }
 
 Stand Plan::makeStand(const RectM &rect)
 {
-    if (m_nextId == kIdsExhausted)
-        return {StandId{}, {}, rect};
-    const StandId id{m_nextId++};
-    return {id, uniqueLabel(id), rect};
+    if (m_nextId == kIdsExhausted) {
+        return {.id = StandId{}, .label = {}, .rect = rect};
+    }
+    const StandId standId{m_nextId++};
+    return {.id = standId, .label = uniqueLabel(standId), .rect = rect};
 }
 
 bool Plan::labelInUse(std::string_view label) const noexcept
 {
-    return std::ranges::any_of(m_stands, [label](const Stand &s) { return s.label == label; });
+    return std::ranges::any_of(
+        m_stands, [label](const Stand &candidate) { return candidate.label == label; });
 }
 
-std::string Plan::uniqueLabel(StandId id) const
+std::string Plan::uniqueLabel(StandId standId) const
 {
-    const std::string base = std::format("S{:02}", id.value);
+    const std::string base = std::format("S{:02}", standId.value);
     std::string label = base;
-    for (int suffix = 2; labelInUse(label); ++suffix)
+    for (int suffix = 2; labelInUse(label); ++suffix) {
         label = std::format("{}-{}", base, suffix);
+    }
     return label;
 }
 
@@ -69,31 +82,35 @@ bool Plan::canInsert(const Stand &stand) const noexcept
 
 bool Plan::insertStand(std::size_t index, Stand stand)
 {
-    if (!canInsert(stand))
+    if (!canInsert(stand)) {
         return false;
-    if (m_nextId != kIdsExhausted && stand.id.value >= m_nextId)
+    }
+    if (m_nextId != kIdsExhausted && stand.id.value >= m_nextId) {
         m_nextId = stand.id.value + 1;
+    }
     index = std::min(index, m_stands.size());
     m_stands.insert(m_stands.begin() + static_cast<std::ptrdiff_t>(index), std::move(stand));
     return true;
 }
 
-std::optional<Stand> Plan::removeStand(StandId id)
+std::optional<Stand> Plan::removeStand(StandId standId)
 {
-    const auto index = indexOf(id);
-    if (!index)
+    const auto index = indexOf(standId);
+    if (!index) {
         return std::nullopt;
-    const auto it = m_stands.begin() + static_cast<std::ptrdiff_t>(*index);
-    Stand removed = std::move(*it);
-    m_stands.erase(it);
+    }
+    const auto found = m_stands.begin() + static_cast<std::ptrdiff_t>(*index);
+    Stand removed = std::move(*found);
+    m_stands.erase(found);
     return removed;
 }
 
-bool Plan::setStandRect(StandId id, const RectM &rect)
+bool Plan::setStandRect(StandId standId, const RectM &rect)
 {
-    const auto index = indexOf(id);
-    if (!index || !rect.isValid())
+    const auto index = indexOf(standId);
+    if (!index || !rect.isValid()) {
         return false;
+    }
     m_stands[*index].rect = rect;
     return true;
 }

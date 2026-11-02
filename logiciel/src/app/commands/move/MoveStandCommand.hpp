@@ -7,7 +7,10 @@
 
 #pragma once
 
+#include "PlanDocument.hpp"
 #include "commands/APlanCommand.hpp"
+#include "geometry/Geometry.h"
+#include "plan/Ids.h"
 
 #include <QCoreApplication>
 
@@ -20,8 +23,9 @@ namespace mangrove::app {
             Q_DECLARE_TR_FUNCTIONS(MoveStandCommand)
 
         public:
+            // Moves `stand` from `from` so that its top-left corner lands on `topLeft`.
             MoveStandCommand(PlanDocument &document, core::StandId stand, const core::RectM &from,
-                             const core::RectM &to, std::uint64_t gesture);
+                core::Vec2 topLeft, std::uint64_t gesture);
 
             [[nodiscard]] int id() const override;
 

@@ -14,9 +14,9 @@ namespace mangrove::app {
 
     namespace {
 
-        bool isFinite(QPointF p)
+        bool isFinite(QPointF point)
         {
-            return std::isfinite(p.x()) && std::isfinite(p.y());
+            return std::isfinite(point.x()) && std::isfinite(point.y());
         }
 
         // Wheel deltas beyond this many notches are clamped (the zoom is clamped anyway).
@@ -30,8 +30,9 @@ namespace mangrove::app {
     void ViewTransform::setPixelsPerMeter(double pixelsPerMeter)
     {
         if (!(pixelsPerMeter > 0.0) || !std::isfinite(pixelsPerMeter * kMaxZoom)
-            || pixelsPerMeter == _pixelsPerMeter)
+            || pixelsPerMeter == _pixelsPerMeter) {
             return;
+        }
         _pixelsPerMeter = pixelsPerMeter;
         emit transformChanged();
     }
@@ -63,8 +64,9 @@ namespace mangrove::app {
 
     void ViewTransform::zoomAt(QPointF screenPos, double factor)
     {
-        if (!(factor > 0.0) || !std::isfinite(factor) || !isFinite(screenPos))
+        if (!(factor > 0.0) || !std::isfinite(factor) || !isFinite(screenPos)) {
             return;
+        }
         const QPointF anchor = toMeters(screenPos);
         const double zoom = std::clamp(_zoom * factor, kMinZoom, kMaxZoom);
         apply(zoom, screenPos - anchor * (_pixelsPerMeter * zoom));
@@ -78,19 +80,22 @@ namespace mangrove::app {
 
     void ViewTransform::pan(QPointF delta)
     {
-        if (isFinite(delta))
+        if (isFinite(delta)) {
             apply(_zoom, _offset + delta);
+        }
     }
 
     void ViewTransform::fit(QRectF meters, QSizeF viewport, double margin)
     {
         if (!isFinite(meters.topLeft()) || !isFinite(meters.bottomRight())
             || !std::isfinite(viewport.width()) || !std::isfinite(viewport.height())
-            || !std::isfinite(margin))
+            || !std::isfinite(margin)) {
             return;
+        }
         const QSizeF available = viewport.shrunkBy({margin, margin, margin, margin});
-        if (meters.isEmpty() || available.isEmpty())
+        if (meters.isEmpty() || available.isEmpty()) {
             return;
+        }
         const double fitScale
             = std::min(available.width() / meters.width(), available.height() / meters.height());
         const double zoom = std::clamp(fitScale / _pixelsPerMeter, kMinZoom, kMaxZoom);
@@ -100,11 +105,13 @@ namespace mangrove::app {
 
     void ViewTransform::apply(double zoom, QPointF offset)
     {
-        if (!std::isfinite(zoom) || !isFinite(offset))
+        if (!std::isfinite(zoom) || !isFinite(offset)) {
             return;
+        }
         zoom = std::clamp(zoom, kMinZoom, kMaxZoom);
-        if (zoom == _zoom && offset == _offset)
+        if (zoom == _zoom && offset == _offset) {
             return;
+        }
         _zoom = zoom;
         _offset = offset;
         emit transformChanged();

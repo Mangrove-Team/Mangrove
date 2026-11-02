@@ -6,6 +6,10 @@
 */
 
 #include "tools/stand/StandTool.hpp"
+#include "geometry/Geometry.h"
+#include "tools/IToolContext.hpp"
+#include "tools/PointerEvent.hpp"
+#include <optional>
 
 namespace mangrove::app {
 
@@ -16,19 +20,25 @@ namespace mangrove::app {
 
     void StandTool::move(IToolContext &context, const PointerEvent &event)
     {
-        if (!_anchor)
+        if (!_anchor) {
             return;
-        const core::RectM rect = rectTo(context, event.position);
+        }
+        const core::RectM rect = rectTo(context, *_anchor, event.position);
         context.setPreview(rect.isEmpty() ? std::nullopt : std::optional(rect));
     }
 
     void StandTool::release(IToolContext &context, const PointerEvent &event)
     {
-        if (!_anchor)
+        if (!_anchor) {
             return;
-        core::RectM rect = rectTo(context, event.position);
-        if (rect.isEmpty())
-            rect = core::RectM{_anchor->x, _anchor->y, kDefaultSize.x, kDefaultSize.y};
+        }
+        core::RectM rect = rectTo(context, *_anchor, event.position);
+        if (rect.isEmpty()) {
+            rect = core::RectM{.x = _anchor->x,
+                .y = _anchor->y,
+                .width = kDefaultSize.x,
+                .height = kDefaultSize.y};
+        }
 
         context.setPreview(std::nullopt);
         context.selectStand(context.addStand(rect));
@@ -41,9 +51,10 @@ namespace mangrove::app {
         _anchor.reset();
     }
 
-    core::RectM StandTool::rectTo(const IToolContext &context, core::Vec2 position) const
+    core::RectM StandTool::rectTo(
+        const IToolContext &context, core::Vec2 anchor, core::Vec2 position)
     {
-        return core::RectM::fromCorners(*_anchor, snap(position, context.snapStep()));
+        return core::RectM::fromCorners(anchor, snap(position, context.snapStep()));
     }
 
 } // namespace mangrove::app

@@ -14,6 +14,7 @@
 #include <QString>
 #include <QtQmlIntegration/qqmlintegration.h>
 
+#include <QtTypes>
 #include <vector>
 
 namespace mangrove::core {
@@ -33,7 +34,7 @@ namespace mangrove::app {
             Q_PROPERTY(int count READ count NOTIFY countChanged)
 
         public:
-            enum Role {
+            enum Role : quint16 {
                 MessageRole = Qt::UserRole + 1,
                 RuleIdRole,
             };

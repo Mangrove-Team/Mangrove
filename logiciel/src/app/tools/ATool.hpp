@@ -7,7 +7,10 @@
 
 #pragma once
 
+#include "geometry/Geometry.h"
 #include "tools/ITool.hpp"
+#include "tools/IToolContext.hpp"
+#include "tools/PointerEvent.hpp"
 
 namespace mangrove::app {
 

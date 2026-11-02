@@ -17,9 +17,9 @@ namespace mangrove::test {
 
 inline std::uint32_t testSeed()
 {
-    bool ok = false;
-    const auto fromEnv = qEnvironmentVariable("MANGROVE_TEST_SEED").toUInt(&ok);
-    const std::uint32_t seed = ok ? fromEnv : 20261003u;
+    bool parsed = false;
+    const auto fromEnv = qEnvironmentVariable("MANGROVE_TEST_SEED").toUInt(&parsed);
+    const std::uint32_t seed = parsed ? fromEnv : 20261003U;
     qInfo("random seed: %u (set MANGROVE_TEST_SEED to change it)", seed);
     return seed;
 }

@@ -9,6 +9,10 @@
 
 #include "Editor.hpp"
 #include "Translation.hpp"
+#include "ViewTransform.hpp"
+#include "plan/Ids.h"
+#include "plan/Plan.h"
+#include "plan/Stand.h"
 
 #include <QQmlApplicationEngine>
 #include <QQuickItem>
@@ -16,7 +20,6 @@
 #include <QtQml/qqmlextensionplugin.h>
 #include <QtTest>
 
-#include <algorithm>
 #include <memory>
 
 Q_IMPORT_QML_PLUGIN(Mangrove_AppPlugin)
@@ -27,228 +30,38 @@ Q_IMPORT_QML_PLUGIN(Mangrove_PanelsPlugin)
 
 using namespace mangrove::app;
 
+namespace {
+
+// Screen positions inside the plan canvas, clear of the bars around it.
+constexpr QPointF kCanvasPoint{160, 160};
+constexpr QPointF kFartherCanvasPoint{320, 320};
+// How much barsKeepTheirThicknessWhenWindowResizes shrinks the window.
+constexpr int kShrinkWidth = 200;
+constexpr int kShrinkHeight = 100;
+
+} // namespace
+
 class TestUi : public QObject {
     Q_OBJECT
 
-private slots:
-    // Each test gets its own engine, hence its own Editor singleton. Shortcuts need an
-    // active window.
-    void init()
-    {
-        m_engine = std::make_unique<QQmlApplicationEngine>();
-        QObject::connect(
-            m_engine.get(), &QQmlEngine::warnings, this, [](const QList<QQmlError> &list) {
-                for (const QQmlError &error : list)
-                    QTest::qFail(qPrintable(error.toString()), __FILE__, __LINE__);
-            });
-        m_engine->load(QUrl::fromLocalFile(QStringLiteral(MANGROVE_MAIN_QML)));
-        QCOMPARE(m_engine->rootObjects().size(), 1);
-
-        m_window = qobject_cast<QQuickWindow *>(m_engine->rootObjects().first());
-        QVERIFY(m_window);
-        QVERIFY(QTest::qWaitForWindowExposed(m_window));
-        m_editor = m_engine->singletonInstance<Editor *>("Mangrove.App", "Editor");
-        QVERIFY(m_editor);
-
-        m_window->requestActivate();
-        QVERIFY(QTest::qWaitForWindowActive(m_window));
-    }
-
-    void cleanup()
-    {
-        m_engine.reset();
-        m_window = nullptr;
-        m_editor = nullptr;
-    }
-
-    void barsSurroundTheWorkspace()
-    {
-        verifyBarsSurroundWorkspace();
-    }
-
-    // When the window shrinks, only the workspace shrinks: the bars keep their thickness.
-    void barsKeepTheirThicknessWhenWindowResizes()
-    {
-        const qreal topHeight = item("topBar")->height();
-        const qreal statusHeight = item("statusBar")->height();
-        const qreal toolbarWidth = item("toolbar")->width();
-        const qreal panelWidth = item("alertsPanel")->width();
-        const qreal workspaceWidth = item("workspace")->width();
-
-        m_window->resize(m_window->width() - 200, m_window->height() - 100);
-        QTRY_COMPARE(item("topBar")->width(), qreal(m_window->width()));
-
-        QCOMPARE(item("topBar")->height(), topHeight);
-        QCOMPARE(item("statusBar")->height(), statusHeight);
-        QCOMPARE(item("toolbar")->width(), toolbarWidth);
-        QCOMPARE(item("alertsPanel")->width(), panelWidth);
-        QCOMPARE(item("workspace")->width(), workspaceWidth - 200);
-        verifyBarsSurroundWorkspace();
-    }
-
-    // The logo is an SVG: it only loads if the Qt SVG image plugin is deployed.
-    void topBarShowsLogo()
-    {
-        QQuickItem *logo = item("logo");
-        QTRY_COMPARE(logo->property("status").toInt(), 1); // Image.Ready
-        QVERIFY(logo->property("paintedWidth").toReal() > 0);
-    }
-
-    void startsWithSelectToolAndEmptyHistory()
-    {
-        QCOMPARE(m_editor->activeTool(), Editor::ToolKind::Select);
-        QVERIFY(item("tool_select")->property("active").toBool());
-        QVERIFY(!item("tool_stand")->property("active").toBool());
-        QVERIFY(!item("undoButton")->isEnabled());
-        QVERIFY(!item("redoButton")->isEnabled());
-        QCOMPARE(m_editor->alerts()->count(), 0);
-    }
-
-    void toolButtonsSwitchTools()
-    {
-        click(item("tool_stand"));
-        QCOMPARE(m_editor->activeTool(), Editor::ToolKind::Stand);
-        QVERIFY(item("tool_stand")->property("active").toBool());
-        QVERIFY(!item("tool_select")->property("active").toBool());
-
-        click(item("tool_select"));
-        QCOMPARE(m_editor->activeTool(), Editor::ToolKind::Select);
-    }
-
-    void keyboardShortcutsSwitchTools()
-    {
-        QTest::keyClick(m_window, Qt::Key_R);
-        QCOMPARE(m_editor->activeTool(), Editor::ToolKind::Stand);
-        QTest::keyClick(m_window, Qt::Key_V);
-        QCOMPARE(m_editor->activeTool(), Editor::ToolKind::Select);
-    }
-
-    void statusBarShowsActiveTool()
-    {
-        QQuickItem *label = item("activeToolLabel");
-        QCOMPARE(label->property("text").toString(), QStringLiteral("Select"));
-        QTest::keyClick(m_window, Qt::Key_R);
-        QCOMPARE(label->property("text").toString(), QStringLiteral("Stand"));
-    }
-
-    void undoRedoButtonsFollowHistory()
-    {
-        addStandThroughEditor();
-        QVERIFY(item("undoButton")->isEnabled());
-        QVERIFY(!item("redoButton")->isEnabled());
-
-        click(item("undoButton"));
-        QCOMPARE(m_editor->stands()->rowCount(), 0);
-        QVERIFY(!item("undoButton")->isEnabled());
-        QVERIFY(item("redoButton")->isEnabled());
-
-        click(item("redoButton"));
-        QCOMPARE(m_editor->stands()->rowCount(), 1);
-    }
-
-    void undoRedoShortcuts()
-    {
-        addStandThroughEditor();
-        QTest::keyClick(m_window, Qt::Key_Z, Qt::ControlModifier);
-        QCOMPARE(m_editor->stands()->rowCount(), 0);
-        QTest::keyClick(m_window, Qt::Key_Z, Qt::ControlModifier | Qt::ShiftModifier);
-        QCOMPARE(m_editor->stands()->rowCount(), 1);
-        QTest::keyClick(m_window, Qt::Key_Z, Qt::ControlModifier);
-        QTest::keyClick(m_window, Qt::Key_Y, Qt::ControlModifier);
-        QCOMPARE(m_editor->stands()->rowCount(), 1);
-    }
-
-    void escapeCancelsGesture()
-    {
-        m_editor->setActiveTool(Editor::ToolKind::Stand);
-        m_editor->press({160, 160});
-        m_editor->move({320, 320});
-        QVERIFY(m_editor->hasPreview());
-        QTest::keyClick(m_window, Qt::Key_Escape);
-        QVERIFY(!m_editor->hasPreview());
-    }
-
-    void alertShowsInAlertsPanel()
-    {
-        QQuickItem *panel = item("alertsPanel");
-        QVERIFY(textShown(panel, QStringLiteral("No issues on this plan.")));
-
-        mangrove::core::Plan plan;
-        const mangrove::core::Stand a = plan.makeStand({10, 10, 4, 3});
-        plan.insertStand(0, a);
-        const mangrove::core::Stand b = plan.makeStand({12, 11, 4, 3});
-        plan.insertStand(1, b);
-        m_editor->alerts()->setAlerts({{"overlap", {a.id, b.id}}}, plan);
-        QCOMPARE(m_editor->alerts()->count(), 1);
-
-        QTRY_VERIFY(textShown(panel, QStringLiteral("Stands S01 and S02 overlap.")));
-        QVERIFY(!textShown(panel, QStringLiteral("No issues on this plan.")));
-    }
-
-    void alertsShowInWarningColor()
-    {
-        QObject *theme = m_engine->singletonInstance<QObject *>("Mangrove.Theme", "Theme");
-        QVERIFY(theme);
-        const QColor warning = theme->property("warning").value<QColor>();
-        QQuickItem *badge = item("countBadge");
-        QVERIFY(badge->property("color").value<QColor>() != warning);
-
-        addStandThroughEditor();
-        const StandModel *stands = m_editor->stands();
-        const mangrove::core::StandId stand{
-            stands->data(stands->index(0), StandModel::StandIdRole).toULongLong()};
-        m_editor->setAlerts({{"inside-hall", {stand}}});
-        QTRY_COMPARE(badge->property("color").value<QColor>(), warning);
-        QVERIFY(textShown(item("alertsPanel"), QStringLiteral("Stand S01 is outside the hall.")));
-
-        m_editor->setAlerts({});
-        QTRY_VERIFY(badge->property("color").value<QColor>() != warning);
-        QVERIFY(textShown(item("alertsPanel"), QStringLiteral("No issues on this plan.")));
-    }
-
-    // The other tests run without a translator, so they read the English source texts.
-    // Texts built in C++ with tr() are translated too. The translator uninstalls itself
-    // at the end of the test.
-    void interfaceIsInFrench()
-    {
-        const auto translator = loadTranslation();
-        QVERIFY(translator);
-        QCoreApplication::installTranslator(translator.get());
-        m_engine->retranslate();
-
-        QCOMPARE(item("activeToolLabel")->property("text").toString(), QStringLiteral("Sélection"));
-        QCOMPARE(
-            item("undoButton")->property("tooltip").toString(), QStringLiteral("Annuler (Ctrl+Z)"));
-        QTRY_VERIFY(textShown(item("alertsPanel"), QStringLiteral("Aucun problème sur ce plan.")));
-
-        mangrove::core::Plan plan;
-        const mangrove::core::Stand a = plan.makeStand({10, 10, 4, 3});
-        plan.insertStand(0, a);
-        const mangrove::core::Stand b = plan.makeStand({12, 11, 4, 3});
-        plan.insertStand(1, b);
-        m_editor->alerts()->setAlerts({{"overlap", {a.id, b.id}}}, plan);
-        QTRY_VERIFY(textShown(
-            item("alertsPanel"), QStringLiteral("Les stands S01 et S02 se chevauchent.")));
-    }
-
-private:
     // Searches the visual tree: Repeater delegates are not QObject children of the window.
     QQuickItem *item(const char *objectName) const
     {
-        QQuickItem *found = findItem(m_window->contentItem(), QLatin1String(objectName));
-        if (!found)
-            qFatal("No item named \"%s\" in Main.qml", objectName);
-        return found;
+        if (auto *found = findItem(m_window->contentItem(), QLatin1String(objectName))) {
+            return found;
+        }
+        qFatal("No item named \"%s\" in Main.qml", objectName);
     }
 
+    // Breadth-first over the visual tree; object names are unique in Main.qml.
     static QQuickItem *findItem(QQuickItem *root, QLatin1String objectName)
     {
-        if (root->objectName() == objectName)
-            return root;
-        const auto children = root->childItems();
-        for (QQuickItem *child : children) {
-            if (QQuickItem *found = findItem(child, objectName))
-                return found;
+        QList<QQuickItem *> visited{root};
+        for (qsizetype index = 0; index < visited.size(); ++index) {
+            if (visited.at(index)->objectName() == objectName) {
+                return visited.at(index);
+            }
+            visited.append(visited.at(index)->childItems());
         }
         return nullptr;
     }
@@ -294,25 +107,235 @@ private:
     void addStandThroughEditor()
     {
         m_editor->setActiveTool(Editor::ToolKind::Stand);
-        m_editor->press({160, 160});
-        m_editor->release({160, 160});
+        m_editor->press(kCanvasPoint);
+        m_editor->release(kCanvasPoint);
         QCOMPARE(m_editor->stands()->rowCount(), 1);
     }
 
+    // Whether `text` is shown by `root` or one of its descendants, invisible
+    // subtrees excluded.
     static bool textShown(QQuickItem *root, const QString &text)
     {
-        if (!root->isVisible())
-            return false;
-        if (root->property("text").toString() == text)
-            return true;
-        const auto children = root->childItems();
-        return std::any_of(children.begin(), children.end(),
-            [&](QQuickItem *child) { return textShown(child, text); });
+        QList<QQuickItem *> pending{root};
+        while (!pending.isEmpty()) {
+            const QQuickItem *current = pending.takeLast();
+            if (!current->isVisible()) {
+                continue;
+            }
+            if (current->property("text").toString() == text) {
+                return true;
+            }
+            pending.append(current->childItems());
+        }
+        return false;
     }
 
     std::unique_ptr<QQmlApplicationEngine> m_engine;
     QQuickWindow *m_window = nullptr;
     Editor *m_editor = nullptr;
+
+private slots:
+    // Each test gets its own engine, hence its own Editor singleton. Shortcuts need an
+    // active window.
+    void init()
+    {
+        m_engine = std::make_unique<QQmlApplicationEngine>();
+        QObject::connect(
+            m_engine.get(), &QQmlEngine::warnings, this, [](const QList<QQmlError> &list) {
+                for (const QQmlError &error : list) {
+                    QTest::qFail(qPrintable(error.toString()), __FILE__, __LINE__);
+                }
+            });
+        m_engine->load(QUrl::fromLocalFile(QStringLiteral(MANGROVE_MAIN_QML)));
+        QCOMPARE(m_engine->rootObjects().size(), 1);
+
+        m_window = qobject_cast<QQuickWindow *>(m_engine->rootObjects().first());
+        QVERIFY(m_window);
+        QVERIFY(QTest::qWaitForWindowExposed(m_window));
+        m_editor = m_engine->singletonInstance<Editor *>("Mangrove.App", "Editor");
+        QVERIFY(m_editor);
+
+        m_window->requestActivate();
+        QVERIFY(QTest::qWaitForWindowActive(m_window));
+    }
+
+    void cleanup()
+    {
+        m_engine.reset();
+        m_window = nullptr;
+        m_editor = nullptr;
+    }
+
+    void barsSurroundTheWorkspace() { verifyBarsSurroundWorkspace(); }
+
+    // When the window shrinks, only the workspace shrinks: the bars keep their thickness.
+    void barsKeepTheirThicknessWhenWindowResizes()
+    {
+        const qreal topHeight = item("topBar")->height();
+        const qreal statusHeight = item("statusBar")->height();
+        const qreal toolbarWidth = item("toolbar")->width();
+        const qreal panelWidth = item("alertsPanel")->width();
+        const qreal workspaceWidth = item("workspace")->width();
+
+        m_window->resize(m_window->width() - kShrinkWidth, m_window->height() - kShrinkHeight);
+        QTRY_COMPARE(item("topBar")->width(), qreal(m_window->width()));
+
+        QCOMPARE(item("topBar")->height(), topHeight);
+        QCOMPARE(item("statusBar")->height(), statusHeight);
+        QCOMPARE(item("toolbar")->width(), toolbarWidth);
+        QCOMPARE(item("alertsPanel")->width(), panelWidth);
+        QCOMPARE(item("workspace")->width(), workspaceWidth - kShrinkWidth);
+        verifyBarsSurroundWorkspace();
+    }
+
+    // The logo is an SVG: it only loads if the Qt SVG image plugin is deployed.
+    void topBarShowsLogo()
+    {
+        QQuickItem const *logo = item("logo");
+        QTRY_COMPARE(logo->property("status").toInt(), 1); // Image.Ready
+        QVERIFY(logo->property("paintedWidth").toReal() > 0);
+    }
+
+    void startsWithSelectToolAndEmptyHistory()
+    {
+        QCOMPARE(m_editor->activeTool(), Editor::ToolKind::Select);
+        QVERIFY(item("tool_select")->property("active").toBool());
+        QVERIFY(!item("tool_stand")->property("active").toBool());
+        QVERIFY(!item("undoButton")->isEnabled());
+        QVERIFY(!item("redoButton")->isEnabled());
+        QCOMPARE(m_editor->alerts()->count(), 0);
+    }
+
+    void toolButtonsSwitchTools()
+    {
+        click(item("tool_stand"));
+        QCOMPARE(m_editor->activeTool(), Editor::ToolKind::Stand);
+        QVERIFY(item("tool_stand")->property("active").toBool());
+        QVERIFY(!item("tool_select")->property("active").toBool());
+
+        click(item("tool_select"));
+        QCOMPARE(m_editor->activeTool(), Editor::ToolKind::Select);
+    }
+
+    void keyboardShortcutsSwitchTools()
+    {
+        QTest::keyClick(m_window, Qt::Key_R);
+        QCOMPARE(m_editor->activeTool(), Editor::ToolKind::Stand);
+        QTest::keyClick(m_window, Qt::Key_V);
+        QCOMPARE(m_editor->activeTool(), Editor::ToolKind::Select);
+    }
+
+    void statusBarShowsActiveTool()
+    {
+        QQuickItem const *label = item("activeToolLabel");
+        QCOMPARE(label->property("text").toString(), QStringLiteral("Select"));
+        QTest::keyClick(m_window, Qt::Key_R);
+        QCOMPARE(label->property("text").toString(), QStringLiteral("Stand"));
+    }
+
+    void undoRedoButtonsFollowHistory()
+    {
+        addStandThroughEditor();
+        QVERIFY(item("undoButton")->isEnabled());
+        QVERIFY(!item("redoButton")->isEnabled());
+
+        click(item("undoButton"));
+        QCOMPARE(m_editor->stands()->rowCount(), 0);
+        QVERIFY(!item("undoButton")->isEnabled());
+        QVERIFY(item("redoButton")->isEnabled());
+
+        click(item("redoButton"));
+        QCOMPARE(m_editor->stands()->rowCount(), 1);
+    }
+
+    void undoRedoShortcuts()
+    {
+        addStandThroughEditor();
+        QTest::keyClick(m_window, Qt::Key_Z, Qt::ControlModifier);
+        QCOMPARE(m_editor->stands()->rowCount(), 0);
+        QTest::keyClick(m_window, Qt::Key_Z, Qt::ControlModifier | Qt::ShiftModifier);
+        QCOMPARE(m_editor->stands()->rowCount(), 1);
+        QTest::keyClick(m_window, Qt::Key_Z, Qt::ControlModifier);
+        QTest::keyClick(m_window, Qt::Key_Y, Qt::ControlModifier);
+        QCOMPARE(m_editor->stands()->rowCount(), 1);
+    }
+
+    void escapeCancelsGesture()
+    {
+        m_editor->setActiveTool(Editor::ToolKind::Stand);
+        m_editor->press(kCanvasPoint);
+        m_editor->move(kFartherCanvasPoint);
+        QVERIFY(m_editor->hasPreview());
+        QTest::keyClick(m_window, Qt::Key_Escape);
+        QVERIFY(!m_editor->hasPreview());
+    }
+
+    void alertShowsInAlertsPanel()
+    {
+        QQuickItem *panel = item("alertsPanel");
+        QVERIFY(textShown(panel, QStringLiteral("No issues on this plan.")));
+
+        mangrove::core::Plan plan;
+        const mangrove::core::Stand first
+            = plan.makeStand({.x = 10, .y = 10, .width = 4, .height = 3});
+        plan.insertStand(0, first);
+        const mangrove::core::Stand second
+            = plan.makeStand({.x = 12, .y = 11, .width = 4, .height = 3});
+        plan.insertStand(1, second);
+        m_editor->alerts()->setAlerts({{"overlap", {first.id, second.id}}}, plan);
+        QCOMPARE(m_editor->alerts()->count(), 1);
+
+        QTRY_VERIFY(textShown(panel, QStringLiteral("Stands S01 and S02 overlap.")));
+        QVERIFY(!textShown(panel, QStringLiteral("No issues on this plan.")));
+    }
+
+    void alertsShowInWarningColor()
+    {
+        auto *theme = m_engine->singletonInstance<QObject *>("Mangrove.Theme", "Theme");
+        QVERIFY(theme);
+        const auto warning = theme->property("warning").value<QColor>();
+        QQuickItem const *badge = item("countBadge");
+        QVERIFY(badge->property("color").value<QColor>() != warning);
+
+        addStandThroughEditor();
+        const StandModel *stands = m_editor->stands();
+        const mangrove::core::StandId stand{
+            stands->data(stands->index(0), StandModel::StandIdRole).toULongLong()};
+        m_editor->setAlerts({{"inside-hall", {stand}}});
+        QTRY_COMPARE(badge->property("color").value<QColor>(), warning);
+        QVERIFY(textShown(item("alertsPanel"), QStringLiteral("Stand S01 is outside the hall.")));
+
+        m_editor->setAlerts({});
+        QTRY_VERIFY(badge->property("color").value<QColor>() != warning);
+        QVERIFY(textShown(item("alertsPanel"), QStringLiteral("No issues on this plan.")));
+    }
+
+    // The other tests run without a translator, so they read the English source texts.
+    // Texts built in C++ with tr() are translated too. The translator uninstalls itself
+    // at the end of the test.
+    void interfaceIsInFrench()
+    {
+        const auto translator = loadTranslation();
+        QVERIFY(translator);
+        QCoreApplication::installTranslator(translator.get());
+        m_engine->retranslate();
+
+        QCOMPARE(item("activeToolLabel")->property("text").toString(), QStringLiteral("Sélection"));
+        QCOMPARE(
+            item("undoButton")->property("tooltip").toString(), QStringLiteral("Annuler (Ctrl+Z)"));
+        QTRY_VERIFY(textShown(item("alertsPanel"), QStringLiteral("Aucun problème sur ce plan.")));
+
+        mangrove::core::Plan plan;
+        const mangrove::core::Stand first
+            = plan.makeStand({.x = 10, .y = 10, .width = 4, .height = 3});
+        plan.insertStand(0, first);
+        const mangrove::core::Stand second
+            = plan.makeStand({.x = 12, .y = 11, .width = 4, .height = 3});
+        plan.insertStand(1, second);
+        m_editor->alerts()->setAlerts({{"overlap", {first.id, second.id}}}, plan);
+        QTRY_VERIFY(textShown(
+            item("alertsPanel"), QStringLiteral("Les stands S01 et S02 se chevauchent.")));
+    }
 };
 
 QTEST_MAIN(TestUi)

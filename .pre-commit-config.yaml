@@ -8,6 +8,8 @@ repos:
         args: [--style=file, --version=21]
       - id: clang-tidy
         args: [--version=21, -p=build]
+        # Only compiled with -DMANGROVE_FUZZ=ON (Clang + libFuzzer): not in build/compile_commands.json.
+        exclude: ^logiciel/tests/fuzz/
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v4.4.0
     hooks:

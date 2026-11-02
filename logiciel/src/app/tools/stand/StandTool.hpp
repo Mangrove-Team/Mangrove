@@ -7,7 +7,10 @@
 
 #pragma once
 
+#include "geometry/Geometry.h"
 #include "tools/ATool.hpp"
+#include "tools/IToolContext.hpp"
+#include "tools/PointerEvent.hpp"
 
 #include <optional>
 
@@ -15,7 +18,7 @@ namespace mangrove::app {
 
     class StandTool final : public ATool {
         public:
-            static constexpr core::Vec2 kDefaultSize{4.0, 3.0};
+            static constexpr core::Vec2 kDefaultSize{.x = 4.0, .y = 3.0};
 
             void press(IToolContext &context, const PointerEvent &event) override;
             void move(IToolContext &context, const PointerEvent &event) override;
@@ -23,8 +26,8 @@ namespace mangrove::app {
             void cancel(IToolContext &context) override;
 
         private:
-            [[nodiscard]] core::RectM rectTo(const IToolContext &context,
-                                             core::Vec2 position) const;
+            [[nodiscard]] static core::RectM rectTo(
+                const IToolContext &context, core::Vec2 anchor, core::Vec2 position);
 
             std::optional<core::Vec2> _anchor;
     }; // class StandTool

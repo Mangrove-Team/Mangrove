@@ -12,6 +12,7 @@
 #include <QAbstractListModel>
 #include <QtQmlIntegration/qqmlintegration.h>
 
+#include <QtTypes>
 #include <unordered_set>
 
 namespace mangrove::app {
@@ -25,7 +26,7 @@ namespace mangrove::app {
             QML_UNCREATABLE("StandModel is provided by Editor.stands")
 
         public:
-            enum Role {
+            enum Role : quint16 {
                 StandIdRole = Qt::UserRole + 1,
                 LabelRole,
                 XmRole,
@@ -43,13 +44,13 @@ namespace mangrove::app {
             [[nodiscard]] QVariant data(const QModelIndex &index, int role) const override;
             [[nodiscard]] QHash<int, QByteArray> roleNames() const override;
 
-            void setSelectedStand(core::StandId id);
+            void setSelectedStand(core::StandId standId);
             // Stands named by an alert. Set from outside: nothing is checked here.
             void setConflictingStands(std::unordered_set<core::StandId> ids);
 
         private:
             void notifyRow(int row, const QList<int> &roles);
-            void notifyStand(core::StandId id, const QList<int> &roles);
+            void notifyStand(core::StandId standId, const QList<int> &roles);
 
             const PlanDocument &_document;
             core::StandId _selected;

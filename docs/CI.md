@@ -28,13 +28,13 @@ Dans l'onglet **Actions** du dépôt (ou via les checks en bas d'une PR) :
 Avant de pousser, les mêmes commandes que la CI :
 
 ```sh
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
 cmake --build build --parallel
 pre-commit run --all-files
-ctest --test-dir build --output-on-failure
+QT_QPA_PLATFORM=offscreen ctest --test-dir build --output-on-failure
 ```
 
-> Le dossier de build doit s'appeler **`build/`** : le hook clang-tidy lit `build/compile_commands.json`. Sous CLion, changer le dossier dans *Settings → Build, Execution, Deployment → CMake → Build directory*.
+> Les commandes se lancent **depuis la racine** du dépôt (le `CMakeLists.txt` racine inclut `logiciel/`). Le dossier de build doit s'appeler **`build/`** : le hook clang-tidy lit `build/compile_commands.json`. Sous CLion, changer le dossier dans *Settings → Build, Execution, Deployment → CMake → Build directory*.
 
 ## Écrire un test C++ compatible
 
@@ -49,70 +49,16 @@ Un test qui n'est pas déclaré avec `add_test` n'est **pas lancé** par la CI, 
 
 ### Où placer les tests
 
-```
-tests/
-├── CMakeLists.txt        ← déclaration des tests
-├── sanity_test.cpp       ← exemple minimal
-└── <module>_test.cpp     ← un fichier par module testé
-```
-
-Nommage : `<module>_test.cpp`, et le même nom pour l'exécutable et le test (ex. `stand_test`).
-
-### Déclarer un test
-
-Dans `tests/CMakeLists.txt` :
+Les tests de l'application sont dans `logiciel/tests/`, un sous-dossier par couche (`core/`, `app/`, `ui/`, `i18n/`, `fuzz/`). Ils utilisent Qt Test et sont déclarés avec la fonction CMake `mangrove_add_test`, qui fait le `add_test` :
 
 ```cmake
-add_executable(stand_test stand_test.cpp)
-target_link_libraries(stand_test PRIVATE mangrove_core)
-add_test(NAME stand_test COMMAND stand_test)
+# logiciel/tests/core/CMakeLists.txt
+mangrove_add_test(tst_plan LIBS Mangrove::Core)
 ```
 
-### Tester le code de l'application
+Le guide complet (écrire, nommer, lancer un test, labels `ctest -L core`…) est dans [logiciel/Documentation/guides/TESTING.md](../logiciel/Documentation/guides/TESTING.md).
 
-Un exécutable de test ne peut pas linker contre l'exécutable `Mangrove`. Le code métier (Plan, Stand, Constraint…) doit donc être compilé dans une **bibliothèque** que l'application et les tests utilisent tous les deux :
-
-```cmake
-add_library(mangrove_core STATIC
-        src/Plan/Plan.cpp
-        src/Stand/Stand.cpp
-        # ...
-)
-target_include_directories(mangrove_core PUBLIC src/Plan src/Stand ...)
-target_link_libraries(mangrove_core PUBLIC Qt6::Core)
-
-add_executable(Mangrove src/main.cpp ...)
-target_link_libraries(Mangrove PRIVATE mangrove_core Qt6::Quick Qt6::Svg)
-```
-
-### Exemple minimal (sans framework)
-
-Voir `tests/sanity_test.cpp` :
-
-```cpp
-#include <cstdlib>
-#include <iostream>
-
-int main () {
-    if (2 + 2 != 4) {
-        std::cerr << "sanity_test: 2 + 2 != 4\n";
-        return EXIT_FAILURE;
-    }
-    return EXIT_SUCCESS;
-}
-```
-
-### Avec Qt Test
-
-Qt Test est déjà installé en CI avec Qt, sans dépendance supplémentaire. Un exécutable Qt Test renvoie le nombre de tests en échec, donc il fonctionne directement avec `ctest` :
-
-```cmake
-find_package(Qt6 REQUIRED COMPONENTS Test)
-
-add_executable(stand_test stand_test.cpp)
-target_link_libraries(stand_test PRIVATE mangrove_core Qt6::Test)
-add_test(NAME stand_test COMMAND stand_test)
-```
+Un exécutable de test ne peut pas linker contre l'exécutable `Mangrove` : le code testé doit être dans une bibliothèque (`mangrove_core`, `mangrove_app`). Un exécutable Qt Test renvoie le nombre de tests en échec, il fonctionne donc directement avec `ctest`.
 
 ### Règles pour qu'un test passe en CI
 
@@ -133,7 +79,7 @@ La pipeline de l'API n'est pas encore en place. Elle suivra le même principe : 
 Vérifier les règles ci-dessus (écran, réseau, chemins absolus). Pour reproduire l'absence d'écran en local : `QT_QPA_PLATFORM=offscreen ctest --test-dir build --output-on-failure`.
 
 **Mon test n'apparaît pas dans le Summary**
-Il manque le `add_test` dans `tests/CMakeLists.txt`. `ctest --test-dir build -N` liste les tests que ctest connaît.
+Il manque l'appel à `mangrove_add_test` dans le `CMakeLists.txt` du dossier de test. `ctest --test-dir build -N` liste les tests que ctest connaît.
 
 **clang-tidy échoue en local avec `compile_commands.json` introuvable**
 Le projet n'a pas été configuré dans `build/` : relancer la commande `cmake -S . -B build ...` ci-dessus.
