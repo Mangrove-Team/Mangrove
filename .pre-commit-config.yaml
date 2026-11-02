@@ -5,9 +5,11 @@ repos:
     rev: v1.6.1
     hooks:
       - id: clang-format
-        args: [--style=file, --version=21]
+        args: [--style=file, --version=21.1.8]
+        additional_dependencies: [clang-format==21.1.8]
       - id: clang-tidy
-        args: [--version=21, -p=build]
+        args: [--version=21.1.6, -p=build]
+        additional_dependencies: [clang-tidy==21.1.6]
         # Only compiled with -DMANGROVE_FUZZ=ON (Clang + libFuzzer): not in build/compile_commands.json.
         exclude: ^logiciel/tests/fuzz/
   - repo: https://github.com/compilerla/conventional-pre-commit
