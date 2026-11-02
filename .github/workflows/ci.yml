@@ -76,3 +76,25 @@ jobs:
           annotate_only: true
           include_passed: true
           detailed_summary: true
+
+  build-windows:
+    name: Build & test (Windows, MSVC)
+    runs-on: windows-2022
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.3'
+          arch: win64_msvc2022_64
+          cache: true
+
+      - uses: microsoft/setup-msbuild@v1.0.2
+
+      - name: Configure
+        run: cmake -S . -B build
+
+      - name: Build
+        run: cmake --build build --parallel
+

@@ -4,16 +4,17 @@ La CI tourne sur **GitHub Actions** (`.github/workflows/ci.yml`). Elle se lance 
 
 ## Ce que vérifie la pipeline
 
-Deux jobs tournent en parallèle :
+Trois jobs tournent en parallèle :
 
 | Job | Étapes | Échoue si… |
 |-----|--------|------------|
 | **Format** | `pre-commit` sans clang-tidy | le code n'est pas formaté selon le `.clang-format` |
-| **Build, tidy & test** | Installation de Qt 6.8 → configure CMake → build → clang-tidy → ctest | le projet ne compile pas, clang-tidy remonte une erreur, ou un test échoue |
+| **Build, tidy & test** (Linux) | Installation de Qt 6.8 → configure CMake → build → clang-tidy → ctest | le projet ne compile pas, clang-tidy remonte une erreur, ou un test échoue |
+| **Build (Windows, MSVC)** | Installation de Qt 6.8 (MSVC 2022) → configure CMake → build | le projet ne compile pas avec MSVC, ou un test échoue sous Windows |
 
 Si un nouveau commit est poussé sur la même branche, le run précédent est annulé.
 
-Une PR ne doit être mergée que si les deux jobs sont verts.
+Une PR ne doit être mergée que si tous les jobs sont verts.
 
 ## Lire le résultat d'un run
 
