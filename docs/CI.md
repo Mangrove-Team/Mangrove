@@ -4,13 +4,14 @@ La CI tourne sur **GitHub Actions** (`.github/workflows/ci.yml`). Elle se lance 
 
 ## Ce que vérifie la pipeline
 
-Trois jobs tournent en parallèle :
+Quatre jobs tournent en parallèle :
 
 | Job | Étapes | Échoue si… |
 |-----|--------|------------|
 | **Format** | `pre-commit` sans clang-tidy | le code n'est pas formaté selon le `.clang-format` |
 | **Build, tidy & test** (Linux) | Installation de Qt 6.8 → configure CMake → build → clang-tidy → ctest | le projet ne compile pas, clang-tidy remonte une erreur, ou un test échoue |
-| **Build (Windows, MSVC)** | Installation de Qt 6.8 (MSVC 2022) → configure CMake → build | le projet ne compile pas avec MSVC, ou un test échoue sous Windows |
+| **Package (Linux)** | Installation de Qt 6.8 → build Release → `cpack` | le build Release ou le packaging échoue |
+| **Build & package (Windows, MSVC)** | Installation de Qt 6.8 (MSVC 2022) → build Release → `cpack -G NSIS` (windeployqt + installeur) | le projet ne compile pas avec MSVC, ou le déploiement de Qt / l'installeur échoue |
 
 Si un nouveau commit est poussé sur la même branche, le run précédent est annulé.
 
@@ -23,6 +24,19 @@ Dans l'onglet **Actions** du dépôt (ou via les checks en bas d'une PR) :
 - **Summary** du run : tableau de tous les tests avec leur statut et leur durée.
 - **Logs d'un job** : cliquer sur l'étape en échec. Pour un test, la sortie complète du test en échec est affichée (`--output-on-failure`).
 - **Format en échec** : le diff attendu est affiché dans les logs. Lancer `pre-commit run --all-files` en local corrige les fichiers automatiquement.
+
+## Récupérer l'application compilée
+
+Chaque run publie l'application prête à lancer, **Qt inclus** (rien à installer à part) :
+
+| Artifact | Contenu | Lancer |
+|----------|---------|--------|
+| `Mangrove-linux-x64` | `Mangrove-<version>-Linux.tar.gz` | extraire l'archive, puis `bin/Mangrove` |
+| `Mangrove-windows-x64-installer` | installeur `Mangrove-<version>-win64.exe` | extraire le zip, lancer l'installeur (raccourcis menu Démarrer + bureau, désinstallation dans *Applications*) |
+
+On les télécharge en bas de la page **Summary** du run (section *Artifacts*). Ils sont conservés **14 jours**. L'installeur n'est pas signé : Windows SmartScreen affiche un avertissement, cliquer sur *Informations complémentaires → Exécuter quand même*.
+
+Pour produire la même chose en local, configurer avec `-DMANGROVE_DEPLOY_QT=ON`, puis `cmake --install` ou `cpack`. L'option est activée par défaut avec vcpkg, et à laisser désactivée avec le Qt de la distribution : ses bibliothèques restent une dépendance système, et le déploiement échoue (`file RPATH_SET could not write new RPATH`).
 
 ## Reproduire la CI en local
 
