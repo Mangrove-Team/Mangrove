@@ -99,9 +99,9 @@ jobs:
         working-directory: build
         run: cpack -G TGZ
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: Mangrove-linux-x64
+          archive: false
           path: build/Mangrove-*.tar.gz
           if-no-files-found: error
           retention-days: 14
@@ -131,16 +131,16 @@ jobs:
         working-directory: build
         run: cpack -G NSIS -C Release
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: Mangrove-windows-x64-installer
+          archive: false
           path: build/Mangrove-*-win64.exe
           if-no-files-found: error
           retention-days: 14
 
       - name: Upload CPack logs
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cpack-logs-windows
           path: build/_CPack_Packages/**/*.log

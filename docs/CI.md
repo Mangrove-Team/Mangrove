@@ -31,8 +31,8 @@ Chaque run publie l'application prête à lancer, **Qt inclus** (rien à install
 
 | Artifact | Contenu | Lancer |
 |----------|---------|--------|
-| `Mangrove-linux-x64` | `Mangrove-<version>-Linux.tar.gz` | extraire l'archive, puis `bin/Mangrove` |
-| `Mangrove-windows-x64-installer` | installeur `Mangrove-<version>-win64.exe` | extraire le zip, lancer l'installeur (raccourcis menu Démarrer + bureau, désinstallation dans *Applications*) |
+| `Mangrove-<version>-Linux.tar.gz` | l'application et Qt | `tar xzf` l'archive, puis `bin/Mangrove` |
+| `Mangrove-<version>-win64.exe` | l'installeur | le lancer (raccourcis menu Démarrer + bureau, désinstallation dans *Applications*) |
 
 On les télécharge en bas de la page **Summary** du run (section *Artifacts*). Ils sont conservés **14 jours**. L'installeur n'est pas signé : Windows SmartScreen affiche un avertissement, cliquer sur *Informations complémentaires → Exécuter quand même*.
 
