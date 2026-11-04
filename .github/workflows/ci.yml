@@ -76,3 +76,73 @@ jobs:
           annotate_only: true
           include_passed: true
           detailed_summary: true
+
+  package-linux:
+    name: Package (Linux)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.3'
+          cache: true
+
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DMANGROVE_BUILD_TESTS=OFF -DMANGROVE_DEPLOY_QT=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Package
+        working-directory: build
+        run: cpack -G TGZ
+
+      - uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: build/Mangrove-*.tar.gz
+          if-no-files-found: error
+          retention-days: 14
+
+  build-windows:
+    name: Build & package (Windows, MSVC)
+    runs-on: windows-2022
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.3'
+          arch: win64_msvc2022_64
+          cache: true
+
+      - uses: microsoft/setup-msbuild@v1.0.2
+
+      - name: Configure
+        run: cmake -S . -B build -DMANGROVE_DEPLOY_QT=ON
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Package
+        working-directory: build
+        run: cpack -G NSIS -C Release
+
+      - uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: build/Mangrove-*-win64.exe
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload CPack logs
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: cpack-logs-windows
+          path: build/_CPack_Packages/**/*.log
+          if-no-files-found: ignore
+
