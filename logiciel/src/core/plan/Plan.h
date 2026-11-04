@@ -21,36 +21,36 @@
 namespace mangrove::core {
 
 class Plan {
-    public:
-        static constexpr RectM kDefaultHall{0.0, 0.0, 60.0, 40.0};
+public:
+    static constexpr RectM kDefaultHall{.x = 0.0, .y = 0.0, .width = 60.0, .height = 40.0};
 
-        Plan() = default;
-        explicit Plan(const RectM &hall);
+    Plan() = default;
+    explicit Plan(const RectM &hall);
 
-        [[nodiscard]] std::optional<std::size_t> indexOf(StandId id) const noexcept;
-        [[nodiscard]] const std::vector<Stand> &stands() const noexcept;
-        [[nodiscard]] bool canInsert(const Stand &stand) const noexcept;
-        [[nodiscard]] const Stand *find(StandId id) const noexcept;
-        [[nodiscard]] StandId standAt(Vec2 point) const noexcept;
-        [[nodiscard]] const RectM &hall() const noexcept;
-        [[nodiscard]] std::size_t size() const noexcept;
-        [[nodiscard]] Stand makeStand(const RectM &rect);
-        
-        bool insertStand(std::size_t index, Stand stand);
-        bool setStandRect(StandId id, const RectM &rect);
-        void setHall(const RectM &hall) noexcept;
-        
-        std::optional<Stand> removeStand(StandId id);
+    [[nodiscard]] std::optional<std::size_t> indexOf(StandId standId) const noexcept;
+    [[nodiscard]] const std::vector<Stand> &stands() const noexcept;
+    [[nodiscard]] bool canInsert(const Stand &stand) const noexcept;
+    [[nodiscard]] const Stand *find(StandId standId) const noexcept;
+    [[nodiscard]] StandId standAt(Vec2 point) const noexcept;
+    [[nodiscard]] const RectM &hall() const noexcept;
+    [[nodiscard]] std::size_t size() const noexcept;
+    [[nodiscard]] Stand makeStand(const RectM &rect);
 
-    private:
-        static constexpr std::uint64_t kIdsExhausted = 0;
+    bool insertStand(std::size_t index, Stand stand);
+    bool setStandRect(StandId standId, const RectM &rect);
+    void setHall(const RectM &hall) noexcept;
 
-        [[nodiscard]] bool labelInUse(std::string_view label) const noexcept;
-        [[nodiscard]] std::string uniqueLabel(StandId id) const;
+    std::optional<Stand> removeStand(StandId standId);
 
-        RectM m_hall = kDefaultHall;
-        std::vector<Stand> m_stands;
-        std::uint64_t m_nextId = 1;
-    };
+private:
+    static constexpr std::uint64_t kIdsExhausted = 0;
+
+    [[nodiscard]] bool labelInUse(std::string_view label) const noexcept;
+    [[nodiscard]] std::string uniqueLabel(StandId standId) const;
+
+    RectM m_hall = kDefaultHall;
+    std::vector<Stand> m_stands;
+    std::uint64_t m_nextId = 1;
+};
 
 } // namespace mangrove::core

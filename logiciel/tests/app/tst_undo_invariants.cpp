@@ -10,10 +10,16 @@
 #include "TestSeed.h"
 
 #include "Editor.hpp"
+#include "constraints/Alert.h"
+#include "models/stand/StandModel.hpp"
+#include "plan/Ids.h"
 
 #include <QAbstractItemModelTester>
 #include <QtTest>
 
+#include <array>
+#include <cstddef>
+#include <cstdint>
 #include <random>
 #include <tuple>
 #include <vector>
@@ -22,6 +28,32 @@ using namespace mangrove::app;
 
 namespace {
 
+constexpr int kSteps = 1500;
+// Pointer positions reach slightly outside a default-sized view.
+constexpr double kMinPixel = -50.0;
+constexpr double kMaxPixel = 1100.0;
+constexpr int kDragMoves = 4;
+// One wheel notch, in eighths of a degree (QWheelEvent::angleDelta).
+constexpr int kWheelNotch = 120;
+constexpr int kMaxWheelNotches = 5;
+constexpr double kAlertChance = 3.0 / 11.0;
+
+enum class Action : std::uint8_t {
+    UseStandTool,
+    UseSelectTool,
+    Drag,
+    CancelledDrag,
+    Undo,
+    Redo,
+    Zoom,
+    SetAlerts,
+};
+
+// Drawn uniformly: an action listed three times is three times as likely.
+constexpr std::array kActions{Action::UseStandTool, Action::UseSelectTool, Action::Drag,
+    Action::Drag, Action::Drag, Action::CancelledDrag, Action::Undo, Action::Undo, Action::Redo,
+    Action::Zoom, Action::SetAlerts};
+
 using Row = std::tuple<quint64, QString, double, double, double, double>;
 
 std::vector<Row> snapshot(Editor &editor)
@@ -29,13 +61,13 @@ std::vector<Row> snapshot(Editor &editor)
     const StandModel *model = editor.stands();
     std::vector<Row> rows;
     for (int row = 0; row < model->rowCount(); ++row) {
-        const QModelIndex i = model->index(row);
-        rows.emplace_back(model->data(i, StandModel::StandIdRole).toULongLong(),
-            model->data(i, StandModel::LabelRole).toString(),
-            model->data(i, StandModel::XmRole).toDouble(),
-            model->data(i, StandModel::YmRole).toDouble(),
-            model->data(i, StandModel::WidthMRole).toDouble(),
-            model->data(i, StandModel::HeightMRole).toDouble());
+        const QModelIndex index = model->index(row);
+        rows.emplace_back(model->data(index, StandModel::StandIdRole).toULongLong(),
+            model->data(index, StandModel::LabelRole).toString(),
+            model->data(index, StandModel::XmRole).toDouble(),
+            model->data(index, StandModel::YmRole).toDouble(),
+            model->data(index, StandModel::WidthMRole).toDouble(),
+            model->data(index, StandModel::HeightMRole).toDouble());
     }
     return rows;
 }
@@ -54,67 +86,69 @@ private slots:
     void randomSessionIsFullyUndoable()
     {
         std::mt19937 rng(mangrove::test::testSeed());
-        std::uniform_int_distribution<int> action(0, 10);
-        std::uniform_real_distribution<double> pixel(-50.0, 1100.0);
+        std::uniform_int_distribution<std::size_t> pickAction(0, kActions.size() - 1);
+        std::uniform_real_distribution<double> pixel(kMinPixel, kMaxPixel);
+        std::uniform_int_distribution<int> wheelNotches(-kMaxWheelNotches, kMaxWheelNotches);
+        std::bernoulli_distribution raiseAlert(kAlertChance);
         const auto randomPoint = [&] { return QPointF(pixel(rng), pixel(rng)); };
 
         Editor editor;
-        QAbstractItemModelTester standsTester(
+        QAbstractItemModelTester const standsTester(
             editor.stands(), QAbstractItemModelTester::FailureReportingMode::QtTest);
-        QAbstractItemModelTester alertsTester(
+        QAbstractItemModelTester const alertsTester(
             editor.alerts(), QAbstractItemModelTester::FailureReportingMode::QtTest);
 
-        for (int step = 0; step < 1500; ++step) {
-            switch (action(rng)) {
-            case 0:
+        for (int step = 0; step < kSteps; ++step) {
+            switch (kActions.at(pickAction(rng))) {
+            case Action::UseStandTool:
                 editor.setActiveTool(Editor::ToolKind::Stand);
                 break;
-            case 1:
+            case Action::UseSelectTool:
                 editor.setActiveTool(Editor::ToolKind::Select);
                 break;
-            case 2:
-            case 3:
-            case 4: {
+            case Action::Drag: {
                 const QPointF from = randomPoint();
-                const QPointF to = randomPoint();
+                const QPointF target = randomPoint();
                 editor.press(from);
-                for (int i = 1; i <= 4; ++i)
-                    editor.move(from + (to - from) * i / 4);
-                editor.release(to);
+                for (int move = 1; move <= kDragMoves; ++move) {
+                    editor.move(from + (target - from) * move / kDragMoves);
+                }
+                editor.release(target);
                 break;
             }
-            case 5:
+            case Action::CancelledDrag:
                 editor.press(randomPoint());
                 editor.move(randomPoint());
                 editor.cancel();
                 break;
-            case 6:
-            case 7:
+            case Action::Undo:
                 editor.undo();
                 break;
-            case 8:
+            case Action::Redo:
                 editor.redo();
                 break;
-            case 9:
-                editor.view()->wheelZoomAt(randomPoint(), (action(rng) - 5) * 120);
+            case Action::Zoom:
+                editor.view()->wheelZoomAt(randomPoint(), wheelNotches(rng) * kWheelNotch);
                 break;
-            case 10: {
+            case Action::SetAlerts: {
                 std::vector<mangrove::core::Alert> alerts;
                 const StandModel *stands = editor.stands();
                 for (int row = 0; row < stands->rowCount(); ++row) {
-                    if (action(rng) < 3)
+                    if (raiseAlert(rng)) {
                         alerts.push_back({"overlap",
                             {mangrove::core::StandId{
                                 stands->data(stands->index(row), StandModel::StandIdRole)
                                     .toULongLong()}}});
+                    }
                 }
                 editor.setAlerts(alerts);
                 break;
             }
             }
             QCOMPARE(editor.alerts()->count(), editor.alerts()->rowCount());
-            if (QTest::currentTestFailed())
+            if (QTest::currentTestFailed()) {
                 return;
+            }
         }
 
         const auto finalRows = snapshot(editor);
@@ -128,8 +162,9 @@ private slots:
         QCOMPARE(editor.stands()->rowCount(), 0);
         QCOMPARE(editor.alerts()->count(), finalAlerts);
 
-        for (int i = 0; i < undone; ++i)
+        for (int redone = 0; redone < undone; ++redone) {
             editor.redo();
+        }
         QVERIFY(snapshot(editor) == finalRows);
         QCOMPARE(editor.alerts()->count(), finalAlerts);
     }

@@ -15,12 +15,19 @@ namespace mangrove::app {
     class ITool {
         public:
             virtual ~ITool() = default;
+            ITool(const ITool &) = delete;
+            ITool &operator=(const ITool &) = delete;
+            ITool(ITool &&) = delete;
+            ITool &operator=(ITool &&) = delete;
 
             virtual void press(IToolContext &context, const PointerEvent &event) = 0;
             virtual void move(IToolContext &context, const PointerEvent &event) = 0;
             virtual void release(IToolContext &context, const PointerEvent &event) = 0;
             // Abandons the gesture in progress and reverts what it changed.
             virtual void cancel(IToolContext &context) = 0;
+
+        protected:
+            ITool() = default;
     }; // class ITool
 
 } // namespace mangrove::app

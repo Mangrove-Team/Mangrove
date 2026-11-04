@@ -17,29 +17,29 @@
 
 namespace mangrove::app {
 
-    [[nodiscard]] inline QPointF toQt(core::Vec2 v)
+    [[nodiscard]] inline QPointF toQt(core::Vec2 point)
     {
-        return {v.x, v.y};
+        return {point.x, point.y};
     }
 
-    [[nodiscard]] inline QRectF toQt(const core::RectM &r)
+    [[nodiscard]] inline QRectF toQt(const core::RectM &rect)
     {
-        return {r.x, r.y, r.width, r.height};
+        return {rect.x, rect.y, rect.width, rect.height};
     }
 
-    [[nodiscard]] inline QString toQt(const std::string &s)
+    [[nodiscard]] inline QString toQt(const std::string &text)
     {
-        return QString::fromStdString(s);
+        return QString::fromStdString(text);
     }
 
-    [[nodiscard]] inline core::Vec2 toCore(QPointF p)
+    [[nodiscard]] inline core::Vec2 toCore(QPointF point)
     {
-        return {p.x(), p.y()};
+        return {.x = point.x(), .y = point.y()};
     }
 
-    [[nodiscard]] inline core::RectM toCore(const QRectF &r)
+    [[nodiscard]] inline core::RectM toCore(const QRectF &rect)
     {
-        return {r.x(), r.y(), r.width(), r.height()};
+        return {.x = rect.x(), .y = rect.y(), .width = rect.width(), .height = rect.height()};
     }
 
 } // namespace mangrove::app

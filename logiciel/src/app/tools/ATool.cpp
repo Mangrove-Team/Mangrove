@@ -6,18 +6,21 @@
 */
 
 #include "tools/ATool.hpp"
+#include "geometry/Geometry.h"
+#include "tools/IToolContext.hpp"
+#include "tools/PointerEvent.hpp"
 
 #include <cmath>
 
 namespace mangrove::app {
 
-    void ATool::move(IToolContext &, const PointerEvent &)
+    void ATool::move(IToolContext & /*context*/, const PointerEvent & /*event*/)
     { }
 
-    void ATool::release(IToolContext &, const PointerEvent &)
+    void ATool::release(IToolContext & /*context*/, const PointerEvent & /*event*/)
     { }
 
-    void ATool::cancel(IToolContext &)
+    void ATool::cancel(IToolContext & /*context*/)
     { }
 
     double ATool::snap(double value, double step)
@@ -27,7 +30,7 @@ namespace mangrove::app {
 
     core::Vec2 ATool::snap(core::Vec2 point, double step)
     {
-        return {snap(point.x, step), snap(point.y, step)};
+        return {.x = snap(point.x, step), .y = snap(point.y, step)};
     }
 
 } // namespace mangrove::app

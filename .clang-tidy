@@ -1,0 +1,21 @@
+---
+Checks: "*,
+        -abseil-*,
+        -altera-*,
+        -android-*,
+        -fuchsia-*,
+        -google-*,
+        -llvm*,
+        -zircon-*,
+        -modernize-use-trailing-return-type,
+        -portability-avoid-pragma-once,
+"
+CheckOptions:
+  misc-include-cleaner.IgnoreHeaders: 'Qt[A-Za-z]*/.*'
+  readability-function-cognitive-complexity.IgnoreMacros: true
+  misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic: true
+  cppcoreguidelines-use-enum-class.IgnoreUnscopedEnumsInClasses: true
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*'
+ExcludeHeaderFilterRegex: '.*(build|cmake-build-[^/]*|_autogen|vcpkg_installed)/.*'
+FormatStyle: none

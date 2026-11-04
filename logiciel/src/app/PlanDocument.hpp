@@ -7,7 +7,10 @@
 
 #pragma once
 
+#include "geometry/Geometry.h"
+#include "plan/Ids.h"
 #include "plan/Plan.h"
+#include "plan/Stand.h"
 
 #include <QObject>
 #include <QUndoStack>
@@ -47,8 +50,8 @@ namespace mangrove::app {
             friend class APlanCommand;
 
             bool insertStand(std::size_t index, core::Stand stand);
-            std::optional<core::Stand> removeStand(core::StandId id);
-            bool setStandRect(core::StandId id, const core::RectM &rect);
+            std::optional<core::Stand> removeStand(core::StandId standId);
+            bool setStandRect(core::StandId standId, const core::RectM &rect);
 
             core::Plan _plan;
             QUndoStack _undoStack;

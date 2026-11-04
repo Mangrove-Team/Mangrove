@@ -17,15 +17,16 @@ class TestGeometry : public QObject {
 private slots:
     void containsPointIsInclusive()
     {
-        const RectM r{0, 0, 4, 3};
-        QVERIFY(r.contains(Vec2{0, 0}));
-        QVERIFY(r.contains(Vec2{4, 3}));
-        QVERIFY(!r.contains(Vec2{4.01, 1}));
+        const RectM rect{.x = 0, .y = 0, .width = 4, .height = 3};
+        QVERIFY(rect.contains(Vec2{0, 0}));
+        QVERIFY(rect.contains(Vec2{4, 3}));
+        constexpr double kJustOutside = 0.01;
+        QVERIFY(!rect.contains(Vec2{rect.right() + kJustOutside, 1}));
     }
 
     void containsRect()
     {
-        const RectM hall{0, 0, 60, 40};
+        const RectM hall{.x = 0, .y = 0, .width = 60, .height = 40};
         QVERIFY(hall.contains(RectM{56, 37, 4, 3}));
         QVERIFY(!hall.contains(RectM{57, 37, 4, 3}));
     }
@@ -34,15 +35,20 @@ private slots:
     // nested ones do.
     void intersectsIsStrict()
     {
-        const RectM a{0, 0, 4, 3};
-        QVERIFY(!a.intersects(RectM{4, 0, 4, 3}));
-        QVERIFY(!a.intersects(RectM{0, 3, 4, 3}));
-        QVERIFY(!a.intersects(RectM{4, 3, 4, 3}));
-        QVERIFY(a.intersects(RectM{3.5, 2.5, 4, 3}));
-        QVERIFY(a.intersects(RectM{1, 1, 1, 1}));
+        const RectM first{.x = 0, .y = 0, .width = 4, .height = 3};
+        QVERIFY(!first.intersects(RectM{4, 0, 4, 3}));
+        QVERIFY(!first.intersects(RectM{0, 3, 4, 3}));
+        QVERIFY(!first.intersects(RectM{4, 3, 4, 3}));
+        constexpr double kOverlap = 0.5;
+        QVERIFY(first.intersects(RectM{first.right() - kOverlap, first.bottom() - kOverlap, 4, 3}));
+        QVERIFY(first.intersects(RectM{1, 1, 1, 1}));
     }
 
-    void translated() { QCOMPARE(RectM(1, 2, 4, 3).translated({1.5, -2}), RectM(2.5, 0, 4, 3)); }
+    void translated()
+    {
+        constexpr Vec2 kDelta{.x = 1.5, .y = -2};
+        QCOMPARE(RectM(1, 2, 4, 3).translated(kDelta), RectM(1 + kDelta.x, 2 + kDelta.y, 4, 3));
+    }
 
     void fromCornersNormalizes()
     {

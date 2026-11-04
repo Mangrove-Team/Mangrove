@@ -1,0 +1,3 @@
+---
+InheritParentConfig: true
+Checks: "-readability-convert-member-functions-to-static"

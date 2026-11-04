@@ -7,7 +7,11 @@
 
 #pragma once
 
+#include "geometry/Geometry.h"
+#include "plan/Ids.h"
 #include "tools/ATool.hpp"
+#include "tools/IToolContext.hpp"
+#include "tools/PointerEvent.hpp"
 
 #include <optional>
 

@@ -9,6 +9,10 @@
 
 #include "Conversions.hpp"
 #include "PlanDocument.hpp"
+#include "plan/Stand.h"
+#include <cstddef>
+#include <unordered_set>
+#include <utility>
 
 namespace mangrove::app {
 
@@ -16,10 +20,10 @@ namespace mangrove::app {
         : QAbstractListModel(parent), _document(document)
     {
         connect(&document, &PlanDocument::aboutToInsertStand, this,
-                [this](int row) { beginInsertRows({}, row, row); });
+            [this](int row) { beginInsertRows({}, row, row); });
         connect(&document, &PlanDocument::standInserted, this, [this] { endInsertRows(); });
         connect(&document, &PlanDocument::aboutToRemoveStand, this,
-                [this](int row) { beginRemoveRows({}, row, row); });
+            [this](int row) { beginRemoveRows({}, row, row); });
         connect(&document, &PlanDocument::standRemoved, this, [this] { endRemoveRows(); });
         connect(&document, &PlanDocument::standChanged, this, [this](int row) {
             notifyRow(row, {LabelRole, XmRole, YmRole, WidthMRole, HeightMRole});
@@ -33,8 +37,10 @@ namespace mangrove::app {
 
     QVariant StandModel::data(const QModelIndex &index, int role) const
     {
-        if (!checkIndex(index, CheckIndexOption::IndexIsValid | CheckIndexOption::ParentIsInvalid))
+        if (!checkIndex(
+                index, CheckIndexOption::IndexIsValid | CheckIndexOption::ParentIsInvalid)) {
             return {};
+        }
         const core::Stand &stand = _document.plan().stands()[static_cast<std::size_t>(index.row())];
 
         switch (role) {
@@ -74,12 +80,13 @@ namespace mangrove::app {
         };
     }
 
-    void StandModel::setSelectedStand(core::StandId id)
+    void StandModel::setSelectedStand(core::StandId standId)
     {
-        if (id == _selected)
+        if (standId == _selected) {
             return;
+        }
         const core::StandId previous = _selected;
-        _selected = id;
+        _selected = standId;
         notifyStand(previous, {SelectedRole});
         notifyStand(_selected, {SelectedRole});
     }
@@ -87,13 +94,15 @@ namespace mangrove::app {
     void StandModel::setConflictingStands(std::unordered_set<core::StandId> ids)
     {
         std::swap(_conflicting, ids);
-        for (const core::StandId id : ids) {
-            if (!_conflicting.contains(id))
-                notifyStand(id, {InConflictRole});
+        for (const core::StandId standId : ids) {
+            if (!_conflicting.contains(standId)) {
+                notifyStand(standId, {InConflictRole});
+            }
         }
-        for (const core::StandId id : _conflicting) {
-            if (!ids.contains(id))
-                notifyStand(id, {InConflictRole});
+        for (const core::StandId standId : _conflicting) {
+            if (!ids.contains(standId)) {
+                notifyStand(standId, {InConflictRole});
+            }
         }
     }
 
@@ -103,10 +112,11 @@ namespace mangrove::app {
         emit dataChanged(changed, changed, roles);
     }
 
-    void StandModel::notifyStand(core::StandId id, const QList<int> &roles)
+    void StandModel::notifyStand(core::StandId standId, const QList<int> &roles)
     {
-        if (const auto row = _document.plan().indexOf(id))
+        if (const auto row = _document.plan().indexOf(standId)) {
             notifyRow(static_cast<int>(*row), roles);
+        }
     }
 
 } // namespace mangrove::app

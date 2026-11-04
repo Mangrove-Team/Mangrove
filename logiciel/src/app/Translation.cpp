@@ -8,14 +8,16 @@
 #include "Translation.hpp"
 
 #include <QString>
+#include <memory>
 
 namespace mangrove::app {
 
     std::unique_ptr<QTranslator> loadTranslation()
     {
         auto translator = std::make_unique<QTranslator>();
-        if (!translator->load(QStringLiteral(":/i18n/mangrove_fr.qm")))
+        if (!translator->load(QStringLiteral(":/i18n/mangrove_fr.qm"))) {
             return nullptr;
+        }
         return translator;
     }
 

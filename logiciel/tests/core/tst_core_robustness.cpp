@@ -7,11 +7,16 @@
 // Copyright (c) Mangrove. All rights reserved.
 */
 
+#include "geometry/Geometry.h"
 #include "plan/Plan.h"
+#include "plan/Stand.h"
 
 #include <QtTest>
 
+#include <cstddef>
+#include <cstdint>
 #include <limits>
+#include <optional>
 
 using namespace mangrove::core;
 
@@ -20,6 +25,8 @@ namespace {
 constexpr double kNaN = std::numeric_limits<double>::quiet_NaN();
 constexpr double kInf = std::numeric_limits<double>::infinity();
 constexpr std::uint64_t kMaxId = std::numeric_limits<std::uint64_t>::max();
+// Finite, but twice of it is not: x + width overflows to infinity.
+constexpr double kHuge = 1e308;
 
 } // namespace
 
@@ -32,21 +39,24 @@ private slots:
         QTest::addColumn<RectM>("rect");
         QTest::addColumn<bool>("valid");
 
-        QTest::newRow("regular") << RectM{1, 2, 4, 3} << true;
-        QTest::newRow("empty") << RectM{1, 2, 0, 0} << true;
-        QTest::newRow("negative width") << RectM{0, 0, -4, 3} << false;
-        QTest::newRow("negative height") << RectM{0, 0, 4, -3} << false;
-        QTest::newRow("NaN x") << RectM{kNaN, 0, 4, 3} << false;
-        QTest::newRow("NaN width") << RectM{0, 0, kNaN, 3} << false;
-        QTest::newRow("infinite y") << RectM{0, kInf, 4, 3} << false;
-        QTest::newRow("infinite height") << RectM{0, 0, 4, kInf} << false;
-        QTest::newRow("right edge overflows") << RectM{1e308, 0, 1e308, 3} << false;
+        QTest::newRow("regular") << RectM{.x = 1, .y = 2, .width = 4, .height = 3} << true;
+        QTest::newRow("empty") << RectM{.x = 1, .y = 2, .width = 0, .height = 0} << true;
+        QTest::newRow("negative width") << RectM{.x = 0, .y = 0, .width = -4, .height = 3} << false;
+        QTest::newRow("negative height")
+            << RectM{.x = 0, .y = 0, .width = 4, .height = -3} << false;
+        QTest::newRow("NaN x") << RectM{.x = kNaN, .y = 0, .width = 4, .height = 3} << false;
+        QTest::newRow("NaN width") << RectM{.x = 0, .y = 0, .width = kNaN, .height = 3} << false;
+        QTest::newRow("infinite y") << RectM{.x = 0, .y = kInf, .width = 4, .height = 3} << false;
+        QTest::newRow("infinite height")
+            << RectM{.x = 0, .y = 0, .width = 4, .height = kInf} << false;
+        QTest::newRow("right edge overflows")
+            << RectM{.x = kHuge, .y = 0, .width = kHuge, .height = 3} << false;
     }
 
     void rectValidity()
     {
-        QFETCH(RectM, rect);
-        QFETCH(bool, valid);
+        QFETCH(const RectM, rect);
+        QFETCH(const bool, valid);
         QCOMPARE(rect.isValid(), valid);
     }
 
@@ -56,29 +66,30 @@ private slots:
     // the stand untouched.
     void planRejectsInvalidRects()
     {
-        QFETCH(RectM, rect);
-        QFETCH(bool, valid);
+        QFETCH(const RectM, rect);
+        QFETCH(const bool, valid);
 
         Plan plan;
         QCOMPARE(plan.insertStand(0, plan.makeStand(rect)), valid);
 
-        const Stand reference = plan.makeStand({0, 0, 4, 3});
+        const Stand reference = plan.makeStand({.x = 0, .y = 0, .width = 4, .height = 3});
         QVERIFY(plan.insertStand(plan.size(), reference));
         QCOMPARE(plan.setStandRect(reference.id, rect), valid);
-        if (!valid)
+        if (!valid) {
             QCOMPARE(plan.find(reference.id)->rect, RectM(0, 0, 4, 3));
+        }
     }
 
     void unknownIdsAreHarmless()
     {
         Plan plan;
-        plan.insertStand(0, plan.makeStand({0, 0, 4, 3}));
+        plan.insertStand(0, plan.makeStand({.x = 0, .y = 0, .width = 4, .height = 3}));
 
-        for (const StandId id : {StandId{}, StandId{999}, StandId{kMaxId}}) {
-            QVERIFY(plan.find(id) == nullptr);
-            QVERIFY(!plan.indexOf(id).has_value());
-            QVERIFY(!plan.removeStand(id).has_value());
-            QVERIFY(!plan.setStandRect(id, {1, 1, 1, 1}));
+        for (const StandId standId : {StandId{}, StandId{999}, StandId{kMaxId}}) {
+            QVERIFY(plan.find(standId) == nullptr);
+            QVERIFY(!plan.indexOf(standId).has_value());
+            QVERIFY(!plan.removeStand(standId).has_value());
+            QVERIFY(!plan.setStandRect(standId, {1, 1, 1, 1}));
         }
         QCOMPARE(plan.size(), std::size_t{1});
     }
@@ -86,15 +97,15 @@ private slots:
     void insertIndexIsClamped()
     {
         Plan plan;
-        const Stand a = plan.makeStand({0, 0, 4, 3});
-        QVERIFY(plan.insertStand(std::numeric_limits<std::size_t>::max(), a));
-        QCOMPARE(plan.indexOf(a.id), std::optional<std::size_t>(0));
+        const Stand first = plan.makeStand({.x = 0, .y = 0, .width = 4, .height = 3});
+        QVERIFY(plan.insertStand(std::numeric_limits<std::size_t>::max(), first));
+        QCOMPARE(plan.indexOf(first.id), std::optional<std::size_t>(0));
     }
 
     void standAtNonFinitePointFindsNothing()
     {
         Plan plan;
-        plan.insertStand(0, plan.makeStand({0, 0, 4, 3}));
+        plan.insertStand(0, plan.makeStand({.x = 0, .y = 0, .width = 4, .height = 3}));
         QVERIFY(!plan.standAt({kNaN, 1}));
         QVERIFY(!plan.standAt({kInf, kInf}));
     }
@@ -103,8 +114,10 @@ private slots:
     {
         Plan plan;
         QVERIFY(plan.insertStand(0, Stand{StandId{7}, "S07", {0, 0, 4, 3}}));
-        for (int i = 0; i < 10; ++i)
+        constexpr int kNewStands = 10;
+        for (int i = 0; i < kNewStands; ++i) {
             QVERIFY(plan.makeStand({0, 0, 1, 1}).id.value > 7);
+        }
     }
 
     // Found by fuzz_plan: a stand from outside (file, paste...) already named
@@ -113,12 +126,12 @@ private slots:
     {
         Plan plan;
         QVERIFY(plan.insertStand(0, Stand{StandId{50}, "S51", {0, 0, 4, 3}}));
-        const Stand a = plan.makeStand({0, 0, 1, 1});
-        QCOMPARE(a.id.value, std::uint64_t{51});
-        QVERIFY(a.label != "S51");
-        QVERIFY(plan.insertStand(plan.size(), a));
-        const Stand b = plan.makeStand({0, 0, 1, 1});
-        QVERIFY(b.label != "S51" && b.label != a.label);
+        const Stand first = plan.makeStand({.x = 0, .y = 0, .width = 1, .height = 1});
+        QCOMPARE(first.id.value, std::uint64_t{51});
+        QVERIFY(first.label != "S51");
+        QVERIFY(plan.insertStand(plan.size(), first));
+        const Stand second = plan.makeStand({.x = 0, .y = 0, .width = 1, .height = 1});
+        QVERIFY(second.label != "S51" && second.label != first.label);
     }
 
     // Once the last id is used, makeStand returns an invalid id instead of wrapping
@@ -128,11 +141,11 @@ private slots:
         Plan plan;
         QVERIFY(plan.insertStand(0, Stand{StandId{kMaxId - 1}, "far", {0, 0, 1, 1}}));
 
-        const Stand last = plan.makeStand({0, 0, 1, 1});
+        const Stand last = plan.makeStand({.x = 0, .y = 0, .width = 1, .height = 1});
         QCOMPARE(last.id.value, kMaxId);
         QVERIFY(plan.insertStand(plan.size(), last));
 
-        const Stand none = plan.makeStand({0, 0, 1, 1});
+        const Stand none = plan.makeStand({.x = 0, .y = 0, .width = 1, .height = 1});
         QVERIFY(!none.id);
         QVERIFY(!plan.insertStand(plan.size(), none));
         QCOMPARE(plan.size(), std::size_t{2});
@@ -143,7 +156,7 @@ private slots:
     {
         Plan plan;
         QVERIFY(plan.insertStand(0, Stand{StandId{kMaxId}, "max", {0, 0, 1, 1}}));
-        const Stand next = plan.makeStand({0, 0, 1, 1});
+        const Stand next = plan.makeStand({.x = 0, .y = 0, .width = 1, .height = 1});
         QVERIFY(!next.id || next.id.value > kMaxId);
     }
 };

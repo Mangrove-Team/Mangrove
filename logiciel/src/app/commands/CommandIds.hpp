@@ -7,9 +7,11 @@
 
 #pragma once
 
+#include <cstdint>
+
 namespace mangrove::app {
 
-    enum class CommandId : int {
+    enum class CommandId : std::uint8_t {
         MoveStand = 1,
     };
 

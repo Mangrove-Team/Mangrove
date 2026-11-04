@@ -92,7 +92,9 @@ install(TARGETS Mangrove
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-if(MANGROVE_USE_VCPKG)
+option(MANGROVE_DEPLOY_QT "Bundle the Qt libraries, plugins and QML modules on install" ${MANGROVE_USE_VCPKG})
+
+if(MANGROVE_DEPLOY_QT)
     set(mangrove_deploy_options "")
     if(UNIX AND NOT APPLE)
         list(APPEND mangrove_deploy_options
@@ -113,9 +115,17 @@ endif()
 set(CPACK_PACKAGE_NAME "Mangrove")
 set(CPACK_PACKAGE_VENDOR "Mangrove")
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "Mangrove")
+set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_CURRENT_SOURCE_DIR}/packaging/LICENSE.txt)
 if(WIN32)
     set(CPACK_GENERATOR "NSIS;ZIP")
     set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
+    set(CPACK_NSIS_DISPLAY_NAME "Mangrove")
+    set(CPACK_NSIS_PACKAGE_NAME "Mangrove")
+    set(CPACK_PACKAGE_EXECUTABLES "Mangrove;Mangrove")
+    set(CPACK_CREATE_DESKTOP_LINKS "Mangrove")
+    set(CPACK_NSIS_MUI_FINISHPAGE_RUN "Mangrove.exe")
+    set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\Mangrove.exe")
 else()
     set(CPACK_GENERATOR "TGZ")
 endif()

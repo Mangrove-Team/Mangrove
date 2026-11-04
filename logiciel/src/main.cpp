@@ -10,6 +10,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QtQml/qqmlextensionplugin.h>
+#include <cstdlib>
 
 Q_IMPORT_QML_PLUGIN(Mangrove_AppPlugin)
 Q_IMPORT_QML_PLUGIN(Mangrove_ThemePlugin)
@@ -25,8 +26,9 @@ int main(int argc, char **argv)
     QGuiApplication::setApplicationVersion(QStringLiteral(MANGROVE_VERSION));
 
     const auto translator = mangrove::app::loadTranslation();
-    if (translator)
+    if (translator) {
         QCoreApplication::installTranslator(translator.get());
+    }
 
     QQmlApplicationEngine engine;
     QObject::connect(
