@@ -4,18 +4,16 @@ La CI tourne sur **GitHub Actions** (`.github/workflows/ci.yml`). Elle se lance 
 
 ## Ce que vérifie la pipeline
 
-Quatre jobs tournent en parallèle :
+Deux jobs tournent en parallèle :
 
 | Job | Étapes | Échoue si… |
 |-----|--------|------------|
 | **Format** | `pre-commit` sans clang-tidy | le code n'est pas formaté selon le `.clang-format` |
-| **Build, tidy & test** (Linux) | Installation de Qt 6.8 → configure CMake → build → clang-tidy → ctest | le projet ne compile pas, clang-tidy remonte une erreur, ou un test échoue |
-| **Package (Linux)** | Installation de Qt 6.8 → build Release → `cpack` | le build Release ou le packaging échoue |
-| **Build & package (Windows, MSVC)** | Installation de Qt 6.8 (MSVC 2022) → build Release → `cpack -G NSIS` (windeployqt + installeur) | le projet ne compile pas avec MSVC, ou le déploiement de Qt / l'installeur échoue |
+| **Build, tidy & test** | Installation de Qt 6.8 → configure CMake → build → clang-tidy → ctest | le projet ne compile pas, clang-tidy remonte une erreur, ou un test échoue |
 
 Si un nouveau commit est poussé sur la même branche, le run précédent est annulé.
 
-Une PR ne doit être mergée que si tous les jobs sont verts.
+Une PR ne doit être mergée que si les deux jobs sont verts.
 
 ## Lire le résultat d'un run
 
@@ -24,19 +22,6 @@ Dans l'onglet **Actions** du dépôt (ou via les checks en bas d'une PR) :
 - **Summary** du run : tableau de tous les tests avec leur statut et leur durée.
 - **Logs d'un job** : cliquer sur l'étape en échec. Pour un test, la sortie complète du test en échec est affichée (`--output-on-failure`).
 - **Format en échec** : le diff attendu est affiché dans les logs. Lancer `pre-commit run --all-files` en local corrige les fichiers automatiquement.
-
-## Récupérer l'application compilée
-
-Chaque run publie l'application prête à lancer, **Qt inclus** (rien à installer à part) :
-
-| Artifact | Contenu | Lancer |
-|----------|---------|--------|
-| `Mangrove-<version>-Linux.tar.gz` | l'application et Qt | `tar xzf` l'archive, puis `bin/Mangrove` |
-| `Mangrove-<version>-win64.exe` | l'installeur | le lancer (raccourcis menu Démarrer + bureau, désinstallation dans *Applications*) |
-
-On les télécharge en bas de la page **Summary** du run (section *Artifacts*). Ils sont conservés **14 jours**. L'installeur n'est pas signé : Windows SmartScreen affiche un avertissement, cliquer sur *Informations complémentaires → Exécuter quand même*.
-
-Pour produire la même chose en local, configurer avec `-DMANGROVE_DEPLOY_QT=ON`, puis `cmake --install` ou `cpack`. L'option est activée par défaut avec vcpkg, et à laisser désactivée avec le Qt de la distribution : ses bibliothèques restent une dépendance système, et le déploiement échoue (`file RPATH_SET could not write new RPATH`).
 
 ## Reproduire la CI en local
 

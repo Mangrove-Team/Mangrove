@@ -31,7 +31,7 @@
 
 namespace mangrove::app {
 
-    class Editor : public QObject, private IToolContext {
+    class Editor final : public QObject, private IToolContext {
 
             Q_OBJECT
             Q_DISABLE_COPY_MOVE(Editor)
@@ -94,13 +94,13 @@ namespace mangrove::app {
 
         private:
             // IToolContext
-            [[nodiscard]] const core::Plan &plan() const final;
-            [[nodiscard]] double snapStep() const final;
-            [[nodiscard]] core::StandId selectedStand() const final;
-            void selectStand(core::StandId standId) final;
-            void setPreview(std::optional<core::RectM> rect) final;
-            core::StandId addStand(const core::RectM &rect) final;
-            void moveStand(core::StandId standId, core::Vec2 topLeft) final;
+            [[nodiscard]] const core::Plan &plan() const override;
+            [[nodiscard]] double snapStep() const override;
+            [[nodiscard]] core::StandId selectedStand() const override;
+            void selectStand(core::StandId standId) override;
+            void setPreview(std::optional<core::RectM> rect) override;
+            core::StandId addStand(const core::RectM &rect) override;
+            void moveStand(core::StandId standId, core::Vec2 topLeft) override;
 
             [[nodiscard]] ITool &currentTool() const;
             [[nodiscard]] std::optional<PointerEvent> pointer(QPointF screenPos) const;
