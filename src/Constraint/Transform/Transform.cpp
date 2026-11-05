@@ -1,14 +1,14 @@
 /*
 // Mangrove Project
-// Space.cpp
-// Description: Space constraint class that represents stand position and delimitation in a plan
+// Transform.cpp
+// Description: Transform constraint class that represents stand position and delimitation in a plan
 // Copyright (c) Mangrove. All rights reserved.
 */
 
-#include "Space.hpp"
+#include "Transform.hpp"
 
-Space::Space() {
-    _name = "Space";
+Transform::Transform() {
+    _name = "Transform";
 
     boost::geometry::append(_delimitation, Point(0, 0));
     boost::geometry::append(_delimitation, Point(100, 0));
@@ -18,7 +18,7 @@ Space::Space() {
     boost::geometry::correct(_delimitation);
 }
 
-std::string Space::getDataInfo() const {
+std::string Transform::getDataInfo() const {
     std::string dataInfo;
 
     for (auto& point: _delimitation.outer())
@@ -30,30 +30,30 @@ std::string Space::getDataInfo() const {
     return dataInfo;
 }
 
-const Polygon &Space::getDelimitation() const {
+const Polygon &Transform::getDelimitation() const {
     return _delimitation;
 }
 
-void Space::addPoint(const int x, const int y) {
+void Transform::addPoint(const int x, const int y) {
     boost::geometry::append(_delimitation, Point(x, y));
 }
 
-void Space::changePoint(const int index, const int x, const int y, const std::list<std::shared_ptr<Space>>& other) {
+void Transform::changePoint(const int index, const int x, const int y, const std::list<std::shared_ptr<Transform>>& other) {
     if (index < 0 || index >= _delimitation.outer().size())
         throw std::out_of_range("Index out of range");
     _delimitation.outer()[index] = Point(x, y);
 }
 
-std::string Space::check(const std::shared_ptr<Plan>& plan) const {
+std::string Transform::check(const std::shared_ptr<Plan>& plan) const {
     std::string errors;
     const auto &stands = plan->getStands();
 
     const auto currentStand = std::ranges::find_if(stands, [this](const auto& stand) {
-        return stand->template getConstraint<Space>().get() == this;
+        return stand->template getConstraint<Transform>().get() == this;
     });
 
     for (const auto& stand: stands)
-        if (*currentStand != stand && boost::geometry::intersects(_delimitation, stand->getConstraint<Space>()->getDelimitation()))
-            errors += "Error: Space of '" + currentStand->get()->getName() + "' overlaps with '" + stand->getName() + "'\n";
+        if (*currentStand != stand && boost::geometry::intersects(_delimitation, stand->getConstraint<Transform>()->getDelimitation()))
+            errors += "Error: Transform of '" + currentStand->get()->getName() + "' overlaps with '" + stand->getName() + "'\n";
     return errors;
 }

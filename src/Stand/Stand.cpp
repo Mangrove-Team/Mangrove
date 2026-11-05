@@ -6,10 +6,10 @@
 */
 
 #include "Stand.hpp"
-#include "Space.hpp"
+#include "Transform/Transform.hpp"
 
 Stand::Stand(std::string name): _name(std::move(name)) {
-    addConstraint<Space>();
+    addConstraint<Transform>();
 }
 
 const std::string& Stand::getName() const {

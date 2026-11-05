@@ -8,9 +8,9 @@
 #include <ostream>
 
 #include "Plan.hpp"
-#include "Space.hpp"
 #include "Electricity.hpp"
 #include "Compatibility.hpp"
+#include "Transform/Transform.hpp"
 
 int main() {
     const auto plan = std::make_shared<Plan>();
@@ -25,7 +25,7 @@ int main() {
     plan->addStand(stand1);
     plan->addStand(stand2);
     std::cout << plan << std::endl;
-    const auto spaceConstraint = stand2->getConstraint<Space>().get();
-    std::cout << spaceConstraint->check(plan);
+    const auto transformConstraint = stand2->getConstraint<Transform>().get();
+    std::cout << transformConstraint->check(plan);
     return 0;
 }

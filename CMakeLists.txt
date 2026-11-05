@@ -23,7 +23,7 @@ add_executable(
         src/Plan/Plan.cpp
         src/Stand/Stand.cpp
         src/Constraint/AConstraint.cpp
-        src/Constraint/Space/Space.cpp
+        src/Constraint/Transform/Transform.cpp
         src/Constraint/Electricity/Electricity.cpp
         src/Constraint/Compatibility/Compatibility.cpp)
 
@@ -31,7 +31,7 @@ target_include_directories(Mangrove PRIVATE
         src/Plan
         src/Stand
         src/Constraint
-        src/Constraint/Space
+        src/Constraint/Transform
         src/Constraint/Electricity
         src/Constraint/Compatibility
 )
