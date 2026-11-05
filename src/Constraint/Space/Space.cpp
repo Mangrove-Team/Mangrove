@@ -5,8 +5,6 @@
 // Copyright (c) Mangrove. All rights reserved.
 */
 
-#include <memory>
-
 #include "Space.hpp"
 
 Space::Space() {
@@ -23,9 +21,8 @@ Space::Space() {
 std::string Space::getDataInfo() const {
     std::string dataInfo;
 
-    for (auto& point: _delimitation.outer()) {
+    for (auto& point: _delimitation.outer())
         dataInfo += "(" + std::to_string(point.x()) + ", " + std::to_string(point.y()) + "), ";
-    }
     if (!dataInfo.empty()) {
         dataInfo.pop_back();
         dataInfo.pop_back();
@@ -47,17 +44,16 @@ void Space::changePoint(const int index, const int x, const int y, const std::li
     _delimitation.outer()[index] = Point(x, y);
 }
 
-std::string Space::check(const Plan &plan) const {
+std::string Space::check(const std::shared_ptr<Plan>& plan) const {
     std::string errors;
-    const auto &stands = plan.getStands();
+    const auto &stands = plan->getStands();
 
     const auto currentStand = std::ranges::find_if(stands, [this](const auto& stand) {
         return stand->template getConstraint<Space>().get() == this;
     });
 
-    for (const auto& stand: stands) {
+    for (const auto& stand: stands)
         if (*currentStand != stand && boost::geometry::intersects(_delimitation, stand->getConstraint<Space>()->getDelimitation()))
             errors += "Error: Space of '" + currentStand->get()->getName() + "' overlaps with '" + stand->getName() + "'\n";
-    }
     return errors;
 }

@@ -55,14 +55,14 @@ std::list<std::shared_ptr<AConstraint>> Plan::getConstraints() const {
     return constraints;
 }
 
-inline std::ostream &operator<<(std::ostream &os, const Plan &plan) {
+inline std::ostream &operator<<(std::ostream &os, const std::shared_ptr<Plan>& plan) {
     bool first = true;
 
-    for (const auto &stand: plan.getStands()) {
+    for (const auto &stand: plan->getStands()) {
         if (!first)
             os << "\n";
         first = false;
-        os << *stand;
+        os << stand;
     }
     return os;
 }

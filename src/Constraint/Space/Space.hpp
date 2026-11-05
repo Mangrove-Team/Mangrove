@@ -29,7 +29,7 @@ public:
     void addPoint(int x, int y);
     void changePoint(int index, int x, int y, const std::list<std::shared_ptr<Space>>& other);
 
-    [[nodiscard]] std::string check(const Plan &plan) const;
+    [[nodiscard]] std::string check(const std::shared_ptr<Plan>& plan) const;
 
 private:
     Polygon _delimitation;

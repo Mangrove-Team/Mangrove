@@ -6,7 +6,6 @@
 */
 
 #include <ostream>
-#include <iostream>
 
 #include "Plan.hpp"
 #include "Space.hpp"
@@ -25,8 +24,8 @@ int main() {
     compatibilityConstraint->addIncompatibleStand(stand1);
     plan->addStand(stand1);
     plan->addStand(stand2);
-    std::cout << *plan << std::endl;
+    std::cout << plan << std::endl;
     const auto spaceConstraint = stand2->getConstraint<Space>().get();
-    std::cout << spaceConstraint->check(*plan);
+    std::cout << spaceConstraint->check(plan);
     return 0;
 }

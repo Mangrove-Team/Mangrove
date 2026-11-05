@@ -54,15 +54,15 @@ void Stand::addConstraint(Args &&... args) {
     _constraints.emplace(c->getType(), c);
 }
 
-inline std::ostream& operator<<(std::ostream& os, const Stand& stand) {
+inline std::ostream& operator<<(std::ostream& os, const std::shared_ptr<Stand>& stand) {
     bool first = true;
 
-    os << stand.getName() << ":\n";
-    for (const auto &constraint: stand.getConstraints() | std::views::values) {
+    os << stand->getName() << ":\n";
+    for (const auto &constraint: stand->getConstraints() | std::views::values) {
         if (!first)
             os << ",\n";
         first = false;
-        os << *constraint;
+        os << constraint;
     }
     os << '\n';
     return os;

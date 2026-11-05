@@ -8,6 +8,7 @@
 #ifndef MANGROVE_ACONSTRAINT_HPP
 #define MANGROVE_ACONSTRAINT_HPP
 
+#include <memory>
 #include <string>
 #include <ostream>
 #include <typeindex>
@@ -30,8 +31,8 @@ protected:
     std::type_index _type;
 };
 
-inline std::ostream& operator<<(std::ostream& os, const AConstraint& constraint) {
-    os << constraint.getName() << " (" << constraint.getDataInfo() << ")";
+inline std::ostream& operator<<(std::ostream& os, const std::shared_ptr<AConstraint>& constraint) {
+    os << constraint->getName() << " (" << constraint->getDataInfo() << ")";
     return os;
 }
 
