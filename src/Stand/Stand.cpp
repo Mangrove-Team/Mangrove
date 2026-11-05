@@ -1,7 +1,7 @@
 /*
 // Mangrove Project
 // Stand.cpp
-// Description: 
+// Description: Stand class that represents a stand in a plan and contains its constraints
 // Copyright (c) Mangrove. All rights reserved.
 */
 

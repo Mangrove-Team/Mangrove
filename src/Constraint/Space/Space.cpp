@@ -1,7 +1,7 @@
 /*
 // Mangrove Project
 // Space.cpp
-// Description: 
+// Description: Space constraint class that represents stand position and delimitation in a plan
 // Copyright (c) Mangrove. All rights reserved.
 */
 

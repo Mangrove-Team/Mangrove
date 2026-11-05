@@ -1,7 +1,7 @@
 /*
 // Mangrove Project
 // Plan.cpp
-// Description: 
+// Description: Plan class that represents a collection of stands and their constraints
 // Copyright (c) Mangrove. All rights reserved.
 */
 

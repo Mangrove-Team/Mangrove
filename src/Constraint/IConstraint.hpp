@@ -1,7 +1,7 @@
 /*
 // Mangrove Project
 // IConstraint.hpp
-// Description: 
+// Description: Interface for constraints
 // Copyright (c) Mangrove. All rights reserved.
 */
 

@@ -1,7 +1,7 @@
 /*
 // Mangrove Project
 // Electricity.hpp
-// Description: 
+// Description: Electricity constraint class that represents the electricity consumption of a stand
 // Copyright (c) Mangrove. All rights reserved.
 */
 

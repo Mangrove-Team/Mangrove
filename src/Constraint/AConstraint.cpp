@@ -1,7 +1,7 @@
 /*
 // Mangrove Project
 // AConstraint.cpp
-// Description: 
+// Description: Abstract class for constraints
 // Copyright (c) Mangrove. All rights reserved.
 */
 

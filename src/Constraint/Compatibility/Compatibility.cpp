@@ -1,7 +1,7 @@
 /*
 // Mangrove Project
 // Compatibility.cpp
-// Description: 
+// Description: Compatibility constraint class that represents the compatibility with other stands in a plan
 // Copyright (c) Mangrove. All rights reserved.
 */
 
