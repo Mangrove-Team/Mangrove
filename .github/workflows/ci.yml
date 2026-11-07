@@ -2,7 +2,9 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -53,7 +55,7 @@ jobs:
       - run: pip install pre-commit
 
       - name: Configure
-        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
 
       - name: Build
         run: cmake --build build --parallel
@@ -118,8 +120,6 @@ jobs:
           version: '6.8.3'
           arch: win64_msvc2022_64
           cache: true
-
-      - uses: microsoft/setup-msbuild@v1.0.2
 
       - name: Configure
         run: cmake -S . -B build -DMANGROVE_DEPLOY_QT=ON

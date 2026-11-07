@@ -1,6 +1,6 @@
 # CI : pipelines et écriture de tests
 
-La CI tourne sur **GitHub Actions** (`.github/workflows/ci.yml`). Elle se lance à chaque push, sur toutes les branches, et sur chaque pull request.
+La CI tourne sur **GitHub Actions** (`.github/workflows/ci.yml`). Elle se lance sur chaque pull request (et à chaque nouveau commit poussé dessus), à chaque push sur `main`, et à la main depuis l'onglet **Actions** (*Run workflow*). Une branche sans PR n'a pas de CI : ouvrir une PR (en brouillon si besoin) pour la lancer.
 
 ## Ce que vérifie la pipeline
 

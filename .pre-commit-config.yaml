@@ -5,8 +5,8 @@ repos:
     rev: v1.6.1
     hooks:
       - id: clang-format
-        args: [--style=file, --version=21.1.8]
-        additional_dependencies: [clang-format==21.1.8]
+        args: [--style=file, --version=21.1.6]
+        additional_dependencies: [clang-format==21.1.6]
       - id: clang-tidy
         args: [--version=21.1.6, -p=build]
         additional_dependencies: [clang-tidy==21.1.6]
